@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -512,26 +513,12 @@ namespace EXFunctionKit
         /// </summary>
         /// <typeparam name="T">集合类型</typeparam>
         /// <param name="self">当前集合</param>
-        /// <param name="set">要执行的操作</param>
-        /// <returns>当前集合</returns>
-        public static T ForIndex<T>(this T self, Action<T, int> set) where T : ICollection
-        {
-            for (int i = 0; i < self.Count; i++)
-                set(self, i);
-            return self;
-        }
-
-        /// <summary>
-        /// 对集合进行索引循环操作，并执行指定的操作。
-        /// </summary>
-        /// <typeparam name="T">集合类型</typeparam>
-        /// <param name="self">当前集合</param>
         /// <param name="set">要执行的条件判断操作</param>
         /// <returns>当前集合</returns>
-        public static T ForIndex<T>(this T self, Func<T, int, bool> set) where T : ICollection
+        public static T ForIndex<T>(this T self, Func<int, bool> set) where T : ICollection
         {
             for (int i = 0; i < self.Count; i++)
-                if (set(self, i))
+                if (set(i))
                     break;
             return self;
         }
@@ -551,43 +538,29 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 对集合进行倒序索引循环操作，并执行指定的操作。
-        /// </summary>
-        /// <typeparam name="T">集合类型</typeparam>
-        /// <param name="self">当前集合</param>
-        /// <param name="set">要执行的操作</param>
-        /// <returns>当前集合</returns>
-        public static T ForIndexReverse<T>(this T self, Action<T, int> set) where T : ICollection
-        {
-            for (int i = self.Count - 1; i > -1; i--)
-                set(self, i);
-            return self;
-        }
-
-        /// <summary>
         /// 对集合进行倒序索引循环操作，并执行指定的条件判断操作。
         /// </summary>
         /// <typeparam name="T">集合类型</typeparam>
         /// <param name="self">当前集合</param>
         /// <param name="set">要执行的条件判断操作</param>
         /// <returns>当前集合</returns>
-        public static T ForIndexReverse<T>(this T self, Func<T, int, bool> set) where T : ICollection
+        public static T ForIndexReverse<T>(this T self, Func<int, bool> set) where T : ICollection
         {
             for (int i = self.Count - 1; i > -1; i--)
-                if (set(self, i))
+                if (set(i))
                     break;
             return self;
         }
 
 
         /// <summary>
-        /// 遍历 List 并应用操作。
+        /// 遍历 List 并应用操作。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         /// <typeparam name="T">列表中的元素类型。</typeparam>
         /// <param name="self">要遍历的 List 实例。</param>
         /// <param name="set">应用于元素的操作。</param>
         /// <returns>已经遍历的 List 实例。</returns>
-        public static List<T> For<T>(this List<T> self, Action<int, T> set) where T : class
+        public static List<T> For<T>(this List<T> self, Action<int, T> set)
         {
             for (int i = 0; i < self.Count; i++)
                 set.Invoke(i, self[i]);
@@ -595,13 +568,13 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 遍历 List 并应用操作，直到操作返回 false。
+        /// 遍历 List 并应用操作，直到操作返回 false。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         /// <typeparam name="T">列表中的元素类型。</typeparam>
         /// <param name="self">要遍历的 List 实例。</param>
         /// <param name="set">应用于元素的操作。</param>
         /// <returns>已经遍历的 List 实例。</returns>
-        public static List<T> For<T>(this List<T> self, Func<int, T, bool> set) where T : class
+        public static List<T> For<T>(this List<T> self, Func<int, T, bool> set)
         {
             for (int i = 0; i < self.Count; i++)
                 if (!set.Invoke(i, self[i]))
@@ -610,13 +583,13 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 遍历 T[] 并应用操作。
+        /// 遍历 T[] 并应用操作。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         /// <typeparam name="T">数组中的元素类型。</typeparam>
         /// <param name="self">要遍历的 T[] 实例。</param>
         /// <param name="set">应用于元素的操作。</param>
         /// <returns>已经遪历的 T[] 实例。</returns>
-        public static T[] For<T>(this T[] self, Action<int, T> set) where T : class
+        public static T[] For<T>(this T[] self, Action<int, T> set)
         {
             for (int i = 0; i < self.Length; i++)
                 set.Invoke(i, self[i]);
@@ -624,13 +597,13 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 遍历 T[] 并应用操作，直到操作返回 false。
+        /// 遍历 T[] 并应用操作，直到操作返回 false。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         /// <typeparam name="T">数组中的元素类型。</typeparam>
         /// <param name="self">要遍历的 T[] 实例。</param>
         /// <param name="set">应用于元素的操4。</param>
         /// <returns>已经遍历的 T[] 实例。</returns>
-        public static T[] For<T>(this T[] self, Func<int, T, bool> set) where T : class
+        public static T[] For<T>(this T[] self, Func<int, T, bool> set)
         {
             for (int i = 0; i < self.Length; i++)
                 if (!set.Invoke(i, self[i]))
@@ -639,13 +612,13 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 逆向遍历 List 并应用操作。
+        /// 逆向遍历 List 并应用操作。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         /// <typeparam name="T">列表中的元素类型。</typeparam>
         /// <param name="self">要遍历的 List 实例。</param>
         /// <param name="set">应用于元素的操作。</param>
         /// <returns>已经遍历的 List 实例。</returns>
-        public static List<T> ForReverse<T>(this List<T> self, Action<int, T> set) where T : class
+        public static List<T> ForReverse<T>(this List<T> self, Action<int, T> set)
         {
             for (int i = self.Count - 1; i > -1; i--)
                 set.Invoke(i, self[i]);
@@ -653,13 +626,13 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 逆向遍历 List 并应用操作，直到操作返回 false。
+        /// 逆向遍历 List 并应用操作，直到操作返回 false。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         /// <typeparam name="T">列表中的元素类型。</typeparam>
         /// <param name="self">要遍历的 List 实例。</param>
         /// <param name="set">应用于元素的操作。</param>
         /// <returns>已经遍历的 List 实例。</returns>
-        public static List<T> ForReverse<T>(this List<T> self, Func<int, T, bool> set) where T : class
+        public static List<T> ForReverse<T>(this List<T> self, Func<int, T, bool> set)
         {
             for (int i = self.Count - 1; i > -1; i--)
                 if (!set.Invoke(i, self[i]))
@@ -668,13 +641,13 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 逆向遍历 T[] 并应用操作。
+        /// 逆向遍历 T[] 并应用操作。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         /// <typeparam name="T">数组中的元素类型。</typeparam>
         /// <param name="self">要遍历的 T[] 实例。</param>
         /// <param name="set">应用于元素的操作。</param>
         /// <returns>已经遍历的 T[] 实例。</returns>
-        public static T[] ForReverse<T>(this T[] self, Action<int, T> set) where T : class
+        public static T[] ForReverse<T>(this T[] self, Action<int, T> set)
         {
             for (int i = self.Length - 1; i > -1; i--)
                 set.Invoke(i, self[i]);
@@ -682,13 +655,13 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 逆向遍历 T[] 并应用操作，直到操作返回 false。
+        /// 逆向遍历 T[] 并应用操作，直到操作返回 false。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         /// <typeparam name="T">数组中的元素类型。</typeparam>
         /// <param name="self">要遍历的 T[] 实例。</param>
         /// <param name="set">应用于元素的操作。</param>
         /// <returns>已经遍历的 T[] 实例。</returns>
-        public static T[] ForReverse<T>(this T[] self, Func<int, T, bool> set) where T : class
+        public static T[] ForReverse<T>(this T[] self, Func<int, T, bool> set)
         {
             for (int i = self.Length - 1; i > -1; i--)
                 if (!set.Invoke(i, self[i]))
@@ -698,30 +671,32 @@ namespace EXFunctionKit
 
 
         /// <summary>
-        /// 对集合中的每个项执行操作。
+        /// 对集合中的每个项执行操作。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
-        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Action<T> set) where T : class
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Action<T> set)
         {
-            foreach (var item in self)
+            var forEach = self as T[] ?? self.ToArray();
+            foreach (var item in forEach)
                 set.Invoke(item);
 
-            return self;
+            return forEach;
         }
 
         /// <summary>
-        /// 对集合中的每个项执行操作，如果操作返回 false，则停止遍历。
+        /// 对集合中的每个项执行操作，如果操作返回 false，则停止遍历。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
-        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Func<T, bool> set) where T : class
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> self, Func<T, bool> set)
         {
-            foreach (var item in self)
+            var forEach = self as T[] ?? self.ToArray();
+            foreach (var item in forEach)
                 if (!set.Invoke(item))
                     break;
 
-            return self;
+            return forEach;
         }
 
         /// <summary>
-        /// 对字典中的每个键值对执行操作。
+        /// 对字典中的每个键值对执行操作。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         public static Dictionary<K, V> ForEachKey<K, V>(this Dictionary<K, V> self, Action<K, V> set)
         {
@@ -731,7 +706,7 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 对字典中的每个键值对执行操作，如果操作返回 true，则停止遍历。
+        /// 对字典中的每个键值对执行操作，如果操作返回 true，则停止遍历。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         public static Dictionary<K, V> ForEachKey<K, V>(this Dictionary<K, V> self, Func<K, V, bool> set)
         {
@@ -742,7 +717,7 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 对字典中的每个键执行操作
+        /// 对字典中的每个键执行操作。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         public static Dictionary<K, V> ForEachKey<K, V>(this Dictionary<K, V> self, Action<K> set)
         {
@@ -752,7 +727,7 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 对字典中的每个键执行操作，如果操作返回 true，则停止遍历。
+        /// 对字典中的每个键执行操作，如果操作返回 true，则停止遍历。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         public static Dictionary<K, V> ForEachKey<K, V>(this Dictionary<K, V> self, Func<K, bool> set)
         {
@@ -763,7 +738,7 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 对字典中的每个值执行操作。
+        /// 对字典中的每个值执行操作。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         public static Dictionary<K, V> ForEachValue<K, V>(this Dictionary<K, V> self, Action<V> set)
         {
@@ -773,7 +748,7 @@ namespace EXFunctionKit
         }
 
         /// <summary>
-        /// 对字典中的每个值执行操作，如果操作返回 true，则停止遍历。
+        /// 对字典中的每个值执行操作，如果操作返回 true，则停止遍历。注意！！遍历值类型时，事件传出的值是副本，而不是原值。
         /// </summary>
         public static Dictionary<K, V> ForEachValue<K, V>(this Dictionary<K, V> self, Func<V, bool> set)
         {
@@ -968,27 +943,60 @@ namespace EXFunctionKit
             return value;
         }
 
-        public static void All<T>(this (T, T) self, Action<T> set) where T : class
+        /// <summary>
+        /// 将元组转换为可枚举的 IEnumerable.注意!!必须保证元组的元素类型一致;若元组元素为值类型,建议使用ExCSharp.AsIEnumerable()代替,否则会有装箱拆箱的开销.
+        /// </summary>
+        /// <param name="self">元组</param>
+        /// <typeparam name="T">元组中的元素类型</typeparam>
+        /// <returns> 可枚举的 IEnumerable </returns>
+        public static IEnumerable<T> AsIEnumerable<T>(this ITuple self)
         {
-            set.Invoke(self.Item1);
-            set.Invoke(self.Item2);
+            for (int i = 0; i < self.Length; i++)
+            {
+                yield return (T) self[i];
+            }
         }
-
-        public static void All<T>(this (T, T, T) self, Action<T> set) where T : class
+        /// <summary>
+        /// 遍历元组，并对每个元素执行操作.注意!!必须保证元组的元素类型一致;若元组元素为值类型,建议使用ExCSharp.All()代替,否则会有装箱拆箱的开销.
+        /// </summary>
+        /// <param name="self"> 元组 </param>
+        /// <param name="set"> 操作 </param>
+        /// <typeparam name="T"> 元组中的元素类型 </typeparam>
+        /// <returns> 可枚举的 IEnumerable </returns>
+        public static void All<T>(this ITuple self, Action<T> set)
         {
-            set.Invoke(self.Item1);
-            set.Invoke(self.Item2);
-            set.Invoke(self.Item3);
+            foreach (var item in self.AsIEnumerable<T>())
+            {
+                set.Invoke(item);
+            }
         }
-
-        public static void All<T>(this (T, T, T, T) self, Action<T> set) where T : class
+        /// <summary>
+        /// 将传入的参数转换为可枚举的 IEnumerable。注意！！必须保证传入的参数类型一致。
+        /// </summary>
+        /// <param name="self">参数</param>
+        /// <typeparam name="T">参数类型</typeparam>
+        /// <returns> 可枚举的 IEnumerable </returns>
+        public static IEnumerable<T> AsIEnumerable<T>(params T[] self)
         {
-            set.Invoke(self.Item1);
-            set.Invoke(self.Item2);
-            set.Invoke(self.Item3);
-            set.Invoke(self.Item4);
+            foreach (var t in self)
+            {
+                yield return t;
+            }
         }
-
+        /// <summary>
+        ///  遍历参数，并对每个元素执行操作。注意！！若参数元素为值类型，则事件传出的值是副本，而不是原值。
+        /// </summary>
+        /// <param name="action"> 操作 </param>
+        /// <param name="self"> 参数 </param>
+        /// <typeparam name="T"> 参数类型 </typeparam>
+        /// <returns> 可枚举的 IEnumerable </returns>
+        public static void All<T>(Action<T> action,params T[] self)
+        {
+            foreach (var t in AsIEnumerable(self))
+            {
+                action(t);
+            }
+        }
         public static IEnumerable<T> AppendTo<T>(this T self, IEnumerable<T> targetEnumerable) =>
             targetEnumerable.Append(self);
 
