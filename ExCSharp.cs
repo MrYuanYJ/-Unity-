@@ -944,6 +944,18 @@ namespace EXFunctionKit
         }
 
         /// <summary>
+        /// 将元组转换为可枚举的 IEnumerable.注意!!若元组元素为值类型,建议使用ExCSharp.AsIEnumerable()代替,否则会有装箱的开销.
+        /// </summary>
+        /// <param name="self">元组</param>
+        /// <returns> 可枚举的 IEnumerable </returns>
+        public static IEnumerable AsIEnumerable(this ITuple self)
+        {
+            for (int i = 0; i < self.Length; i++)
+            {
+                yield return self[i];
+            }
+        }
+        /// <summary>
         /// 将元组转换为可枚举的 IEnumerable.注意!!必须保证元组的元素类型一致;若元组元素为值类型,建议使用ExCSharp.AsIEnumerable()代替,否则会有装箱拆箱的开销.
         /// </summary>
         /// <param name="self">元组</param>
@@ -957,21 +969,34 @@ namespace EXFunctionKit
             }
         }
         /// <summary>
-        /// 遍历元组，并对每个元素执行操作.注意!!必须保证元组的元素类型一致;若元组元素为值类型,建议使用ExCSharp.All()代替,否则会有装箱拆箱的开销.
+        /// 遍历元组，并对每个元素执行操作.注意!!若元组元素为值类型,建议使用ExCSharp.ForEach()代替,否则会有装箱的开销.
         /// </summary>
         /// <param name="self"> 元组 </param>
         /// <param name="set"> 操作 </param>
-        /// <typeparam name="T"> 元组中的元素类型 </typeparam>
         /// <returns> 可枚举的 IEnumerable </returns>
-        public static void All<T>(this ITuple self, Action<T> set)
+        public static void ForEach(this ITuple self, Action<object> set)
         {
-            foreach (var item in self.AsIEnumerable<T>())
+            foreach (var item in self.AsIEnumerable())
             {
                 set.Invoke(item);
             }
         }
         /// <summary>
-        /// 将传入的参数转换为可枚举的 IEnumerable。注意！！必须保证传入的参数类型一致。
+        /// 遍历元组，并对每个元素执行操作.注意!!必须保证元组的元素类型一致;若元组元素为值类型,建议使用ExCSharp.ForEach()代替,否则会有装箱拆箱的开销.
+        /// </summary>
+        /// <param name="self"> 元组 </param>
+        /// <param name="set"> 操作 </param>
+        /// <typeparam name="T"> 元组中的元素类型 </typeparam>
+        /// <returns> 可枚举的 IEnumerable </returns>
+        public static void ForEach<T>(this ITuple self, Action<T> set)
+        {
+            foreach (var item in self.AsIEnumerable())
+            {
+                set.Invoke((T)item);
+            }
+        }
+        /// <summary>
+        /// 将传入的参数转换为可枚举的 IEnumerable.注意!!必须保证传入的参数类型一致.
         /// </summary>
         /// <param name="self">参数</param>
         /// <typeparam name="T">参数类型</typeparam>
@@ -984,13 +1009,13 @@ namespace EXFunctionKit
             }
         }
         /// <summary>
-        ///  遍历参数，并对每个元素执行操作。注意！！若参数元素为值类型，则事件传出的值是副本，而不是原值。
+        ///  遍历参数，并对每个元素执行操作.注意!!若参数元素为值类型,则事件传出的值是副本,而不是原值.
         /// </summary>
         /// <param name="action"> 操作 </param>
         /// <param name="self"> 参数 </param>
         /// <typeparam name="T"> 参数类型 </typeparam>
         /// <returns> 可枚举的 IEnumerable </returns>
-        public static void All<T>(Action<T> action,params T[] self)
+        public static void ForEach<T>(Action<T> action,params T[] self)
         {
             foreach (var t in AsIEnumerable(self))
             {
