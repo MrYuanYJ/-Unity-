@@ -1,0 +1,17 @@
+{
+    "name": "EasyFramework.Specialization",
+    "rootNamespace": "",
+    "references": [
+        "EasyFramework",
+        "EasyFramework.EasyKit"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,18 @@
+
+*.meta
+/Scripts/ScriptGens
+/Scripts/EasyKit/EasyUIKit/Res
+/EasyFramework/Resources/Settings
+/AddressableAssetsData
+Scripts/EasyKit/StateMachineKit/Test/StateMachineTest.cs
+.idea/.idea.Assets.dir/.idea/indexLayout.xml
+.idea/.idea.Assets.dir/.idea/vcs.xml
+MyFirst.cs
+
+/Samples
+/TextMesh Pro
+/TextMesh Pro
+*.meta
+*.meta
+/TextMesh Pro
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
