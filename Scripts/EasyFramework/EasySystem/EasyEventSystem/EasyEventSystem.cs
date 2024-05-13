@@ -41,15 +41,8 @@ namespace EasyFramework
 
         public override void OnDispose()
         {
+            base.OnDispose();
             _allAutoEvents.Clear();
-            _easyEventScope.ForEachValue(dic => dic.ClearAll());
-            _easyFuncScope.ForEachValue(dic => dic.ClearAll());
-            _classEventScope.ForEachValue(dic => dic.ClearAll());
-            _classFuncScope.ForEachValue(dic => dic.ClearAll());
-            _easyEventScope.Clear();
-            _easyFuncScope.Clear();
-            _classEventScope.Clear();
-            _classFuncScope.Clear();
         }
 
         public void RegisterAutoEvent(Type type)
@@ -61,7 +54,7 @@ namespace EasyFramework
                 object[] attrs = type.GetCustomAttributes(typeof(EventScopeAttribute), false);
                 if (attrs.Length == 0)
                 {
-                    obj.Register();
+                    obj.Register().UnRegisterOnDispose(this);
                     return;
                 }
                 
@@ -71,7 +64,7 @@ namespace EasyFramework
                 {
                     if (attr.Scope.HasFlag(scope))
                     {
-                        obj.Register(scope);
+                        obj.Register(scope).UnRegisterOnDispose(this);;
                         scopeValue -= (long)scope;
                         if (scopeValue <= 0)
                             break;
@@ -152,8 +145,8 @@ namespace EasyFramework
         public static void ClearEvent<T>(EventScope scope) where T : struct => GlobalEvent.GetEasyEventDic(scope).Clear<T>();
         
 
-        public static Results<R> InvokeAll<T, R>() where T : struct => EasyFuncDic.Global.InvokeAndReturnAll<T, R>(default);
-        public static Results<R> InvokeAll<T, R>(T arg) where T : struct => EasyFuncDic.Global.InvokeAndReturnAll<T, R>(arg);
+        public static Results<R> InvokeAndReturnAll<T, R>() where T : struct => EasyFuncDic.Global.InvokeAndReturnAll<T, R>(default);
+        public static Results<R> InvokeAndReturnAll<T, R>(T arg) where T : struct => EasyFuncDic.Global.InvokeAndReturnAll<T, R>(arg);
         public static R InvokeFunc<T, R>() where T : struct => EasyFuncDic.Global.Invoke<T, R>(default);
         public static R InvokeFunc<T, R>(T arg) where T : struct => EasyFuncDic.Global.Invoke<T, R>(arg);
         public static IUnRegisterHandle RegisterFunc<T, R>(Func<T, R> func) where T : struct => EasyFuncDic.Global.Register(func);
@@ -192,8 +185,8 @@ namespace EasyFramework
 
             return GlobalEvent.GetEasyFuncDic(scope).Invoke<T,R>(arg);
         }
-        public static Results<R> InvokeAll<T, R>(EventScope scope) where T : struct => InvokeAllByScope<T,R>(default, scope);
-        public static Results<R> InvokeAll<T, R>(T arg, EventScope scope) where T : struct => InvokeAllByScope<T, R>(arg,scope);
+        public static Results<R> InvokeAndReturnAll<T, R>(EventScope scope) where T : struct => InvokeAllByScope<T,R>(default, scope);
+        public static Results<R> InvokeAndReturnAll<T, R>(T arg, EventScope scope) where T : struct => InvokeAllByScope<T, R>(arg,scope);
         public static R InvokeFunc<T, R>(EventScope scope) where T : struct => InvokeFuncByScope<T, R>(default, scope);
         public static R InvokeFunc<T, R>(T arg, EventScope scope) where T : struct => InvokeFuncByScope<T, R>(arg, scope);
         public static IUnRegisterHandle RegisterFunc<T, R>(Func<T, R> func, EventScope scope) where T : struct => GlobalEvent.GetEasyFuncDic(scope).Register(func);
@@ -201,8 +194,8 @@ namespace EasyFramework
         public static void ClearFunc<T, R>(EventScope scope) where T : struct => GlobalEvent.GetEasyFuncDic(scope).Clear<T, R>();
         
         
-        public static Results<IResult> InvokeAll<T>() where T : struct => EasyFuncDic.Global.InvokeAndReturnAll<T>(default);
-        public static Results<IResult> InvokeAll<T>(T arg) where T : struct => EasyFuncDic.Global.InvokeAndReturnAll(arg);
+        public static Results<IResult> InvokeAndReturnAll<T>() where T : struct => EasyFuncDic.Global.InvokeAndReturnAll<T>(default);
+        public static Results<IResult> InvokeAndReturnAll<T>(T arg) where T : struct => EasyFuncDic.Global.InvokeAndReturnAll(arg);
         public static IResult InvokeFunc<T>() where T : struct => EasyFuncDic.Global.Invoke<T>(default);
         public static IResult InvokeFunc<T>(T arg) where T : struct => EasyFuncDic.Global.Invoke(arg);
         public static IUnRegisterHandle RegisterFunc<T>(Func<T, IResult> func) where T : struct => EasyFuncDic.Global.Register(func);
@@ -210,8 +203,8 @@ namespace EasyFramework
         public static void ClearFunc<T>() where T : struct => EasyFuncDic.Global.Clear<T>();
         
         
-        public static Results<IResult> InvokeAll<T>(EventScope scope) where T : struct => InvokeAllByScope<T,IResult>(default,scope);
-        public static Results<IResult> InvokeAll<T>(T arg, EventScope scope) where T : struct => InvokeAllByScope<T,IResult>(arg,scope);
+        public static Results<IResult> InvokeAndReturnAll<T>(EventScope scope) where T : struct => InvokeAllByScope<T,IResult>(default,scope);
+        public static Results<IResult> InvokeAndReturnAll<T>(T arg, EventScope scope) where T : struct => InvokeAllByScope<T,IResult>(arg,scope);
         public static IResult InvokeFunc<T>(EventScope scope) where T : struct => InvokeFuncByScope<T, IResult>(default, scope);
         public static IResult InvokeFunc<T>(T arg, EventScope scope) where T : struct => InvokeFuncByScope<T, IResult>(arg, scope);
         public static IUnRegisterHandle RegisterFunc<T>(Func<T, IResult> func, EventScope scope) where T : struct => GlobalEvent.GetEasyFuncDic(scope).Register(func);

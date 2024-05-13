@@ -9,9 +9,9 @@ namespace EasyFramework
         private IBindEntity _bind;
         public abstract IStructure GetStructure();
         public bool IsInit { get; set; }
-        public EasyEvent<IEasyLife> InitEvent { get; set; } = new();
-        public EasyEvent<IEasyLife> StartEvent { get; set; } = new();
-        public EasyEvent<IEasyLife> DisposeEvent { get; set; } = new();
+        public EasyEvent<IInitAble> InitEvent { get; set; } = new();
+        public EasyEvent<IStartAble> StartEvent { get; set; } = new();
+        public EasyEvent<IDisposeAble> DisposeEvent { get; set; } = new();
 
         public virtual void OnInit()
         {
@@ -28,7 +28,6 @@ namespace EasyFramework
                 _parent.Container.Remove(_parent.GetType());
             _parent = null;
             _bind = null;
-            EntityFactory.Recycle(this);
         }
         public IBindEntity Bind => _bind;
         public IEntity Parent => _parent;

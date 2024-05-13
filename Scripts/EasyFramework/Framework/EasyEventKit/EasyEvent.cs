@@ -724,7 +724,15 @@ namespace EasyFramework.EventKit
         public static void UnRegister<Return>(this IEasyFunc<Return> self,Func<Return> func)=> self.UnRegister(func);
 
 
-        public static void RegisterAfterInvoke(this IEDelegate self,EasyEvent easyEvent, Action action,Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke(this EasyEvent self, Action action, Action<IUnRegisterHandle> set = null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<A>(this EasyEvent<A> self, Action<A> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<A, B>(this EasyEvent<A, B> self, Action<A, B> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<A, B, C>(this EasyEvent<A, B, C> self, Action<A, B, C> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<A, B, C, D>(this EasyEvent<A, B, C, D> self, Action<A, B, C, D> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<A, B, C, D, E>(this EasyEvent<A, B, C, D, E> self, Action<A, B, C, D, E> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        
+
+        public static void RegisterAfterInvoke(this IEDelegate self,EasyEvent easyEvent, Action action,Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -732,7 +740,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<A>(this IEDelegate self, EasyEvent<A> easyEvent, Action<A> action,Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<A>(this IEDelegate self, EasyEvent<A> easyEvent, Action<A> action,Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -740,7 +748,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<A, B>(this IEDelegate self, EasyEvent<A, B> easyEvent, Action<A, B> action,Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<A, B>(this IEDelegate self, EasyEvent<A, B> easyEvent, Action<A, B> action,Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -748,7 +756,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<A, B, C>(this IEDelegate self, EasyEvent<A, B, C> easyEvent, Action<A, B, C> action, Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<A, B, C>(this IEDelegate self, EasyEvent<A, B, C> easyEvent, Action<A, B, C> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -756,7 +764,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<A, B, C, D>(this IEDelegate self, EasyEvent<A, B, C, D> easyEvent, Action<A, B, C, D> action, Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<A, B, C, D>(this IEDelegate self, EasyEvent<A, B, C, D> easyEvent, Action<A, B, C, D> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -764,7 +772,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<A, B, C, D, E>(this IEDelegate self, EasyEvent<A, B, C, D, E> easyEvent, Action<A, B, C, D, E> action, Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<A, B, C, D, E>(this IEDelegate self, EasyEvent<A, B, C, D, E> easyEvent, Action<A, B, C, D, E> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -773,7 +781,8 @@ namespace EasyFramework.EventKit
             };
         }
 
-        public static IUnRegisterHandle RegisterAfterInvoke(this IUnRegisterHandle self, EasyEvent easyEvent, Action action, Action<IUnRegisterHandle> set)
+        
+        public static IUnRegisterHandle RegisterAfterInvoke(this IUnRegisterHandle self, EasyEvent easyEvent, Action action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -782,7 +791,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<A>(this IUnRegisterHandle self, EasyEvent<A> easyEvent, Action<A> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<A>(this IUnRegisterHandle self, EasyEvent<A> easyEvent, Action<A> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -791,7 +800,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<A, B>(this IUnRegisterHandle self, EasyEvent<A, B> easyEvent, Action<A, B> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<A, B>(this IUnRegisterHandle self, EasyEvent<A, B> easyEvent, Action<A, B> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -800,7 +809,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<A, B, C>(this IUnRegisterHandle self, EasyEvent<A, B, C> easyEvent, Action<A, B, C> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<A, B, C>(this IUnRegisterHandle self, EasyEvent<A, B, C> easyEvent, Action<A, B, C> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -809,7 +818,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<A, B, C, D>(this IUnRegisterHandle self, EasyEvent<A, B, C, D> easyEvent, Action<A, B, C, D> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<A, B, C, D>(this IUnRegisterHandle self, EasyEvent<A, B, C, D> easyEvent, Action<A, B, C, D> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -818,7 +827,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<A, B, C, D, E>(this IUnRegisterHandle self, EasyEvent<A, B, C, D, E> easyEvent, Action<A, B, C, D, E> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<A, B, C, D, E>(this IUnRegisterHandle self, EasyEvent<A, B, C, D, E> easyEvent, Action<A, B, C, D, E> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -828,7 +837,15 @@ namespace EasyFramework.EventKit
             return self;
         }
 
-        public static void RegisterAfterInvoke<R>(this IEDelegate self, EasyFunc<R> easyFunc, Func<R> action, Action<IUnRegisterHandle> set)
+        
+        public static void RegisterAfterInvoke<R>(this EasyFunc<R> self, Func<R> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<R, A>(this EasyFunc<R,A> self, Func<A, R> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<R, A, B>(this EasyFunc<R,A,B> self, Func<A, B, R> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<R, A, B, C>(this EasyFunc<R,A,B,C> self, Func<A, B, C, R> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<R, A, B, C, D>(this EasyFunc<R,A,B,C,D> self, Func<A, B, C, D, R> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        public static void RegisterAfterInvoke<R, A, B, C, D, E>(this EasyFunc<R,A,B,C,D,E> self, Func<A, B, C, D, E, R> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
+        
+        public static void RegisterAfterInvoke<R>(this IEDelegate self, EasyFunc<R> easyFunc, Func<R> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -836,7 +853,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<R, A>(this IEDelegate self, EasyFunc<R,A> easyFunc, Func<A, R> action, Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<R, A>(this IEDelegate self, EasyFunc<R,A> easyFunc, Func<A, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -844,7 +861,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<R, A, B>(this IEDelegate self, EasyFunc<R,A,B> easyFunc, Func<A, B, R> action, Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<R, A, B>(this IEDelegate self, EasyFunc<R,A,B> easyFunc, Func<A, B, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -852,7 +869,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<R, A, B, C>(this IEDelegate self, EasyFunc<R,A,B,C> easyFunc, Func<A, B, C, R> action, Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<R, A, B, C>(this IEDelegate self, EasyFunc<R,A,B,C> easyFunc, Func<A, B, C, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -860,7 +877,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<R, A, B, C, D>(this IEDelegate self, EasyFunc<R,A,B,C,D> easyFunc, Func<A, B, C, D, R> action, Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<R, A, B, C, D>(this IEDelegate self, EasyFunc<R,A,B,C,D> easyFunc, Func<A, B, C, D, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -868,7 +885,7 @@ namespace EasyFramework.EventKit
                 set?.Invoke(handle);
             };
         }
-        public static void RegisterAfterInvoke<R, A, B, C, D, E>(this IEDelegate self, EasyFunc<R,A,B,C,D,E> easyFunc, Func<A, B, C, D, E, R> action, Action<IUnRegisterHandle> set)
+        public static void RegisterAfterInvoke<R, A, B, C, D, E>(this IEDelegate self, EasyFunc<R,A,B,C,D,E> easyFunc, Func<A, B, C, D, E, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
             {
@@ -878,7 +895,7 @@ namespace EasyFramework.EventKit
         }
         
         
-        public static IUnRegisterHandle RegisterAfterInvoke<R>(this IUnRegisterHandle self, EasyFunc<R> easyFunc, Func<R> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<R>(this IUnRegisterHandle self, EasyFunc<R> easyFunc, Func<R> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -887,7 +904,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<R, A>(this IUnRegisterHandle self, EasyFunc<R,A> easyFunc, Func<A, R> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<R, A>(this IUnRegisterHandle self, EasyFunc<R,A> easyFunc, Func<A, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -896,7 +913,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<R, A, B>(this IUnRegisterHandle self, EasyFunc<R,A,B> easyFunc, Func<A, B, R> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<R, A, B>(this IUnRegisterHandle self, EasyFunc<R,A,B> easyFunc, Func<A, B, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -905,7 +922,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<R, A, B, C>(this IUnRegisterHandle self, EasyFunc<R,A,B,C> easyFunc, Func<A, B, C, R> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<R, A, B, C>(this IUnRegisterHandle self, EasyFunc<R,A,B,C> easyFunc, Func<A, B, C, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -914,7 +931,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<R, A, B, C, D>(this IUnRegisterHandle self, EasyFunc<R,A,B,C,D> easyFunc, Func<A, B, C, D, R> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<R, A, B, C, D>(this IUnRegisterHandle self, EasyFunc<R,A,B,C,D> easyFunc, Func<A, B, C, D, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {
@@ -923,7 +940,7 @@ namespace EasyFramework.EventKit
             };
             return self;
         }
-        public static IUnRegisterHandle RegisterAfterInvoke<R, A, B, C, D, E>(this IUnRegisterHandle self, EasyFunc<R,A,B,C,D,E> easyFunc, Func<A, B, C, D, E, R> action, Action<IUnRegisterHandle> set)
+        public static IUnRegisterHandle RegisterAfterInvoke<R, A, B, C, D, E>(this IUnRegisterHandle self, EasyFunc<R,A,B,C,D,E> easyFunc, Func<A, B, C, D, E, R> action, Action<IUnRegisterHandle> set=null)
         {
             self.Delegate.OnceAction += () =>
             {

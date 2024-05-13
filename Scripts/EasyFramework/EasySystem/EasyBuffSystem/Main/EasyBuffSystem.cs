@@ -137,7 +137,7 @@ namespace EasyFramework
         public void OnUpdate()
         {
             foreach (IBuffableUnit unit in _pollLst) { unit.PollBuffs(); }
-
+            
             while (_setQueue.Count > 0) { _setQueue.Dequeue()(); }
         }
 

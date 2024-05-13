@@ -1,4 +1,5 @@
 using System;
+using EXFunctionKit;
 using UnityEngine;
 
 namespace EasyFramework.EventKit
@@ -20,22 +21,22 @@ namespace EasyFramework.EventKit
     {
         public static IUnRegisterHandle Register<T>(this GameObject self, Action action) where T : ACollisionListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(_ => action());
+            return self.GetOrAddComponent<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle Register<T>(this GameObject self, Action<Collision> action) where T : ACollisionListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(action);
+            return self.GetOrAddComponent<T>().Event.Register(action);
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action action, GameObject go) where T : ACollisionListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(_ => action());
+            return go.GetOrAddComponent<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action<Collision> action, GameObject go) where T : ACollisionListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(action);
+            return go.GetOrAddComponent<T>().Event.Register(action);
         }
 
         public static void UnRegister<T>(this GameObject go, Action<Collision> action) where T : ACollisionListener
@@ -45,7 +46,7 @@ namespace EasyFramework.EventKit
 
         public static IUnRegisterHandle UnRegisterOn<T>(this IUnRegisterHandle self, GameObject go) where T : ACollisionListener
         {
-            IEventListener.GetOrAddTrigger<T>(go).Event.Register(_=>self.UnRegister()).OnlyPlayOnce();
+            go.GetOrAddComponent<T>().Event.Register(_=>self.UnRegister()).OnlyPlayOnce();
             return self;
         }
     }
@@ -54,22 +55,22 @@ namespace EasyFramework.EventKit
     {
         public static IUnRegisterHandle Register<T>(this GameObject self, Action action) where T : ACollision2DListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(_ => action());
+            return self.GetOrAddComponent<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle Register<T>(this GameObject self, Action<Collision2D> action) where T : ACollision2DListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(action);
+            return self.GetOrAddComponent<T>().Event.Register(action);
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action action, GameObject go) where T : ACollision2DListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(_ => action());
+            return go.GetOrAddComponent<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action<Collision2D> action, GameObject go) where T : ACollision2DListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(action);
+            return go.GetOrAddComponent<T>().Event.Register(action);
         }
 
         public static void UnRegister<T>(this GameObject go, Action<Collision2D> action) where T : ACollision2DListener
@@ -78,7 +79,7 @@ namespace EasyFramework.EventKit
         }
         public static IUnRegisterHandle UnRegisterOn<T>(this IUnRegisterHandle self, GameObject go) where T : ACollision2DListener
         {
-            IEventListener.GetOrAddTrigger<T>(go).Event.Register(_ => self.UnRegister()).OnlyPlayOnce();
+            go.GetOrAddComponent<T>().Event.Register(_ => self.UnRegister()).OnlyPlayOnce();
             return self;
         }
     }
@@ -86,22 +87,22 @@ namespace EasyFramework.EventKit
     {
         public static IUnRegisterHandle Register<T>(this GameObject self, Action action) where T : AListenerListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(_ => action());
+            return self.GetOrAddComponent<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle Register<T>(this GameObject self, Action<Collider> action) where T : AListenerListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(action);
+            return self.GetOrAddComponent<T>().Event.Register(action);
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action action, GameObject go) where T : AListenerListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(_ => action());
+            return go.GetOrAddComponent<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action<Collider> action, GameObject go) where T : AListenerListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(action);
+            return go.GetOrAddComponent<T>().Event.Register(action);
         }
 
         public static void UnRegister<T>(this GameObject go, Action<Collider> action) where T : AListenerListener
@@ -110,7 +111,7 @@ namespace EasyFramework.EventKit
         }
         public static IUnRegisterHandle UnRegisterOn<T>(this IUnRegisterHandle self, GameObject go) where T : AListenerListener
         {
-            IEventListener.GetOrAddTrigger<T>(go).Event.Register(_ => self.UnRegister()).OnlyPlayOnce();
+            go.GetOrAddComponent<T>().Event.Register(_ => self.UnRegister()).OnlyPlayOnce();
             return self;
         }
     }
@@ -118,22 +119,22 @@ namespace EasyFramework.EventKit
     {
         public static IUnRegisterHandle Register<T>(this GameObject self, Action action) where T : AListener2DListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(_ => action());
+            return self.GetOrAddComponent<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle Register<T>(this GameObject self, Action<Collider2D> action) where T : AListener2DListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(action);
+            return self.GetOrAddComponent<T>().Event.Register(action);
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action action, GameObject go) where T : AListener2DListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(_ => action());
+            return go.GetOrAddComponent<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action<Collider2D> action, GameObject go) where T : AListener2DListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(action);
+            return go.GetOrAddComponent<T>().Event.Register(action);
         }
 
         public static void UnRegister<T>(this GameObject go, Action<Collider2D> action) where T : AListener2DListener
@@ -142,7 +143,7 @@ namespace EasyFramework.EventKit
         }
         public static IUnRegisterHandle UnRegisterOn<T>(this IUnRegisterHandle self, GameObject go) where T : AListener2DListener
         {
-            IEventListener.GetOrAddTrigger<T>(go).Event.Register(_ => self.UnRegister()).OnlyPlayOnce();
+            go.GetOrAddComponent<T>().Event.Register(_ => self.UnRegister()).OnlyPlayOnce();
             return self;
         }
     }

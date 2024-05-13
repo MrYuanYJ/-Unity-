@@ -6,22 +6,22 @@ namespace EasyFramework
 {
     public static class OOPEx
     {
-        public static IUnRegisterHandle UnRegisterOnDispose(this IUnRegisterHandle self, IEasyLife easyLife)
+        public static IUnRegisterHandle UnRegisterOnDispose(this IUnRegisterHandle self, IDisposeAble easyLife)
         {
             easyLife.DisposeEvent.Register(self.UnRegister).OnlyPlayOnce();
             return self;
         }
 
-        public static void RegisterOnDispose(this IEasyLife self, Action action) => self.DisposeEvent.Register(action).OnlyPlayOnce();
+        public static void RegisterOnDispose(this IDisposeAble self, Action action) => self.DisposeEvent.Register(action).OnlyPlayOnce();
 
-        public static CancellationTokenSource CancelOnDispose(this IEasyLife self)
+        public static CancellationTokenSource CancelOnDispose(this IDisposeAble self)
         {
             CancellationTokenSource tokenSource = new();
             self.RegisterOnDispose(tokenSource.Cancel);
             return tokenSource;
         }
 
-        public static CancellationTokenSource CancelOnDispose(this CancellationTokenSource self, IEasyLife disposable)
+        public static CancellationTokenSource CancelOnDispose(this CancellationTokenSource self, IDisposeAble disposable)
         {
             disposable.RegisterOnDispose(self.Cancel);
             return self;

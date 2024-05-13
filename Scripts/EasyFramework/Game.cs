@@ -1,5 +1,4 @@
 using EasyFramework.EasySystem;
-using EasyFramework.EasyUIKit;
 using EasyFramework.EventKit;
 using UnityEngine;
 
@@ -14,43 +13,16 @@ namespace EasyFramework
             this.RegisterSystem<EasyEventSystem>();
             this.RegisterSystem<EasyLifeCycleEventSystem>();
             this.RegisterSystem<EasyCodeLoaderSystem>();
-            this.RegisterSystem<EasyBuffSystem>();
             GlobalEvent.ApplicationInit.InvokeEvent(this);
-            Debug.Log(EventSystem.InvokeAll<TestEventStruct>().GetResult().Value<int>());
         }
 
         public override void OnDispose()
         {
+            EasyEventDic.Global.ClearAll();
+            EasyFuncDic.Global.ClearAll();
+            ClassEvent.Global.ClearAll();
+            ClassFunc.Global.ClearAll();
             GlobalEvent.ApplicationQuit.InvokeEvent(this);
         }
-    }
-    [EventScope(EventScope.GameObject,EventScope.Global)]
-    public class TestEvent: AutoEasyFunc<TestEventStruct>
-    {
-        protected override IResult Run(TestEventStruct self)
-        {
-            Debug.Log("TestEvent Run");
-            return 999.AsResult();
-        }
-    }
-    
-    public class TestUpdateSystem: InitAutoEvent<ECBuffAble>
-    {
-        protected override void OnInit(ECBuffAble self)
-        {
-            Debug.Log(self.GetType().Name);
-        }
-    }
-    public class TestStartAutoSystem: StartAutoEvent<ECBuffAble>
-    {
-        protected override void OnStart(ECBuffAble self)
-        {
-            Debug.Log(self.GetType().Name+" Start");
-        }
-    }
-
-    public struct TestEventStruct
-    {
-        
     }
 }

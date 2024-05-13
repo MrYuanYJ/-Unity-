@@ -10,7 +10,6 @@ namespace EasyFramework.EventKit
         public static void ClearEvent() => ClassEvent.Global.Clear<T>();
         public static void ClearEvent(ClassEvent e) => e.Clear<T>();
     }
-
     public abstract class AEventIndex<T> : IEventIndex<T> where T : AEventIndex<T>
     {
         public static IUnRegisterHandle RegisterEvent(Action a) => ClassEvent.Global.Register<T>(a);
@@ -77,8 +76,7 @@ namespace EasyFramework.EventKit
         public static void InvokeEvent(ClassEvent e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) => e.Invoke<T, T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5);
     }
     #endregion
-
-
+    
     public class ClassEvent
     {
         public static ClassEvent Global = new ClassEvent();

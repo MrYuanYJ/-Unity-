@@ -39,9 +39,9 @@ namespace EasyFramework
         }
 
         public bool IsInit { get; set; }
-        public EasyEvent<IEasyLife> InitEvent { get; set; } = new();
-        public EasyEvent<IEasyLife> StartEvent { get; set; } = new();
-        public EasyEvent<IEasyLife> DisposeEvent { get; set; } = new();
+        public EasyEvent<IInitAble> InitEvent { get; set; } = new();
+        public EasyEvent<IStartAble> StartEvent { get; set; } = new();
+        public EasyEvent<IDisposeAble> DisposeEvent { get; set; } = new();
         public abstract void OnInit();
         public virtual void OnStart(){}
         public abstract void OnDispose();

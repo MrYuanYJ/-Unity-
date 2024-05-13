@@ -1,19 +1,12 @@
 using System;
+using EXFunctionKit;
 using UnityEngine;
 
 namespace EasyFramework.EventKit
 {
     public interface IEventListener
     {
-        public static T GetOrAddTrigger<T>(GameObject self) where T: Component, IEventListener
-        {
-            if (!self.TryGetComponent<T>(out var monoEvent))
-            {
-                monoEvent=self.AddComponent<T>();
-            }
 
-            return monoEvent; 
-        }
     }
     public abstract class AMonoListener : AUnityEventBinder,IEventListener
     {
@@ -23,20 +16,20 @@ namespace EasyFramework.EventKit
     {
         public static IUnRegisterHandle Register<T>(this GameObject self, Action action) where T: AMonoListener
         {
-            return IEventListener.GetOrAddTrigger<T>(self).Event.Register(action);
+            return self.GetOrAddComponent<T>().Event.Register(action);
         }
         public static IUnRegisterHandle RegisterOnDestroy(this GameObject self, Action action)
         {
-            return IEventListener.GetOrAddTrigger<DestroyListener>(self).Event.Register(action).OnlyPlayOnce();
+            return self.GetOrAddComponent<DestroyListener>().Event.Register(action).OnlyPlayOnce();
         }
         
         public static IUnRegisterHandle InvokeOn<T>(this Action action, GameObject go) where T : AMonoListener
         {
-            return IEventListener.GetOrAddTrigger<T>(go).Event.Register(action);
+            return go.GetOrAddComponent<T>().Event.Register(action);
         }
         public static IUnRegisterHandle InvokeOnDestroy(this Action action, GameObject go)
         {
-            return IEventListener.GetOrAddTrigger<DestroyListener>(go).Event.Register(action).OnlyPlayOnce();
+            return go.GetOrAddComponent<DestroyListener>().Event.Register(action).OnlyPlayOnce();
         }
 
         public static void UnRegister<T>(this GameObject go,Action action) where T : AMonoListener
@@ -48,12 +41,12 @@ namespace EasyFramework.EventKit
         }
         public static IUnRegisterHandle UnRegisterOn<T>(this IUnRegisterHandle self,GameObject go) where T : AMonoListener
         {
-            IEventListener.GetOrAddTrigger<T>(go).Event.Register(self.UnRegister).OnlyPlayOnce();
+            go.GetOrAddComponent<T>().Event.Register(self.UnRegister).OnlyPlayOnce();
             return self;
         }
         public static IUnRegisterHandle UnRegisterOnDestroy(this IUnRegisterHandle self,GameObject go)
         { 
-            IEventListener.GetOrAddTrigger<DestroyListener>(go).Event.Register(self.UnRegister).OnlyPlayOnce();
+            go.GetOrAddComponent<DestroyListener>().Event.Register(self.UnRegister).OnlyPlayOnce();
             return self;
         }
     }

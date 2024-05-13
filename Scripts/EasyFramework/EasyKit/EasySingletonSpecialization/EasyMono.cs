@@ -1,50 +1,58 @@
 using System;
+using System.Collections.Generic;
 using EasyFramework.EventKit;
-using UnityEngine;
 
 namespace EasyFramework
 {
-    public class EasyMonoOnInitDoEvent : AutoClassEvent<GlobalEvent.InitDo,IEasyLife>
+    public class EasyMonoOnInitDoEvent : AutoClassEvent<GlobalEvent.InitDo,IInitAble>
     {
-        protected override void Run(IEasyLife a)
+        protected override void Run(IInitAble a)
         {
-            EasyMono.TryRegister(a);
+            EasyMono.Instance.TryRegister(a);
         }
     }
     
-    public class EasyMonoOnDisposeDoEvent : AutoClassEvent<GlobalEvent.DisposeDo,IEasyLife>
+    public class EasyMonoOnDisposeDoEvent : AutoClassEvent<GlobalEvent.DisposeDo,IDisposeAble>
     {
-        protected override void Run(IEasyLife a)
+        protected override void Run(IDisposeAble a)
         {
-            EasyMono.TryUnRegister(a);
+            EasyMono.Get()?.TryUnRegister(a);
         }
     }
     public class EasyMono: AutoMonoSingleton<EasyMono>
     {
-        public static void TryRegister(IEasyLife obj)
+        private readonly Queue<Action> _set = new();
+        readonly EasyEvent _updateEvent = new();
+        readonly EasyEvent _fixedUpdateEvent= new();
+
+        private void Update()
         {
-            if (!(obj is MonoBehaviour))
-            {
-                Register<UpdateListener>(obj.Start).OnlyPlayOnce();
-                if (obj is IEasyUpdate update)
-                    Register<UpdateListener>(update.Update);
-                if (obj is IEasyFixedUpdate fixedUpdate)
-                    Register<FixedUpdateListener>(fixedUpdate.FixedUpdate);
-            }
+            _updateEvent.Invoke();
+            while (_set.Count > 0)
+                _set.Dequeue()();
         }
-        
-        public static void TryUnRegister(IEasyLife obj)
+
+        private void FixedUpdate()=> _fixedUpdateEvent.Invoke();
+
+        public void TryRegister(IInitAble obj)
         {
-            if (!(obj is MonoBehaviour))
-            {
-                if (obj is IEasyUpdate update)
-                    UnRegister<UpdateListener>(update.Update);
-                if (obj is IEasyFixedUpdate fixedUpdate)
-                    UnRegister<FixedUpdateListener>(fixedUpdate.FixedUpdate);
-            }
+            if (obj is IStartAble start)
+                _set.Enqueue(()=>_updateEvent.Register(start.Start).OnlyPlayOnce());
+            if (obj is IEasyUpdate update)
+                _set.Enqueue(()=>_updateEvent.RegisterAfterInvoke(update.Update));
+            if (obj is IEasyFixedUpdate fixedUpdate)
+                _set.Enqueue(()=>_fixedUpdateEvent.Register(fixedUpdate.FixedUpdate));
         }
-        
-        
+
+        public void TryUnRegister(IDisposeAble obj)
+        {
+            if (obj is IEasyUpdate update)
+                _updateEvent.UnRegister(update.Update);
+            if (obj is IEasyFixedUpdate fixedUpdate)
+                _fixedUpdateEvent.UnRegister(fixedUpdate.FixedUpdate);
+        }
+
+
         public static IUnRegisterHandle Register<T>(Action action) where T: AMonoListener =>
             Instance.gameObject.Register<T>(action);
 

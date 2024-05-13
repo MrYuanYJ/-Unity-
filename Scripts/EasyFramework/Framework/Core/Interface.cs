@@ -133,9 +133,11 @@ namespace EasyFramework
 
             return entity;
         }
-        public static T AddNewEntity<T>(this IEntity self) where T : IEntity, new()
+
+        public static T AddNewEntity<T>(this IEntity self) where T : class, IEntity, new() => self.AddNewEntity<T>(false);
+        public static T AddNewEntity<T>(this IEntity self,bool usePool) where T : class,IEntity, new()
         {
-            var entity = EntityFactory.Fetch<T>();
+            var entity = ReferencePool.Fetch<T>(false, usePool);
             self.Container.Add(typeof(T), entity);
             entity.SetParent(self);
             if (self.IsInit)
@@ -143,9 +145,10 @@ namespace EasyFramework
 
             return entity;
         }
-        public static IEntity AddNewEntity(this IEntity self,Type type)
+        public static IEntity AddNewEntity(this IEntity self,Type type) => self.AddNewEntity(type,false);
+        public static IEntity AddNewEntity(this IEntity self,Type type,bool usePool)
         {
-            var entity = EntityFactory.Fetch(type);
+            var entity = (IEntity)ReferencePool.Fetch(type,false,usePool);
             self.Container.Add(type, entity);
             entity.SetParent(self);
             if (self.IsInit)
@@ -165,6 +168,18 @@ namespace EasyFramework
         }
         public static T GetEntity<T>(this IEntity self) where T : IEntity => (T) self.Container.Get(typeof(T));
         public static IEntity GetEntity(this IEntity self,Type type) => self.Container.Get(type);
+        public static T GetOrAddEntity<T>(this IEntity self) where T : class, IEntity, new()
+        {
+            if(!self.Container.TryGet(typeof(T), out var e))
+                e = self.AddNewEntity<T>();
+            return (T)e;
+        }
+        public static IEntity GetOrAddEntity(this IEntity self, Type type)
+        {
+            if (!self.Container.TryGet(type, out var e))
+                e = self.AddNewEntity(type);
+            return e;
+        }
         public static bool TryGetEntity<T>(this IEntity self,out T entity) where T : IEntity
         {
             if (self.Container.TryGet(typeof(T), out var e))

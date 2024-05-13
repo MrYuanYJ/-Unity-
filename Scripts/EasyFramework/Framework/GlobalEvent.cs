@@ -7,21 +7,22 @@ namespace EasyFramework
 {
     public struct GlobalEvent
     {
-        public abstract class ApplicationInit : AEventIndex<ApplicationInit, IStructure> { }
-        public abstract class ApplicationQuit : AEventIndex<ApplicationQuit, IStructure> { }
-        public abstract class InitDo : AEventIndex<InitDo, IEasyLife> { }
-        public abstract class DisposeDo : AEventIndex<DisposeDo, IEasyLife> { }
-        public abstract class LifeCycleRegister : AEventIndex<LifeCycleRegister, IEasyLife> { }
-        public abstract class RegisterAutoEvent : AEventIndex<RegisterAutoEvent, Type> { }
+        public sealed class ApplicationInit : AEventIndex<ApplicationInit, IStructure> { }
+        public sealed class ApplicationQuit : AEventIndex<ApplicationQuit, IStructure> { }
+        public sealed class InitDo : AEventIndex<InitDo, IInitAble> { }
+        public sealed class DisposeDo : AEventIndex<DisposeDo, IDisposeAble> { }
+        public sealed class LifeCycleRegister : AEventIndex<LifeCycleRegister, IEasyLife> { }
+        public sealed class RegisterAutoEvent : AEventIndex<RegisterAutoEvent, Type> { }
         
-        public abstract class RecycleAsset: AEventIndex<RecycleAsset,Object> { }
-        public abstract class RecycleGObject: AEventIndex<RecycleGObject,GameObject> { }
+        public sealed class RecycleClass: AEventIndex<RecycleClass,object> { }
+        public sealed class RecycleAsset: AEventIndex<RecycleAsset,Object> { }
+        public sealed class RecycleGObject: AEventIndex<RecycleGObject,GameObject> { }
         
         
-        public abstract class GetScopeClassEventDic<TScope>: AFuncIndex<GetScopeClassEventDic<TScope>,ClassEvent,TScope> {}
-        public abstract class GetScopeEasyEventDic<TScope>: AFuncIndex<GetScopeEasyEventDic<TScope>,EasyEventDic,TScope> {}
-        public abstract class GetScopeClassFuncDic<TScope>: AFuncIndex<GetScopeClassFuncDic<TScope>,ClassFunc,TScope> {}
-        public abstract class GetScopeEasyFuncDic<TScope>: AFuncIndex<GetScopeEasyFuncDic<TScope>,EasyFuncDic,TScope> {}
+        public sealed class GetScopeClassEventDic<TScope>: AFuncIndex<GetScopeClassEventDic<TScope>,ClassEvent,TScope> {}
+        public sealed class GetScopeEasyEventDic<TScope>: AFuncIndex<GetScopeEasyEventDic<TScope>,EasyEventDic,TScope> {}
+        public sealed class GetScopeClassFuncDic<TScope>: AFuncIndex<GetScopeClassFuncDic<TScope>,ClassFunc,TScope> {}
+        public sealed class GetScopeEasyFuncDic<TScope>: AFuncIndex<GetScopeEasyFuncDic<TScope>,EasyFuncDic,TScope> {}
 
         public static ClassEvent GetClassEventDic<TScope>(TScope scope) => GetScopeClassEventDic<TScope>.InvokeFunc(scope);
         public static EasyEventDic GetEasyEventDic<TScope>(TScope scope)=>GetScopeEasyEventDic<TScope>.InvokeFunc(scope);

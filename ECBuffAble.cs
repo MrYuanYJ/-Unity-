@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 using EasyFramework.EasyTagKit;
-using EasyFramework.EventKit;
 using EXFunctionKit;
 
 namespace EasyFramework
 {
-    public class ECBuffAble: AEntity,IBuffableUnit,IEasyUpdate
+    public class ECBuffAble: AEntity,IBuffableUnit
     {
         Dictionary<BuffTag, HashSet<ITagAble<BuffTag>>> ITagAbleContainer<BuffTag>.TagMap { get; set; }
         Dictionary<int, HashSet<IBuff>> IBuffableUnit.PollOrder { get; set; }
         Dictionary<EBuff, IBuff> IBuffableUnit.Buffs { get; set; }
         Dictionary<EMeans, Dictionary<EBuff, CoroutineHandle>> IBuffableUnit.Timers { get; set; }
-        public override IStructure GetStructure() => Game.Instance;
+        public override IStructure GetStructure() => BattleSystem.Instance;
 
         public override void OnInit()
         {
@@ -24,10 +23,10 @@ namespace EasyFramework
             base.OnDispose();
             this.As<IBuffableUnit>().Set(unit =>
             {
-                unit.TagMap.Clear();
-                unit.PollOrder.ForEachValue(set => set.Clear());
-                unit.Buffs.Clear();
-                unit.Timers.ForEachValue(dic => dic.ForEach(keyValuePair =>
+                unit.TagMap?.Clear();
+                unit.PollOrder?.ForEachValue(set => set.Clear());
+                unit.Buffs?.Clear();
+                unit.Timers?.ForEachValue(dic => dic.ForEach(keyValuePair =>
                 {
                     if (keyValuePair.Value != null)
                     {
@@ -36,16 +35,6 @@ namespace EasyFramework
                     }
                 }));
             });
-        }
-
-        public EasyEvent<IEasyUpdate> UpdateEvent { get; set; } = new();
-
-        public void OnUpdate()
-        {
-            if (true)
-            {
-                
-            }
         }
     }
 }

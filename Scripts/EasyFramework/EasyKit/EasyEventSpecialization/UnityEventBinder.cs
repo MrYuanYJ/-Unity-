@@ -1,47 +1,51 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace EasyFramework.EventKit
 {
     public interface IUnityEventBinder
     {
-        UnityEvent Register{ get; }
+        IEasyEvent Event { get; }
+        UnityEvent UnityEvent{ get; }
     }
 
     public interface IUnityEventBinder<T> : IUnityEventBinder
     {
-        UnityEvent<T> TRegister { get; }
+        UnityEvent<T> TUnityEvent { get; }
     }
     public abstract class AUnityEventBinder: MonoBehaviour,IUnityEventBinder
     {
         protected EasyEvent easyEvent=new EasyEvent();
-        [SerializeField]protected UnityEvent registerEvent=new UnityEvent();
+        [SerializeField]protected UnityEvent unityEvent=new UnityEvent();
         
+        IEasyEvent IUnityEventBinder.Event => easyEvent;
         public EasyEvent Event => easyEvent;
-        public UnityEvent Register => registerEvent;
+        public UnityEvent UnityEvent => unityEvent;
 
         public void Invoke()
         {
             easyEvent?.Invoke();
-            registerEvent?.Invoke();
+            unityEvent?.Invoke();
         }
     }
     public abstract class AUnityEventBinder<T>: MonoBehaviour,IUnityEventBinder<T>
     {
         protected EasyEvent<T> easyEvent=new EasyEvent<T>();
-        [SerializeField]protected UnityEvent registerEvent=new UnityEvent();
-        [SerializeField]protected UnityEvent<T> tRegisterEvent=new UnityEvent<T>();
-
-
+        [SerializeField]protected UnityEvent unityEvent=new UnityEvent();
+        [SerializeField]protected UnityEvent<T> tUnityEvent=new UnityEvent<T>();
+        
+        IEasyEvent IUnityEventBinder.Event => easyEvent;
         public EasyEvent<T> Event => easyEvent;
-        public UnityEvent Register => registerEvent;
-        public UnityEvent<T> TRegister => tRegisterEvent;
+        public UnityEvent UnityEvent => unityEvent;
+        public UnityEvent<T> TUnityEvent => tUnityEvent;
 
         public void Invoke(T t)
         {
             easyEvent?.Invoke(t);
-            registerEvent?.Invoke();
-            tRegisterEvent?.Invoke(t);
+            unityEvent?.Invoke();
+            tUnityEvent?.Invoke(t);
         }
     }
 }

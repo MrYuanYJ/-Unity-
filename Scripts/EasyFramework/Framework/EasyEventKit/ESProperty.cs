@@ -1,10 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using EXFunctionKit;
 
 namespace EasyFramework.EventKit
 {
-    public interface IESProperty
+    public interface IESProperty: IDisposeAble
     {
         public object GetBoxed();
         public void SetBoxed(object value);
@@ -83,7 +83,7 @@ namespace EasyFramework.EventKit
         public void SetBoxed(object value) => Value = (T) value;
         public void SetBoxedSilently(object value) => _value = (T) value;
 
-        public void Modify<M>(M newValue,EXFunctionKit.RefFunc<T,M> refFunc)
+        public void Modify<M>(M newValue,RefFunc<T,M> refFunc)
         {
             ref var refValue = ref refFunc.Invoke(ref _value);
             if (!EqualityComparer<M>.Default.Equals(refValue,newValue))
@@ -92,7 +92,7 @@ namespace EasyFramework.EventKit
                 _propertyEasyEvent.Invoke(_value);
             }
         }
-        public void Modify<M>(M newValue,EXFunctionKit.RefFunc<T,M> refFunc,Func<M, M, bool> equalLogic)
+        public void Modify<M>(M newValue,RefFunc<T,M> refFunc,Func<M, M, bool> equalLogic)
         {
            ref var refValue = ref refFunc.Invoke(ref _value);
            equalLogic ??= EqualityComparer<M>.Default.Equals;
@@ -102,10 +102,26 @@ namespace EasyFramework.EventKit
                _propertyEasyEvent.Invoke(_value);
            }
         }
+
+        public bool IsDispose{ get; set; }
+        public EasyEvent<IDisposeAble> DisposeEvent { get; set; } = new();
+        public void OnDispose()
+        {
+            _value = default;
+            _propertyEasyEvent.Clear();
+        }
     }
 
     public static class ESPropertyEx
     {
+        public static IUnRegisterHandle BindTo<T>(this IESProperty<T> self, RefFunc<T> refFunc)
+        {
+            return self.Register(value =>
+            {
+                ref var refValue = ref refFunc.Invoke();
+                refValue = value;
+            });
+        }
         public static void Add<T1,T2>(this IESProperty<T1> self, T2 value)  where T1: ICollection<T2>
         {
             self.Value.Add(value);

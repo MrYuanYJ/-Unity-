@@ -74,7 +74,7 @@ namespace EasyFramework
         public static void TryInitAll(this ContainerDic<object> container)
         {
             foreach (var obj in container.Values)
-                if (obj is IEasyLife initable)
+                if (obj is IInitAble initable)
                     initable.Init();
         }
         public static void DisposeAll<T>(this ContainerDic<T> container) where T : IEasyLife
@@ -86,7 +86,7 @@ namespace EasyFramework
         public static void TryDisposeAll(this ContainerDic<object> container)
         {
             foreach (var obj in container.Values)
-                if (obj is IEasyLife disposable)
+                if (obj is IDisposeAble disposable)
                     disposable.Dispose();
         }
     }

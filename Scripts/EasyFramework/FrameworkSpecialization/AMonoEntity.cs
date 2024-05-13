@@ -23,13 +23,13 @@ namespace EasyFramework
         IEntity IBindEntity.Entity => MEntity;
         public TEntity MEntity { get; private set; }
         public bool IsInit { get; set; }
-        public EasyEvent<IEasyLife> InitEvent { get; set; } = new();
-        public EasyEvent<IEasyLife> StartEvent { get; set; } = new();
-        public EasyEvent<IEasyLife> DisposeEvent { get; set; } = new();
+        public EasyEvent<IInitAble> InitEvent { get; set; } = new();
+        public EasyEvent<IStartAble> StartEvent { get; set; } = new();
+        public EasyEvent<IDisposeAble> DisposeEvent { get; set; } = new();
 
         public virtual void OnInit()
         {
-            MEntity = EntityFactory.Fetch<TEntity>();
+            MEntity = new TEntity();
             MEntity.Init();
             MEntity.RegisterOnDispose(this.Dispose);
             MEntity.EntityBind(this);
