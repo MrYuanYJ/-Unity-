@@ -4,51 +4,48 @@ using EasyFramework.EventKit;
 
 namespace EasyFramework
 {
-    public class EasyMonoOnInitDoEvent : AutoClassEvent<GlobalEvent.InitDo,IInitAble>
+    public class EasyMonoOnInitDoEvent : AutoClassEvent<GlobalEvent.InitDo,object>
     {
-        protected override void Run(IInitAble a)
+        protected override void Run(object a)
         {
             EasyMono.Instance.TryRegister(a);
         }
     }
     
-    public class EasyMonoOnDisposeDoEvent : AutoClassEvent<GlobalEvent.DisposeDo,IDisposeAble>
+    public class EasyMonoOnDisposeDoEvent : AutoClassEvent<GlobalEvent.DisposeDo,object>
     {
-        protected override void Run(IDisposeAble a)
+        protected override void Run(object a)
         {
             EasyMono.Get()?.TryUnRegister(a);
         }
     }
     public class EasyMono: AutoMonoSingleton<EasyMono>
     {
-        private readonly Queue<Action> _set = new();
         readonly EasyEvent _updateEvent = new();
         readonly EasyEvent _fixedUpdateEvent= new();
 
         private void Update()
         {
             _updateEvent.Invoke();
-            while (_set.Count > 0)
-                _set.Dequeue()();
         }
 
         private void FixedUpdate()=> _fixedUpdateEvent.Invoke();
 
-        public void TryRegister(IInitAble obj)
+        public void TryRegister(object obj)
         {
             if (obj is IStartAble start)
-                _set.Enqueue(()=>_updateEvent.Register(start.Start).OnlyPlayOnce());
-            if (obj is IEasyUpdate update)
-                _set.Enqueue(()=>_updateEvent.RegisterAfterInvoke(update.Update));
-            if (obj is IEasyFixedUpdate fixedUpdate)
-                _set.Enqueue(()=>_fixedUpdateEvent.Register(fixedUpdate.FixedUpdate));
+                _updateEvent.Register(start.Start).OnlyPlayOnce();
+            if (obj is IUpdateAble update)
+                _updateEvent.RegisterAfterInvoke(update.Update);
+            if (obj is IFixedUpdateAble fixedUpdate)
+                _fixedUpdateEvent.Register(fixedUpdate.FixedUpdate);
         }
 
-        public void TryUnRegister(IDisposeAble obj)
+        public void TryUnRegister(object obj)
         {
-            if (obj is IEasyUpdate update)
+            if (obj is IUpdateAble update)
                 _updateEvent.UnRegister(update.Update);
-            if (obj is IEasyFixedUpdate fixedUpdate)
+            if (obj is IFixedUpdateAble fixedUpdate)
                 _fixedUpdateEvent.UnRegister(fixedUpdate.FixedUpdate);
         }
 

@@ -10,7 +10,7 @@ namespace EasyFramework
         Dictionary<int, HashSet<IBuff>> IBuffableUnit.PollOrder { get; set; }
         Dictionary<EBuff, IBuff> IBuffableUnit.Buffs { get; set; }
         Dictionary<EMeans, Dictionary<EBuff, CoroutineHandle>> IBuffableUnit.Timers { get; set; }
-        public override IStructure GetStructure() => BattleSystem.Instance;
+        public override IStructure GetStructure() => Battle.Instance;
 
         public override void OnInit()
         {

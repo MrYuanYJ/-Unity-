@@ -8,9 +8,9 @@ namespace EasyFramework
         private IStructure _structure;
 
         public bool IsInit { get; set; }
-        public EasyEvent<IInitAble> InitEvent { get; set; } = new();
-        public EasyEvent<IStartAble> StartEvent { get; set; } = new();
-        public EasyEvent<IDisposeAble> DisposeEvent { get; set; } = new();
+        public IEasyEvent InitEvent { get; }=new EasyEvent();
+        public IEasyEvent StartEvent { get; }=new EasyEvent();
+        public IEasyEvent DisposeEvent { get; }=new EasyEvent();
 
         public virtual void OnInit() { }
         public virtual void OnStart() { }

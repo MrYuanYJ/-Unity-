@@ -46,6 +46,7 @@ namespace EasyFramework.EventKit
             return new UnRegisterHandle(this,() => BaseAction -= action);
         }
         void UnRegister(Action action)=> BaseAction -= action;
+        void Invoke();
     }
 
     public class EasyEvent : IEasyEvent
@@ -55,9 +56,10 @@ namespace EasyFramework.EventKit
 
         public void Invoke()
         {
-            BaseAction?.Invoke();
-            OnceAction?.Invoke();
+            var onceAction = OnceAction;
             OnceAction = null;
+            BaseAction?.Invoke();
+            onceAction?.Invoke();
         }
 
         public IUnRegisterHandle Register(Action action)
@@ -90,10 +92,18 @@ namespace EasyFramework.EventKit
 
         public void Invoke(A a)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             BaseAction?.Invoke();
             Action?.Invoke(a);
-            OnceAction?.Invoke();
+            onceAction?.Invoke();
+        }
+        void IEasyEvent.Invoke()
+        {
+            var onceAction = OnceAction;
             OnceAction = null;
+            BaseAction?.Invoke();
+            onceAction?.Invoke();
         }
         
         public IUnRegisterHandle Register(Action<A> action)
@@ -126,10 +136,18 @@ namespace EasyFramework.EventKit
 
         public void Invoke(A a, B b)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             BaseAction?.Invoke();
             Action?.Invoke(a, b);
-            OnceAction?.Invoke();
+            onceAction?.Invoke();
+        }
+        void IEasyEvent.Invoke()
+        {
+            var onceAction = OnceAction;
             OnceAction = null;
+            BaseAction?.Invoke();
+            onceAction?.Invoke();
         }
         public IUnRegisterHandle Register(Action<A, B> action)
         {
@@ -160,10 +178,18 @@ namespace EasyFramework.EventKit
 
         public void Invoke(A a, B b, C c)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             BaseAction?.Invoke();
             Action?.Invoke(a, b, c);
-            OnceAction?.Invoke();
+            onceAction?.Invoke();
+        }
+        void IEasyEvent.Invoke()
+        {
+            var onceAction = OnceAction;
             OnceAction = null;
+            BaseAction?.Invoke();
+            onceAction?.Invoke();
         }
         public IUnRegisterHandle Register(Action<A, B, C> action)
         {
@@ -195,10 +221,18 @@ namespace EasyFramework.EventKit
 
         public void Invoke(A a, B b, C c, D d)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             BaseAction?.Invoke();
             Action?.Invoke(a, b, c, d);
-            OnceAction?.Invoke();
+            onceAction?.Invoke();
+        }
+        void IEasyEvent.Invoke()
+        {
+            var onceAction = OnceAction;
             OnceAction = null;
+            BaseAction?.Invoke();
+            onceAction?.Invoke();
         }
         public IUnRegisterHandle Register(Action<A, B, C, D> action)
         {
@@ -230,10 +264,18 @@ namespace EasyFramework.EventKit
 
         public void Invoke(A a, B b, C c, D d, E e)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             BaseAction?.Invoke();
             Action?.Invoke(a, b, c, d, e);
-            OnceAction?.Invoke();
+            onceAction?.Invoke();
+        }
+        void IEasyEvent.Invoke()
+        {
+            var onceAction = OnceAction;
             OnceAction = null;
+            BaseAction?.Invoke();
+            onceAction?.Invoke();
         }
         public IUnRegisterHandle Register(Action<A, B, C, D, E> action)
         {            
@@ -362,35 +404,38 @@ namespace EasyFramework.EventKit
             return new UnRegisterHandle(this,() => BaseFunc -= func);
         }
         void UnRegister(Func<Return> func)=> BaseFunc -= func;
+        Return Invoke();
+        Results<Return> InvokeAndReturnAll();
     }
     public class EasyFunc<Return> : IEasyFunc<Return>
     {
         public event Func<Return> BaseFunc;
         public event Action OnceAction;
 
-        public Results<Return> InvokeAndReturnAll()
-        {
-            Delegate[] funcs = Array.Empty<Delegate>();
-            if ( BaseFunc != null )
-                funcs = BaseFunc.GetInvocationList();
-            var results = new Results<Return>(funcs.Length);
-            
-            for ( int i = 0; i < funcs.Length; i++ )
-                results[i] = ( (Func<Return>) funcs[i] )();
-
-            OnceAction?.Invoke();
-            OnceAction = null;
-            return results;
-        }
-
         public Return Invoke()
         {
-            Return result =default;
-            if ( BaseFunc != null )
-                result = BaseFunc();
-            OnceAction?.Invoke();
+            var onceAction = OnceAction;
             OnceAction = null;
+            Return result = default;
+            if (BaseFunc != null)
+                result = BaseFunc();
+            onceAction?.Invoke();
             return result;
+        }
+        public Results<Return> InvokeAndReturnAll()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Delegate[] funcs = Array.Empty<Delegate>();
+            if (BaseFunc != null)
+                funcs = BaseFunc.GetInvocationList();
+            var results = new Results<Return>(funcs.Length);
+
+            for (int i = 0; i < funcs.Length; i++)
+                results[i] = ((Func<Return>) funcs[i])();
+
+            onceAction?.Invoke();
+            return results;
         }
 
         public IUnRegisterHandle Register(Func<Return> func)
@@ -422,6 +467,8 @@ namespace EasyFramework.EventKit
 
         public Results<Return> InvokeAndReturnAll(A a)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Delegate[] baseFuncs = Array.Empty<Delegate>();
             Delegate[] funcs = Array.Empty<Delegate>();
             if ( BaseFunc != null )
@@ -435,20 +482,45 @@ namespace EasyFramework.EventKit
             for ( int i = 0; i < funcs.Length; i++ )
                 results[baseFuncs.Length] = ( (Func<A,Return>) funcs[i] )(a);
 
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return results;
         }
         public Return Invoke(A a)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Return result =default;
             if ( BaseFunc != null )
                 result = BaseFunc();
             if ( Func != null )
                 result = Func(a);
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return result;
+        }
+        Return IEasyFunc<Return>.Invoke()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Return result = default;
+            if (BaseFunc != null)
+                result = BaseFunc();
+            onceAction?.Invoke();
+            return result;
+        }
+        Results<Return> IEasyFunc<Return>.InvokeAndReturnAll()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Delegate[] funcs = Array.Empty<Delegate>();
+            if (BaseFunc != null)
+                funcs = BaseFunc.GetInvocationList();
+            var results = new Results<Return>(funcs.Length);
+
+            for (int i = 0; i < funcs.Length; i++)
+                results[i] = ((Func<Return>) funcs[i])();
+
+            onceAction?.Invoke();
+            return results;
         }
         public IUnRegisterHandle Register(Func<A,Return> func)
         {
@@ -480,6 +552,8 @@ namespace EasyFramework.EventKit
 
         public Results<Return> InvokeAndReturnAll(A a, B b)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Delegate[] baseFuncs = Array.Empty<Delegate>();
             Delegate[] funcs = Array.Empty<Delegate>();
             if ( BaseFunc != null )
@@ -493,20 +567,45 @@ namespace EasyFramework.EventKit
             for ( int i = 0; i < funcs.Length; i++ )
                 results[baseFuncs.Length] = ( (Func<A,B,Return>) funcs[i] )(a,b);
 
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return results;
         }
         public Return Invoke(A a, B b)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Return result =default;
             if ( BaseFunc != null )
                 result = BaseFunc();
             if ( Func != null )
                 result = Func(a,b);
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return result;
+        }
+        Return IEasyFunc<Return>.Invoke()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Return result = default;
+            if (BaseFunc != null)
+                result = BaseFunc();
+            onceAction?.Invoke();
+            return result;
+        }
+        Results<Return> IEasyFunc<Return>.InvokeAndReturnAll()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Delegate[] funcs = Array.Empty<Delegate>();
+            if (BaseFunc != null)
+                funcs = BaseFunc.GetInvocationList();
+            var results = new Results<Return>(funcs.Length);
+
+            for (int i = 0; i < funcs.Length; i++)
+                results[i] = ((Func<Return>) funcs[i])();
+
+            onceAction?.Invoke();
+            return results;
         }
 
         public IUnRegisterHandle Register(Func<A,B,Return> func)
@@ -539,6 +638,8 @@ namespace EasyFramework.EventKit
 
         public Results<Return> InvokeAndReturnAll(A a, B b, C c)
         {
+            var onceAction = OnceAction;            
+            OnceAction = null;
             Delegate[] baseFuncs = Array.Empty<Delegate>();
             Delegate[] funcs = Array.Empty<Delegate>();
             if ( BaseFunc != null )
@@ -552,20 +653,45 @@ namespace EasyFramework.EventKit
             for ( int i = 0; i < funcs.Length; i++ )
                 results[baseFuncs.Length] = ( (Func<A,B,C,Return>) funcs[i] )(a,b,c);
 
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return results;
         }
         public Return Invoke(A a, B b, C c)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Return result =default;
             if ( BaseFunc != null )
                 result = BaseFunc();
             if ( Func != null )
                 result = Func(a,b,c);
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return result;
+        }
+        Return IEasyFunc<Return>.Invoke()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Return result = default;
+            if (BaseFunc != null)
+                result = BaseFunc();
+            onceAction?.Invoke();
+            return result;
+        }
+        Results<Return> IEasyFunc<Return>.InvokeAndReturnAll()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Delegate[] funcs = Array.Empty<Delegate>();
+            if (BaseFunc != null)
+                funcs = BaseFunc.GetInvocationList();
+            var results = new Results<Return>(funcs.Length);
+
+            for (int i = 0; i < funcs.Length; i++)
+                results[i] = ((Func<Return>) funcs[i])();
+
+            onceAction?.Invoke();
+            return results;
         }
 
         public IUnRegisterHandle Register(Func<A,B,C,Return> func)
@@ -598,8 +724,10 @@ namespace EasyFramework.EventKit
 
         public Results<Return> InvokeAndReturnAll(A a, B b, C c, D d)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Delegate[] baseFuncs = Array.Empty<Delegate>();
-            Delegate[] funcs = Array.Empty<Delegate>();
+            Delegate[] funcs = Array.Empty<Delegate>();            
             if ( BaseFunc != null )
                 baseFuncs = BaseFunc.GetInvocationList();
             if ( Func != null )
@@ -611,20 +739,45 @@ namespace EasyFramework.EventKit
             for ( int i = 0; i < funcs.Length; i++ )
                 results[baseFuncs.Length] = ( (Func<A,B,C,D,Return>) funcs[i] )(a,b,c,d);
 
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return results;
         }
         public Return Invoke(A a, B b, C c, D d)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Return result =default;
             if ( BaseFunc != null )
                 result = BaseFunc();
             if ( Func != null )
                 result = Func(a,b,c,d);
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return result;
+        }
+        Return IEasyFunc<Return>.Invoke()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Return result = default;
+            if (BaseFunc != null)
+                result = BaseFunc();
+            onceAction?.Invoke();
+            return result;
+        }
+        Results<Return> IEasyFunc<Return>.InvokeAndReturnAll()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Delegate[] funcs = Array.Empty<Delegate>();
+            if (BaseFunc != null)
+                funcs = BaseFunc.GetInvocationList();
+            var results = new Results<Return>(funcs.Length);
+
+            for (int i = 0; i < funcs.Length; i++)
+                results[i] = ((Func<Return>) funcs[i])();
+
+            onceAction?.Invoke();
+            return results;
         }
 
         public IUnRegisterHandle Register(Func<A,B,C,D,Return> func)
@@ -657,6 +810,8 @@ namespace EasyFramework.EventKit
 
         public Results<Return> InvokeAndReturnAll(A a, B b, C c, D d, E e)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Delegate[] baseFuncs = Array.Empty<Delegate>();
             Delegate[] funcs = Array.Empty<Delegate>();
             if ( BaseFunc != null )
@@ -670,20 +825,45 @@ namespace EasyFramework.EventKit
             for ( int i = 0; i < funcs.Length; i++ )
                 results[baseFuncs.Length] = ( (Func<A,B,C,D,E,Return>) funcs[i] )(a,b,c,d,e);
 
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return results;
         }
         public Return Invoke(A a, B b, C c, D d, E e)
         {
+            var onceAction = OnceAction;
+            OnceAction = null;
             Return result =default;
             if ( BaseFunc != null )
                 result = BaseFunc();
             if ( Func != null )
                 result = Func(a,b,c,d,e);
-            OnceAction?.Invoke();
-            OnceAction = null;
+            onceAction?.Invoke();
             return result;
+        }
+        Return IEasyFunc<Return>.Invoke()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Return result = default;
+            if (BaseFunc != null)
+                result = BaseFunc();
+            onceAction?.Invoke();
+            return result;
+        }
+        Results<Return> IEasyFunc<Return>.InvokeAndReturnAll()
+        {
+            var onceAction = OnceAction;
+            OnceAction = null;
+            Delegate[] funcs = Array.Empty<Delegate>();
+            if (BaseFunc != null)
+                funcs = BaseFunc.GetInvocationList();
+            var results = new Results<Return>(funcs.Length);
+
+            for (int i = 0; i < funcs.Length; i++)
+                results[i] = ((Func<Return>) funcs[i])();
+
+            onceAction?.Invoke();
+            return results;
         }
 
         public IUnRegisterHandle Register(Func<A,B,C,D,E,Return> func)
@@ -719,8 +899,8 @@ namespace EasyFramework.EventKit
             return self;
         }
         public static IUnRegisterHandle Register(this IEasyEvent self,Action action) => self.Register(action);
-        public static void UnRegister(this IEasyEvent self,Action action) => self.UnRegister(action);
         public static IUnRegisterHandle Register<Return>(this IEasyFunc<Return> self,Func<Return> func)=> self.Register(func);
+        public static void UnRegister(this IEasyEvent self,Action action) => self.UnRegister(action);
         public static void UnRegister<Return>(this IEasyFunc<Return> self,Func<Return> func)=> self.UnRegister(func);
 
 
@@ -845,6 +1025,7 @@ namespace EasyFramework.EventKit
         public static void RegisterAfterInvoke<R, A, B, C, D>(this EasyFunc<R,A,B,C,D> self, Func<A, B, C, D, R> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
         public static void RegisterAfterInvoke<R, A, B, C, D, E>(this EasyFunc<R,A,B,C,D,E> self, Func<A, B, C, D, E, R> action, Action<IUnRegisterHandle> set=null)=>self.RegisterAfterInvoke(self, action, set);
         
+        
         public static void RegisterAfterInvoke<R>(this IEDelegate self, EasyFunc<R> easyFunc, Func<R> action, Action<IUnRegisterHandle> set=null)
         {
             self.OnceAction += () =>
@@ -950,7 +1131,8 @@ namespace EasyFramework.EventKit
             return self;
         }
 
-        public static IUnRegisterHandle InvokeAndRegister(this EasyEvent self, Action action)
+        
+        public static IUnRegisterHandle InvokeAndRegister(this IEasyEvent self, Action action)
         {
             action();
             return self.Register(action);
@@ -980,6 +1162,37 @@ namespace EasyFramework.EventKit
             action(a, b, c, d, e);
             return self.Register(action);
         }
-        
+
+
+        public static IUnRegisterHandle InvokeAndRegister<R>(this IEasyFunc<R> self, Func<R> func, out R result)
+        {
+            result = func();
+            return self.Register(func);
+        }
+        public static IUnRegisterHandle InvokeAndRegister<R, A>(this EasyFunc<R,A> self, Func<A, R> func, A a, out R result)
+        {
+            result = func(a);
+            return self.Register(func);
+        }
+        public static IUnRegisterHandle InvokeAndRegister<R, A, B>(this EasyFunc<R,A,B> self, Func<A, B, R> func, A a, B b, out R result)
+        {
+            result = func(a, b);
+            return self.Register(func);
+        }
+        public static IUnRegisterHandle InvokeAndRegister<R, A, B, C>(this EasyFunc<R,A,B,C> self, Func<A, B, C, R> func, A a, B b, C c, out R result)
+        {
+            result = func(a, b, c);
+            return self.Register(func);
+        }
+        public static IUnRegisterHandle InvokeAndRegister<R, A, B, C, D>(this EasyFunc<R,A,B,C,D> self, Func<A, B, C, D, R> func, A a, B b, C c, D d, out R result)
+        {
+            result = func(a, b, c, d);
+            return self.Register(func);
+        }
+        public static IUnRegisterHandle InvokeAndRegister<R, A, B, C, D, E>(this EasyFunc<R,A,B,C,D,E> self, Func<A, B, C, D, E, R> func, A a, B b, C c, D d, E e, out R result)
+        {
+            result = func(a, b, c, d, e);
+            return self.Register(func);
+        }
     }
 }

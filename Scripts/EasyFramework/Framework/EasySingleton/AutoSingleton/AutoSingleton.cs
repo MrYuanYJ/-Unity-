@@ -29,8 +29,7 @@ namespace EasyFramework
                 if (constructors.Length == 1 && constructors[0].GetParameters().Length == 0)
                 {
                     ISingleton<T>.Instance = (T) constructors[0].Invoke(null);
-                    if (ISingleton<T>.Instance is IEasyLife initAble)
-                        initAble.Init();
+                    ISingleton<T>.Instance.TryInit();
                     return ISingleton<T>.Instance;
                 }
 
@@ -38,5 +37,6 @@ namespace EasyFramework
                     $"The singleton [{typeof(T).Name}] must have exactly one constructor and and it must be a non-public parameterless constructor.\n单例类[{typeof(T).Name}]必须有且仅有一个构造函数，并且必须是非公开的无参构造函数。");
             }
         }
+        public static T Get()=>ISingleton<T>.Instance;
     }
 }

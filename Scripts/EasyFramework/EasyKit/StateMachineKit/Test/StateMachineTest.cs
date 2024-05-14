@@ -1,3 +1,4 @@
+using EasyFramework;
 using EasyFramework.EventKit;
 using EasyFramework.StateMachineKit;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace StateMachineKit.Test
 
         private void Test()
         {
-            gameObject.Register<UpdateListener>(Fsm.Update);
+            //gameObject.Register<UpdateListener>(Fsm.Update);
             Fsm.AddState<GameStart>();
             Fsm.AddState<GameEnd>();
             Fsm.ChangeState<GameStart>("66");
@@ -23,9 +24,12 @@ namespace StateMachineKit.Test
         }
     }
 
-    public class fsm : ATypeProcedureMachine<AGamgeState,string>{}
+    public class fsm : ATypeProcedureMachine<AGamgeState,string>,IUpdateAble
+    {
+    }
 
-    public abstract class AGamgeState : AEasyProcedure<fsm,string>{}
+    public abstract class AGamgeState : AEasyProcedure<fsm,string>
+    {}
     public class GameStart : AGamgeState
     {
         public override void OnEnter(string str,object[] objects)

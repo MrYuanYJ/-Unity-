@@ -1,10 +1,9 @@
-using System;
 using EasyFramework.EventKit;
 using UnityEngine;
 
 namespace EasyFramework
 {
-    public abstract class AMonoEntity<TEntity>: MonoBehaviour,IBindEntity,IEasyLife where TEntity : IEntity,new()
+    public abstract class AMonoEntity<TEntity>: MonoBehaviour,IBindEntity,IEasyLife,IStartAble where TEntity : IEntity,new()
     {
         protected virtual void OnEnable()
         {
@@ -23,9 +22,9 @@ namespace EasyFramework
         IEntity IBindEntity.Entity => MEntity;
         public TEntity MEntity { get; private set; }
         public bool IsInit { get; set; }
-        public EasyEvent<IInitAble> InitEvent { get; set; } = new();
-        public EasyEvent<IStartAble> StartEvent { get; set; } = new();
-        public EasyEvent<IDisposeAble> DisposeEvent { get; set; } = new();
+        public IEasyEvent InitEvent { get; }=new EasyEvent();
+        public IEasyEvent StartEvent { get; }=new EasyEvent();
+        public IEasyEvent DisposeEvent { get; }=new EasyEvent();
 
         public virtual void OnInit()
         {

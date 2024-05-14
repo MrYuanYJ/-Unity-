@@ -1,13 +1,15 @@
+using System.Collections.Generic;
 using EasyFramework.EasyTaskKit;
 using EasyFramework.EventKit;
 using EXFunctionKit;
-using Unity.VisualScripting;
+using StateMachineKit.Test;
 using UnityEngine;
 
 namespace EasyFramework
 {
-    public class Test: AMonoEntity<ECBuffAble>
+    public class Test: AMonoEntity<ECBuffAble>,IUpdateAble
     {
+        public ESProperty<List<int>> test = new();
         public override void OnInit()
         {
             base.OnInit();
@@ -24,6 +26,12 @@ namespace EasyFramework
                 BuffEvent.AddBuffByMeans.InvokeEvent(EMeans.Skill, new NormalBuffAddData(MEntity, EBuff.Fire, 5));
             });
             EasyTask.Delay(1).OnCompleted(_ => MEntity.GetStructure().Dispose());
+        }
+
+        public IEasyEvent UpdateEvent { get; } = new EasyEvent();
+        public void OnUpdate()
+        {
+            
         }
     }
     

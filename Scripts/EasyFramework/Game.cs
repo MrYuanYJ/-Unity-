@@ -10,9 +10,9 @@ namespace EasyFramework
         public override void OnInit()
         {
             Debug.Log("Game Init");
-            this.RegisterSystem<EasyEventSystem>();
-            this.RegisterSystem<EasyLifeCycleEventSystem>();
-            this.RegisterSystem<EasyCodeLoaderSystem>();
+            this.System<EasyEventSystem>();
+            this.System<EasyLifeCycleEventSystem>();
+            this.System<EasyCodeLoaderSystem>();
             GlobalEvent.ApplicationInit.InvokeEvent(this);
         }
 

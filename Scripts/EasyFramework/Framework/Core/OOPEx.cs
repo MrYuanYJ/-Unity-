@@ -6,35 +6,23 @@ namespace EasyFramework
 {
     public static class OOPEx
     {
-        public static IUnRegisterHandle UnRegisterOnDispose(this IUnRegisterHandle self, IDisposeAble easyLife)
-        {
-            easyLife.DisposeEvent.Register(self.UnRegister).OnlyPlayOnce();
-            return self;
-        }
-
-        public static void RegisterOnDispose(this IDisposeAble self, Action action) => self.DisposeEvent.Register(action).OnlyPlayOnce();
-
-        public static CancellationTokenSource CancelOnDispose(this IDisposeAble self)
-        {
-            CancellationTokenSource tokenSource = new();
-            self.RegisterOnDispose(tokenSource.Cancel);
-            return tokenSource;
-        }
-
-        public static CancellationTokenSource CancelOnDispose(this CancellationTokenSource self, IDisposeAble disposable)
-        {
-            disposable.RegisterOnDispose(self.Cancel);
-            return self;
-        }
-
         public static T GetModel<T>(this IGetModelAble self) where T : class, IModel => self.GetStructure().GetModel<T>();
         public static T GetSystem<T>(this IGetModelAble self) where T : class, ISystem => self.GetStructure().GetSystem<T>();
+        
+        public static IUnRegisterHandle RegisterEvent<T>(this IRegisterEventAble self,Action action) where T : struct => self.GetStructure().RegisterEvent<T>(action);
         public static IUnRegisterHandle RegisterEvent<T>(this IRegisterEventAble self, Action<T> action) where T : struct => self.GetStructure().RegisterEvent(action);
+
+        public static void UnRegisterEvent<T>(this IRegisterEventAble self, Action action) where T : struct => self.GetStructure().UnRegisterEvent<T>(action);
         public static void UnRegisterEvent<T>(this IRegisterEventAble self, Action<T> action) where T : struct => self.GetStructure().UnRegisterEvent(action);
+        
+        public static IUnRegisterHandle RegisterFunc<T, TReturn>(this IRegisterEventAble self, Func<TReturn> func) where T : struct => self.GetStructure().RegisterFunc<T,TReturn>(func);
         public static IUnRegisterHandle RegisterFunc<T, TReturn>(this IRegisterEventAble self, Func<T, TReturn> func) where T : struct => self.GetStructure().RegisterFunc(func);
+        public static IUnRegisterHandle RegisterFunc<T>(this IRegisterEventAble self, Func<IResult> func) where T : struct => self.GetStructure().RegisterFunc<T>(func);
         public static IUnRegisterHandle RegisterFunc<T>(this IRegisterEventAble self, Func<T, IResult> func) where T : struct => self.GetStructure().RegisterFunc(func);
 
+        public static void UnRegisterFunc<T, TReturn>(this IRegisterEventAble self, Func<TReturn> func) where T : struct => self.GetStructure().UnRegisterFunc<T, TReturn>(func);
         public static void UnRegisterFunc<T, TReturn>(this IRegisterEventAble self, Func<T, TReturn> func) where T : struct => self.GetStructure().UnRegisterFunc(func);
+        public static void UnRegisterFunc<T>(this IRegisterEventAble self, Func<IResult> func) where T : struct => self.GetStructure().UnRegisterFunc<T>(func);
         public static void UnRegisterFunc<T>(this IRegisterEventAble self, Func<T, IResult> func) where T : struct => self.GetStructure().UnRegisterFunc(func);
 
         public static void SendEvent<T>(this ISendEventAble self) where T : struct => self.GetStructure().SendEvent<T>();
@@ -51,12 +39,12 @@ namespace EasyFramework
         
         public static IUnRegisterHandle UnRegisterOnStructureDispose(this IUnRegisterHandle self,IGetStructureAble getStructureAble)
         {
-            getStructureAble.GetStructure().DisposeEvent.Register(self.UnRegister).OnlyPlayOnce();
+            self.UnRegisterOnDispose(getStructureAble.GetStructure());
             return self;
         }
         public static IUnRegisterHandle UnRegisterOnStructureDispose(this IUnRegisterHandle self,IStructure structure)
         {
-            structure.DisposeEvent.Register(self.UnRegister).OnlyPlayOnce();
+            self.UnRegisterOnDispose(structure);
             return self;
         }
     }

@@ -24,418 +24,418 @@ namespace EasyFramework.EventKit
     }
     public class EnumEvent<State>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyEvent> ActionDic = new();
+        private readonly Dictionary<State, EasyEvent> _actionDic = new();
 
-        public EnumEvent() => IEnumDelegate.Fill(ActionDic);
-        public void Invoke(State state)=>ActionDic[state].Invoke();
+        public EnumEvent() => IEnumDelegate.Fill(_actionDic);
+        public void Invoke(State state)=>_actionDic[state].Invoke();
         public void InvokeAll()
         {
-            foreach (var easyEvent in ActionDic.Values)
+            foreach (var easyEvent in _actionDic.Values)
             {
                 easyEvent.Invoke();
             }
         } 
-        public IUnRegisterHandle Register(State state, Action action)=> ActionDic[state].Register(action);
-        public void UnRegister(State state, Action action)=>ActionDic[state].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, Action action)=> _actionDic[state].Register(action);
+        public void UnRegister(State state, Action action)=>_actionDic[state].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class EnumEvent<State, A>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyEvent<A>> ActionDic = new();
+        private readonly Dictionary<State, EasyEvent<A>> _actionDic = new();
 
-        public EnumEvent() => IEnumDelegate.Fill(ActionDic);
-        public void Invoke(State state, A a)=> ActionDic[state]?.Invoke(a);
+        public EnumEvent() => IEnumDelegate.Fill(_actionDic);
+        public void Invoke(State state, A a)=> _actionDic[state]?.Invoke(a);
         public void InvokeAll(A a)
         {
-            foreach (var easyEvent in ActionDic.Values)
+            foreach (var easyEvent in _actionDic.Values)
             {
                 easyEvent?.Invoke(a);
             }
         }
-        public IUnRegisterHandle Register(State state, Action action)=> ActionDic[state].Register(action);
-        public void UnRegister(State state, Action action)=>ActionDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Action<A> action)=>ActionDic[state].Register(action);
-        public void UnRegister(State state, Action<A> action)=>ActionDic[state].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, Action action)=> _actionDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Action<A> action)=>_actionDic[state].Register(action);
+        public void UnRegister(State state, Action action)=>_actionDic[state].UnRegister(action);
+        public void UnRegister(State state, Action<A> action)=>_actionDic[state].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class EnumEvent<State, A, B>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyEvent<A, B>> ActionDic = new();
+        private readonly Dictionary<State, EasyEvent<A, B>> _actionDic = new();
 
-        public EnumEvent() => IEnumDelegate.Fill(ActionDic);
-        public void Invoke(State state, A a, B b)=>ActionDic[state]?.Invoke(a, b);
+        public EnumEvent() => IEnumDelegate.Fill(_actionDic);
+        public void Invoke(State state, A a, B b)=>_actionDic[state]?.Invoke(a, b);
         public void InvokeAll(A a,B b)
         {
-            foreach (var easyEvent in ActionDic.Values)
+            foreach (var easyEvent in _actionDic.Values)
             {
                 easyEvent?.Invoke(a,b);
             }
         }
-        public IUnRegisterHandle Register(State state, Action action)=> ActionDic[state].Register(action);
-        public void UnRegister(State state, Action action)=>ActionDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Action<A, B> action)=>ActionDic[state].Register(action);
-        public void UnRegister(State state, Action<A, B> action)=>ActionDic[state].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, Action action)=> _actionDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Action<A, B> action)=>_actionDic[state].Register(action);
+        public void UnRegister(State state, Action action)=>_actionDic[state].UnRegister(action);
+        public void UnRegister(State state, Action<A, B> action)=>_actionDic[state].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class EnumEvent<State, A, B, C>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyEvent<A, B, C>> ActionDic = new();
+        private readonly Dictionary<State, EasyEvent<A, B, C>> _actionDic = new();
 
-        public EnumEvent() => IEnumDelegate.Fill(ActionDic);
-        public void Invoke(State state, A a, B b, C c)=>ActionDic[state]?.Invoke(a, b, c);
+        public EnumEvent() => IEnumDelegate.Fill(_actionDic);
+        public void Invoke(State state, A a, B b, C c)=>_actionDic[state]?.Invoke(a, b, c);
         public void InvokeAll(A a,B b,C c)
         {
-            foreach (var easyEvent in ActionDic.Values)
+            foreach (var easyEvent in _actionDic.Values)
             {
                 easyEvent?.Invoke(a,b,c);
             }
         }
-        public IUnRegisterHandle Register(State state, Action action)=> ActionDic[state].Register(action);
-        public void UnRegister(State state, Action action)=>ActionDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Action<A, B, C> action)=>ActionDic[state].Register(action);
-        public void UnRegister(State state, Action<A, B, C> action)=>ActionDic[state].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, Action action)=> _actionDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Action<A, B, C> action)=>_actionDic[state].Register(action);
+        public void UnRegister(State state, Action action)=>_actionDic[state].UnRegister(action);
+        public void UnRegister(State state, Action<A, B, C> action)=>_actionDic[state].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class EnumEvent<State, A, B, C, D>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyEvent<A, B, C, D>> ActionDic = new();
+        private readonly Dictionary<State, EasyEvent<A, B, C, D>> _actionDic = new();
 
-        public EnumEvent() => IEnumDelegate.Fill(ActionDic);
-        public void Invoke(State state, A a, B b, C c, D d)=>ActionDic[state]?.Invoke(a, b, c, d);
+        public EnumEvent() => IEnumDelegate.Fill(_actionDic);
+        public void Invoke(State state, A a, B b, C c, D d)=>_actionDic[state]?.Invoke(a, b, c, d);
         public void InvokeAll(A a,B b,C c,D d)
         {
-            foreach (var easyEvent in ActionDic.Values)
+            foreach (var easyEvent in _actionDic.Values)
             {
                 easyEvent?.Invoke(a,b,c,d);
             }
         }
-        public IUnRegisterHandle Register(State state, Action action)=> ActionDic[state].Register(action);
-        public void UnRegister(State state, Action action)=>ActionDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Action<A, B, C, D> action)=>ActionDic[state].Register(action);
-        public void UnRegister(State state, Action<A, B, C, D> action)=>ActionDic[state].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, Action action)=> _actionDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Action<A, B, C, D> action)=>_actionDic[state].Register(action);
+        public void UnRegister(State state, Action action)=>_actionDic[state].UnRegister(action);
+        public void UnRegister(State state, Action<A, B, C, D> action)=>_actionDic[state].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class EnumEvent<State, A, B, C, D, E>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyEvent<A, B, C, D, E>> ActionDic = new();
+        private readonly Dictionary<State, EasyEvent<A, B, C, D, E>> _actionDic = new();
 
-        public EnumEvent() => IEnumDelegate.Fill(ActionDic);
-        public void Invoke(State state, A a, B b, C c, D d, E e)=>ActionDic[state]?.Invoke(a, b, c, d, e);
+        public EnumEvent() => IEnumDelegate.Fill(_actionDic);
+        public void Invoke(State state, A a, B b, C c, D d, E e)=>_actionDic[state]?.Invoke(a, b, c, d, e);
         public void InvokeAll(A a,B b,C c,D d,E e)
         {
-            foreach (var easyEvent in ActionDic.Values)
+            foreach (var easyEvent in _actionDic.Values)
             {
                 easyEvent?.Invoke(a,b,c,d,e);
             }
         }
-        public IUnRegisterHandle Register(State state, Action action)=> ActionDic[state].Register(action);
-        public void UnRegister(State state, Action action)=>ActionDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Action<A, B, C, D, E> action)=>ActionDic[state].Register(action);
-        public void UnRegister(State state, Action<A, B, C, D, E> action)=>ActionDic[state].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, Action action)=> _actionDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Action<A, B, C, D, E> action)=>_actionDic[state].Register(action);
+        public void UnRegister(State state, Action action)=>_actionDic[state].UnRegister(action);
+        public void UnRegister(State state, Action<A, B, C, D, E> action)=>_actionDic[state].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
 
     public class EnumFunc<State, Return>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyFunc<Return>> FuncDic = new();
+        private readonly Dictionary<State, EasyFunc<Return>> _funcDic = new();
 
-        public EnumFunc() => IEnumDelegate.Fill(FuncDic);
-        public Results<Return> InvokeAndReturnAll(State state)=>FuncDic[state].InvokeAndReturnAll();
+        public EnumFunc() => IEnumDelegate.Fill(_funcDic);
+        public Results<Return> InvokeAndReturnAll(State state)=>_funcDic[state].InvokeAndReturnAll();
         public Results<Return> InvokeAndReturnAll()
         {
             var results = new List<Results<Return>>();
-            foreach (var easyEvent in FuncDic.Values)
+            foreach (var easyEvent in _funcDic.Values)
             {
                 results.Add(easyEvent.InvokeAndReturnAll());
             }
 
             return new Results<Return>(results.ToArray());
         }
-        public Return Invoke(State state)=> FuncDic[state].Invoke();
-        public IUnRegisterHandle Register(State state, Func<Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<Return> action)=>FuncDic[state].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(FuncDic);
+        public Return Invoke(State state)=> _funcDic[state].Invoke();
+        public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
+        public void UnRegister(State state, Func<Return> action)=>_funcDic[state].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
     public class EnumFunc<State, Return, A>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyFunc<Return, A>> FuncDic = new();
+        private readonly Dictionary<State, EasyFunc<Return, A>> _funcDic = new();
 
-        public EnumFunc() => IEnumDelegate.Fill(FuncDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a)=> FuncDic[state].InvokeAndReturnAll(a);
+        public EnumFunc() => IEnumDelegate.Fill(_funcDic);
+        public Results<Return> InvokeAndReturnAll(State state, A a)=> _funcDic[state].InvokeAndReturnAll(a);
         public Results<Return> InvokeAndReturnAll(A a)
         {
             var results = new List<Results<Return>>();
-            foreach (var easyEvent in FuncDic.Values)
+            foreach (var easyEvent in _funcDic.Values)
             {
                 results.Add(easyEvent.InvokeAndReturnAll(a));
             }
 
             return new Results<Return>(results.ToArray());
         }
-        public Return Invoke(State state, A a)=> FuncDic[state].Invoke(a);
-        public IUnRegisterHandle Register(State state, Func<Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<Return> action)=>FuncDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Func<A, Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<A, Return> action) { FuncDic[state].UnRegister(action); }
-        public void Clear() => IEnumDelegate.Clear(FuncDic);
+        public Return Invoke(State state, A a)=> _funcDic[state].Invoke(a);
+        public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Func<A, Return> action)=>_funcDic[state].Register(action);
+        public void UnRegister(State state, Func<Return> action)=>_funcDic[state].UnRegister(action);
+        public void UnRegister(State state, Func<A, Return> action) { _funcDic[state].UnRegister(action); }
+        public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
     public class EnumFunc<State, Return, A, B>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyFunc<Return, A, B>> FuncDic = new();
+        private readonly Dictionary<State, EasyFunc<Return, A, B>> _funcDic = new();
 
-        public EnumFunc() => IEnumDelegate.Fill(FuncDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a, B b)=> FuncDic[state].InvokeAndReturnAll(a, b);
+        public EnumFunc() => IEnumDelegate.Fill(_funcDic);
+        public Results<Return> InvokeAndReturnAll(State state, A a, B b)=> _funcDic[state].InvokeAndReturnAll(a, b);
         public Results<Return> InvokeAndReturnAll(A a, B b)
         {
             var results = new List<Results<Return>>();
-            foreach (var easyEvent in FuncDic.Values)
+            foreach (var easyEvent in _funcDic.Values)
             {
                 results.Add(easyEvent.InvokeAndReturnAll(a,b));
             }
 
             return new Results<Return>(results.ToArray());
         }
-        public Return Invoke(State state, A a, B b)=> FuncDic[state].Invoke(a, b);
-        public IUnRegisterHandle Register(State state, Func<Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<Return> action)=>FuncDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Func<A, B, Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<A, B, Return> action) { FuncDic[state].UnRegister(action); }
-        public void Clear() => IEnumDelegate.Clear(FuncDic);
+        public Return Invoke(State state, A a, B b)=> _funcDic[state].Invoke(a, b);
+        public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Func<A, B, Return> action)=>_funcDic[state].Register(action);
+        public void UnRegister(State state, Func<Return> action)=>_funcDic[state].UnRegister(action);
+        public void UnRegister(State state, Func<A, B, Return> action) { _funcDic[state].UnRegister(action); }
+        public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
     public class EnumFunc<State, Return, A, B, C>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyFunc<Return, A, B, C>> FuncDic = new();
+        private readonly Dictionary<State, EasyFunc<Return, A, B, C>> _funcDic = new();
         
-        public EnumFunc() => IEnumDelegate.Fill(FuncDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c)=> FuncDic[state].InvokeAndReturnAll(a, b, c);
+        public EnumFunc() => IEnumDelegate.Fill(_funcDic);
+        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c)=> _funcDic[state].InvokeAndReturnAll(a, b, c);
         public Results<Return> InvokeAndReturnAll(A a, B b, C c)
         {
             var results = new List<Results<Return>>();
-            foreach (var easyEvent in FuncDic.Values)
+            foreach (var easyEvent in _funcDic.Values)
             {
                 results.Add(easyEvent.InvokeAndReturnAll(a,b,c));
             }
 
             return new Results<Return>(results.ToArray());
         }
-        public Return Invoke(State state, A a, B b, C c)=> FuncDic[state].Invoke(a, b, c);
-        public IUnRegisterHandle Register(State state, Func<Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<Return> action)=>FuncDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Func<A, B, C, Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<A, B, C, Return> action) { FuncDic[state].UnRegister(action); }
-        public void Clear() => IEnumDelegate.Clear(FuncDic);
+        public Return Invoke(State state, A a, B b, C c)=> _funcDic[state].Invoke(a, b, c);
+        public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Func<A, B, C, Return> action)=>_funcDic[state].Register(action);
+        public void UnRegister(State state, Func<Return> action)=>_funcDic[state].UnRegister(action);
+        public void UnRegister(State state, Func<A, B, C, Return> action) { _funcDic[state].UnRegister(action); }
+        public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
     public class EnumFunc<State, Return, A, B, C, D>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyFunc<Return, A, B, C, D>> FuncDic = new();
+        private readonly Dictionary<State, EasyFunc<Return, A, B, C, D>> _funcDic = new();
         
-        public EnumFunc() => IEnumDelegate.Fill(FuncDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c, D d)=> FuncDic[state].InvokeAndReturnAll(a, b, c, d);
+        public EnumFunc() => IEnumDelegate.Fill(_funcDic);
+        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c, D d)=> _funcDic[state].InvokeAndReturnAll(a, b, c, d);
         public Results<Return> InvokeAndReturnAll(A a, B b, C c, D d)
         {
             var results = new List<Results<Return>>();
-            foreach (var easyEvent in FuncDic.Values)
+            foreach (var easyEvent in _funcDic.Values)
             {
                 results.Add(easyEvent.InvokeAndReturnAll(a,b,c,d));
             }
 
             return new Results<Return>(results.ToArray());
         }
-        public Return Invoke(State state, A a, B b, C c, D d)=> FuncDic[state].Invoke(a, b, c, d);
-        public IUnRegisterHandle Register(State state, Func<Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<Return> action)=>FuncDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Func<A, B, C, D, Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<A, B, C, D, Return> action) { FuncDic[state].UnRegister(action); }
-        public void Clear() => IEnumDelegate.Clear(FuncDic);
+        public Return Invoke(State state, A a, B b, C c, D d)=> _funcDic[state].Invoke(a, b, c, d);
+        public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Func<A, B, C, D, Return> action)=>_funcDic[state].Register(action);
+        public void UnRegister(State state, Func<Return> action)=>_funcDic[state].UnRegister(action);
+        public void UnRegister(State state, Func<A, B, C, D, Return> action) { _funcDic[state].UnRegister(action); }
+        public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
     public class EnumFunc<State, Return, A, B, C, D, E>: IEnumDelegate where State : Enum
     {
-        public Dictionary<State, EasyFunc<Return, A, B, C, D, E>> FuncDic = new();
+        private readonly Dictionary<State, EasyFunc<Return, A, B, C, D, E>> _funcDic = new();
         
-        public EnumFunc() => IEnumDelegate.Fill(FuncDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c, D d, E e)=> FuncDic[state].InvokeAndReturnAll(a, b, c, d, e);
+        public EnumFunc() => IEnumDelegate.Fill(_funcDic);
+        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c, D d, E e)=> _funcDic[state].InvokeAndReturnAll(a, b, c, d, e);
         public Results<Return> InvokeAndReturnAll(A a, B b, C c, D d, E e)
         {
             var results = new List<Results<Return>>();
-            foreach (var easyEvent in FuncDic.Values)
+            foreach (var easyEvent in _funcDic.Values)
             {
                 results.Add(easyEvent.InvokeAndReturnAll(a,b,c,d,e));
             }
 
             return new Results<Return>(results.ToArray());
         }
-        public Return Invoke(State state, A a, B b, C c, D d, E e)=> FuncDic[state].Invoke(a, b, c, d, e);
-        public IUnRegisterHandle Register(State state, Func<Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<Return> action)=>FuncDic[state].UnRegister(action);
-        public IUnRegisterHandle Register(State state, Func<A, B, C, D, E, Return> action)=>FuncDic[state].Register(action);
-        public void UnRegister(State state, Func<A, B, C, D, E, Return> action) { FuncDic[state].UnRegister(action); }
-        public void Clear() => IEnumDelegate.Clear(FuncDic);
+        public Return Invoke(State state, A a, B b, C c, D d, E e)=> _funcDic[state].Invoke(a, b, c, d, e);
+        public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
+        public IUnRegisterHandle Register(State state, Func<A, B, C, D, E, Return> action)=>_funcDic[state].Register(action);
+        public void UnRegister(State state, Func<Return> action)=>_funcDic[state].UnRegister(action);
+        public void UnRegister(State state, Func<A, B, C, D, E, Return> action) { _funcDic[state].UnRegister(action); }
+        public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
 
     public class DEnumEvent<State, LifeType>: IEnumDelegate where State : Enum where LifeType : Enum
     {
-        public Dictionary<State, Dictionary<LifeType, EasyEvent>> ActionDic = new();
+        private readonly Dictionary<State, Dictionary<LifeType, EasyEvent>> _actionDic = new();
 
         public DEnumEvent()
         {
-            IEnumDelegate.Fill(ActionDic);
-            foreach (var value in ActionDic.Values)
+            IEnumDelegate.Fill(_actionDic);
+            foreach (var value in _actionDic.Values)
                 IEnumDelegate.Fill(value);
         }
-        public void Invoke(State state, LifeType lifeType)=>ActionDic[state][lifeType].Invoke();
+        public void Invoke(State state, LifeType lifeType)=>_actionDic[state][lifeType].Invoke();
 
         public void InvokeAll()
         {
-            foreach (var dic in ActionDic.Values)
+            foreach (var dic in _actionDic.Values)
             {
                 foreach (var easyEvent in dic.Values) { easyEvent.Invoke(); }
             }
         }
 
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].Register(action);
+        public void UnRegister(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class DEnumEvent<State, LifeType, A>: IEnumDelegate where State : Enum where LifeType : Enum
     {
-        public Dictionary<State, Dictionary<LifeType, EasyEvent<A>>> ActionDic = new();
+        private readonly Dictionary<State, Dictionary<LifeType, EasyEvent<A>>> _actionDic = new();
 
         public DEnumEvent()
         {
-            IEnumDelegate.Fill(ActionDic);
-            foreach (var value in ActionDic.Values)
+            IEnumDelegate.Fill(_actionDic);
+            foreach (var value in _actionDic.Values)
                 IEnumDelegate.Fill(value);
         }
-        public void Invoke(State state, LifeType lifeType, A a)=>ActionDic[state][lifeType]?.Invoke(a);
+        public void Invoke(State state, LifeType lifeType, A a)=>_actionDic[state][lifeType]?.Invoke(a);
 
         public void InvokeAll(A a)
         {
-            foreach (var dic in ActionDic.Values)
+            foreach (var dic in _actionDic.Values)
             {
                 foreach (var easyEvent in dic.Values) { easyEvent?.Invoke(a); }
             }
         }
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].UnRegister(action);
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A> action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action<A> action)=>ActionDic[state][lifeType].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].Register(action);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A> action)=>_actionDic[state][lifeType].Register(action);
+        public void UnRegister(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void UnRegister(State state, LifeType lifeType, Action<A> action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class DEnumEvent<State, LifeType, A, B>: IEnumDelegate where State : Enum where LifeType : Enum
     {
-        public Dictionary<State, Dictionary<LifeType, EasyEvent<A, B>>> ActionDic = new();
+        private readonly Dictionary<State, Dictionary<LifeType, EasyEvent<A, B>>> _actionDic = new();
 
         public DEnumEvent()
         {
-            IEnumDelegate.Fill(ActionDic);
-            foreach (var value in ActionDic.Values)
+            IEnumDelegate.Fill(_actionDic);
+            foreach (var value in _actionDic.Values)
                 IEnumDelegate.Fill(value);
         }
-        public void Invoke(State state, LifeType lifeType, A a, B b)=>ActionDic[state][lifeType]?.Invoke(a, b);
+        public void Invoke(State state, LifeType lifeType, A a, B b)=>_actionDic[state][lifeType]?.Invoke(a, b);
 
         public void InvokeAll(A a, B b)
         {
-            foreach (var dic in ActionDic.Values)
+            foreach (var dic in _actionDic.Values)
             {
                 foreach (var easyEvent in dic.Values) { easyEvent?.Invoke(a,b); }
             }
         }
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].UnRegister(action);
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A, B> action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action<A, B> action)=>ActionDic[state][lifeType].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].Register(action);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A, B> action)=>_actionDic[state][lifeType].Register(action);
+        public void UnRegister(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void UnRegister(State state, LifeType lifeType, Action<A, B> action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class DEnumEvent<State, LifeType, A, B, C>: IEnumDelegate where State : Enum where LifeType : Enum
     {
-        public Dictionary<State, Dictionary<LifeType, EasyEvent<A, B, C>>> ActionDic = new();
+        private readonly Dictionary<State, Dictionary<LifeType, EasyEvent<A, B, C>>> _actionDic = new();
 
         public DEnumEvent()
         {
-            IEnumDelegate.Fill(ActionDic);
-            foreach (var value in ActionDic.Values)
+            IEnumDelegate.Fill(_actionDic);
+            foreach (var value in _actionDic.Values)
                 IEnumDelegate.Fill(value);
         }
-        public void Invoke(State state, LifeType lifeType, A a, B b, C c)=>ActionDic[state][lifeType]?.Invoke(a, b, c);
+        public void Invoke(State state, LifeType lifeType, A a, B b, C c)=>_actionDic[state][lifeType]?.Invoke(a, b, c);
 
         public void InvokeAll(A a, B b, C c)
         {
-            foreach (var dic in ActionDic.Values)
+            foreach (var dic in _actionDic.Values)
             {
                 foreach (var easyEvent in dic.Values) { easyEvent?.Invoke(a,b,c); }
             }
         }
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].UnRegister(action);
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A, B, C> action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action<A, B, C> action)=>ActionDic[state][lifeType].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].Register(action);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A, B, C> action)=>_actionDic[state][lifeType].Register(action);
+        public void UnRegister(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void UnRegister(State state, LifeType lifeType, Action<A, B, C> action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class DEnumEvent<State, LifeType, A, B, C, D>: IEnumDelegate where State : Enum where LifeType : Enum
     {
-        public Dictionary<State, Dictionary<LifeType, EasyEvent<A, B, C, D>>> ActionDic = new();
+        private readonly Dictionary<State, Dictionary<LifeType, EasyEvent<A, B, C, D>>> _actionDic = new();
         
         public DEnumEvent()
         {
-            IEnumDelegate.Fill(ActionDic);
-            foreach (var value in ActionDic.Values)
+            IEnumDelegate.Fill(_actionDic);
+            foreach (var value in _actionDic.Values)
                 IEnumDelegate.Fill(value);
         }
-        public void Invoke(State state, LifeType lifeType, A a, B b, C c, D d)=>ActionDic[state][lifeType]?.Invoke(a, b, c, d);
+        public void Invoke(State state, LifeType lifeType, A a, B b, C c, D d)=>_actionDic[state][lifeType]?.Invoke(a, b, c, d);
 
         public void InvokeAll(A a, B b, C c, D d)
         {
-            foreach (var dic in ActionDic.Values)
+            foreach (var dic in _actionDic.Values)
             {
                 foreach (var easyEvent in dic.Values) { easyEvent?.Invoke(a,b,c,d); }
             }
         }
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].UnRegister(action);
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A, B, C, D> action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action<A, B, C, D> action)=>ActionDic[state][lifeType].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].Register(action);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A, B, C, D> action)=>_actionDic[state][lifeType].Register(action);
+        public void UnRegister(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void UnRegister(State state, LifeType lifeType, Action<A, B, C, D> action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 
     public class DEnumEvent<State, LifeType, A, B, C, D, E>: IEnumDelegate where State : Enum where LifeType : Enum
     {
-        public Dictionary<State, Dictionary<LifeType, EasyEvent<A, B, C, D, E>>> ActionDic = new();
+        private readonly Dictionary<State, Dictionary<LifeType, EasyEvent<A, B, C, D, E>>> _actionDic = new();
         
         public DEnumEvent() 
         {
-            IEnumDelegate.Fill(ActionDic);
-            foreach (var value in ActionDic.Values)
+            IEnumDelegate.Fill(_actionDic);
+            foreach (var value in _actionDic.Values)
                 IEnumDelegate.Fill(value);
         }
-        public void Invoke(State state, LifeType lifeType, A a, B b, C c, D d, E e)=>ActionDic[state][lifeType]?.Invoke(a, b, c, d, e);
+        public void Invoke(State state, LifeType lifeType, A a, B b, C c, D d, E e)=>_actionDic[state][lifeType]?.Invoke(a, b, c, d, e);
 
         public void InvokeAll(A a, B b, C c, D d, E e)
         {
-            foreach (var dic in ActionDic.Values)
+            foreach (var dic in _actionDic.Values)
             {
                 foreach (var easyEvent in dic.Values) { easyEvent?.Invoke(a,b,c,d,e); }
             }
         }
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action action)=>ActionDic[state][lifeType].UnRegister(action);
-        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A, B, C, D, E> action)=>ActionDic[state][lifeType].Register(action);
-        public void UnRegister(State state, LifeType lifeType, Action<A, B, C, D, E> action)=>ActionDic[state][lifeType].UnRegister(action);
-        public void Clear() => IEnumDelegate.Clear(ActionDic);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].Register(action);
+        public IUnRegisterHandle Register(State state, LifeType lifeType, Action<A, B, C, D, E> action)=>_actionDic[state][lifeType].Register(action);
+        public void UnRegister(State state, LifeType lifeType, Action action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void UnRegister(State state, LifeType lifeType, Action<A, B, C, D, E> action)=>_actionDic[state][lifeType].UnRegister(action);
+        public void Clear() => IEnumDelegate.Clear(_actionDic);
     }
 }

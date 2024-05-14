@@ -36,8 +36,8 @@ namespace EasyFramework
                 _pools.Add(typeof(T), pool);
             }
             var obj =(T) pool.Fetch();
-            if (init && obj is IInitAble initAble)
-                initAble.Init();
+            if (init)
+                obj.TryInit();
             return obj;
         }
 
@@ -53,8 +53,8 @@ namespace EasyFramework
                 _pools.Add(type, pool);
             }
             var obj = pool.Fetch();
-            if (init && obj is IInitAble initAble)
-                initAble.Init();
+            if (init)
+                obj.TryInit();
             return obj;
         }
 

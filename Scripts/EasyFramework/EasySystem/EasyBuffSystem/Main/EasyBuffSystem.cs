@@ -13,7 +13,7 @@ namespace EasyFramework
         public abstract class AddBuffByMeans : AEventIndex<AddBuffByMeans,EMeans, IBuffAddData> { }
         public abstract class RemoveBuff : AEventIndex<RemoveBuff, IBuffableUnit, EBuff, float> { }
     }
-    public class EasyBuffSystem : ASystem,IEasyUpdate
+    public class BuffSystem : ASystem,IUpdateAble
     {
         private readonly List<IBuffableUnit> _pollLst = new List<IBuffableUnit>();
         private readonly Queue<Action> _setQueue = new Queue<Action>();
@@ -132,7 +132,7 @@ namespace EasyFramework
         {
 
         }
-        public EasyEvent<IEasyUpdate> UpdateEvent { get; set; } = new();
+        public IEasyEvent UpdateEvent { get; } = new EasyEvent();
 
         public void OnUpdate()
         {

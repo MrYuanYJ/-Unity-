@@ -17,22 +17,22 @@ namespace EasyFramework.EventKit
     {
         public static IUnRegisterHandle Register<T>(this GameObject self, Action action) where T : APointerEventListener
         {
-            return self.GetOrAddComponent<T>().Event.Register(_ => action());
+            return self.Component<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle Register<T>(this GameObject self, Action<PointerEventData> action) where T : APointerEventListener
         {
-            return self.GetOrAddComponent<T>().Event.Register(action);
+            return self.Component<T>().Event.Register(action);
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action action, GameObject go) where T : APointerEventListener
         {
-            return go.GetOrAddComponent<T>().Event.Register(_ => action());
+            return go.Component<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action<PointerEventData> action, GameObject go) where T : APointerEventListener
         {
-            return go.GetOrAddComponent<T>().Event.Register(action);
+            return go.Component<T>().Event.Register(action);
         }
 
         public static void UnRegister<T>(this GameObject go, Action<PointerEventData> action) where T : APointerEventListener
@@ -42,7 +42,7 @@ namespace EasyFramework.EventKit
 
         public static IUnRegisterHandle UnRegisterOn<T>(this IUnRegisterHandle self, GameObject go) where T : APointerEventListener
         {
-            go.GetOrAddComponent<T>().Event.Register(_ => self.UnRegister()).OnlyPlayOnce();
+            go.Component<T>().Event.Register(_ => self.UnRegister()).OnlyPlayOnce();
             return self;
         }
     }
@@ -50,22 +50,22 @@ namespace EasyFramework.EventKit
     {
         public static IUnRegisterHandle Register<T>(this GameObject self, Action action) where T : AUISelectEventListener
         {
-            return self.GetOrAddComponent<T>().Event.Register(_ => action());
+            return self.Component<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle Register<T>(this GameObject self, Action<BaseEventData> action) where T : AUISelectEventListener
         {
-            return self.GetOrAddComponent<T>().Event.Register(action);
+            return self.Component<T>().Event.Register(action);
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action action, GameObject go) where T : AUISelectEventListener
         {
-            return go.GetOrAddComponent<T>().Event.Register(_ => action());
+            return go.Component<T>().Event.Register(_ => action());
         }
 
         public static IUnRegisterHandle InvokeOn<T>(this Action<BaseEventData> action, GameObject go) where T : AUISelectEventListener
         {
-            return go.GetOrAddComponent<T>().Event.Register(action);
+            return go.Component<T>().Event.Register(action);
         }
 
         public static void UnRegister<T>(this GameObject go, Action<BaseEventData> action) where T : AUISelectEventListener
@@ -75,7 +75,7 @@ namespace EasyFramework.EventKit
 
         public static IUnRegisterHandle UnRegisterOn<T>(this IUnRegisterHandle self, GameObject go) where T : AUISelectEventListener
         {
-            go.GetOrAddComponent<T>().Event.Register(_ => self.UnRegister());
+            go.Component<T>().Event.Register(_ => self.UnRegister());
             return self;
         }
     }

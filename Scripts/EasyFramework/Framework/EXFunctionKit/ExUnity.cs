@@ -163,13 +163,13 @@ namespace EXFunctionKit
         public static Vector3Int Multiply(this Vector3Int self, int x=1, int y=1, int z=1) => new Vector3Int(self.x*x, self.y*y, self.z*z);
 
         
-        public static T GetOrAddComponent<T>(this GameObject self) where T : Component
+        public static T Component<T>(this GameObject self) where T : Component
         {
             if (!self.TryGetComponent<T>(out var component)) { return self.AddComponent<T>(); }
 
             return component;
         }
-        public static T GetOrAddComponent<T>(this Component self) where T : Component
+        public static T Component<T>(this Component self) where T : Component
         {
             if (!self.gameObject.TryGetComponent<T>(out var component)) { return self.gameObject.AddComponent<T>(); }
 

@@ -24,8 +24,7 @@ namespace EasyFramework
 
                 var go = DontDestroy.Instantiate(EDontDestroy.Singleton, new GameObject(typeof(T).Name));
                 ISingleton<T>.Instance = go.AddComponent<T>();
-                if (ISingleton<T>.Instance is IEasyLife initAble)
-                    initAble.Init();
+                ISingleton<T>.Instance.TryInit();
                 return ISingleton<T>.Instance;
             }
         }

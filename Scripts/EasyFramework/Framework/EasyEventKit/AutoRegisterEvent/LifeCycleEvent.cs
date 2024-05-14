@@ -15,18 +15,18 @@ namespace EasyFramework.EventKit
 
         public IUnRegisterHandle Register(IEasyLife self)
             => self.InitEvent
-                .Register(target => OnInit((T)target))
+                .Register(() => OnInit((T)self))
                 .UnRegisterOnDispose(self);
     }
 
-    public abstract class StartAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IEasyLife
+    public abstract class StartAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IEasyLife,IStartAble
     {
         public Type RegisterType => typeof(T);
         protected abstract void OnStart(T self);
 
         public IUnRegisterHandle Register(IEasyLife self)
-            => self.StartEvent
-                .Register(target => OnStart((T)target))
+            => ((T)self).StartEvent
+                .Register(() => OnStart((T)self))
                 .UnRegisterOnDispose(self);
     }
 
@@ -37,29 +37,29 @@ namespace EasyFramework.EventKit
 
         public IUnRegisterHandle Register(IEasyLife self)
             => self.DisposeEvent
-                .Register(target => OnInit((T)target))
+                .Register(() => OnInit((T)self))
                 .UnRegisterOnDispose(self);
     }
 
-    public abstract class UpdateAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IEasyUpdate
+    public abstract class UpdateAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IUpdateAble
     {
         public Type RegisterType => typeof(T);
         protected abstract void OnUpdate(T self);
 
         public IUnRegisterHandle Register(IEasyLife self)
             => ((T)self).UpdateEvent
-                .Register(target => OnUpdate((T)target))
+                .Register(() => OnUpdate((T)self))
                 .UnRegisterOnDispose(self);
     }
 
-    public abstract class FixedUpdateAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IEasyFixedUpdate
+    public abstract class FixedUpdateAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IFixedUpdateAble
     {
         public Type RegisterType => typeof(T);
         protected abstract void OnFixedUpdate(T self);
 
         public IUnRegisterHandle Register(IEasyLife self)
             => ((T)self).FixedUpdateEvent
-                .Register(target => OnFixedUpdate((T)target))
+                .Register(() => OnFixedUpdate((T)self))
                 .UnRegisterOnDispose(self);
     }
 }

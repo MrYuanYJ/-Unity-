@@ -9,9 +9,9 @@ namespace EasyFramework
     {
         public sealed class ApplicationInit : AEventIndex<ApplicationInit, IStructure> { }
         public sealed class ApplicationQuit : AEventIndex<ApplicationQuit, IStructure> { }
-        public sealed class InitDo : AEventIndex<InitDo, IInitAble> { }
-        public sealed class DisposeDo : AEventIndex<DisposeDo, IDisposeAble> { }
-        public sealed class LifeCycleRegister : AEventIndex<LifeCycleRegister, IEasyLife> { }
+        public sealed class InitDo : AEventIndex<InitDo, object> { }
+        public sealed class DisposeDo : AEventIndex<DisposeDo, object> { }
+        public sealed class LifeCycleRegister<T> : AEventIndex<LifeCycleRegister<T>, T> { }
         public sealed class RegisterAutoEvent : AEventIndex<RegisterAutoEvent, Type> { }
         
         public sealed class RecycleClass: AEventIndex<RecycleClass,object> { }
@@ -20,13 +20,13 @@ namespace EasyFramework
         
         
         public sealed class GetScopeClassEventDic<TScope>: AFuncIndex<GetScopeClassEventDic<TScope>,ClassEvent,TScope> {}
-        public sealed class GetScopeEasyEventDic<TScope>: AFuncIndex<GetScopeEasyEventDic<TScope>,EasyEventDic,TScope> {}
         public sealed class GetScopeClassFuncDic<TScope>: AFuncIndex<GetScopeClassFuncDic<TScope>,ClassFunc,TScope> {}
+        public sealed class GetScopeEasyEventDic<TScope>: AFuncIndex<GetScopeEasyEventDic<TScope>,EasyEventDic,TScope> {}
         public sealed class GetScopeEasyFuncDic<TScope>: AFuncIndex<GetScopeEasyFuncDic<TScope>,EasyFuncDic,TScope> {}
 
         public static ClassEvent GetClassEventDic<TScope>(TScope scope) => GetScopeClassEventDic<TScope>.InvokeFunc(scope);
-        public static EasyEventDic GetEasyEventDic<TScope>(TScope scope)=>GetScopeEasyEventDic<TScope>.InvokeFunc(scope);
         public static ClassFunc GetClassFuncDic<TScope>(TScope scope)=>GetScopeClassFuncDic<TScope>.InvokeFunc(scope);
+        public static EasyEventDic GetEasyEventDic<TScope>(TScope scope)=>GetScopeEasyEventDic<TScope>.InvokeFunc(scope);
         public static EasyFuncDic GetEasyFuncDic<TScope>(TScope scope)=>GetScopeEasyFuncDic<TScope>.InvokeFunc(scope);
 
     }

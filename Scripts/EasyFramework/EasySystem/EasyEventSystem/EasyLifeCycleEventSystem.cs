@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using EasyFramework.EventKit;
-using EXFunctionKit;
 
 namespace EasyFramework
 {
@@ -11,7 +10,7 @@ namespace EasyFramework
         public override void OnInit()
         {
             GlobalEvent.RegisterAutoEvent.RegisterEvent(RegisterAutoEvent).UnRegisterOnDispose(this);
-            GlobalEvent.LifeCycleRegister.RegisterEvent(OnEntityInit).UnRegisterOnDispose(this);
+            GlobalEvent.LifeCycleRegister<IEntity>.RegisterEvent(OnEntityInit).UnRegisterOnDispose(this);
         }
 
         public override void OnDispose()
@@ -20,7 +19,7 @@ namespace EasyFramework
             _allAutoEvents.Clear();
         }
 
-        private void OnEntityInit(IEasyLife easyLife)
+        private void OnEntityInit<T>(T easyLife) where T: IEasyLife
         {
             if (_allAutoEvents.TryGetValue(easyLife.GetType(), out var set))
             {

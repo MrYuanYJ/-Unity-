@@ -18,24 +18,13 @@ namespace EasyFramework.EventKit
             return easyEvent;
         }
 
-        public IUnRegisterHandle Register<T>(Action<T> action) where T : struct
-        {
-            return GetEvent<T>().Register(action);
-        }
+        public IUnRegisterHandle Register<T>(Action action) where T : struct => GetEvent<T>().Register(action);
+        public IUnRegisterHandle Register<T>(Action<T> action) where T : struct=> GetEvent<T>().Register(action);
+        public void UnRegister<T>(Action action) where T : struct=> GetEvent<T>().UnRegister(action);
+        public void UnRegister<T>(Action<T> action) where T : struct=>GetEvent<T>().UnRegister(action);
 
-        public void UnRegister<T>(Action<T> action) where T : struct
-        {
-            GetEvent<T>().UnRegister(action);
-        }
-
-        public void Invoke<T>(T t) where T : struct
-        {
-            GetEvent<T>().Invoke(t);
-        }
-        public void Clear<T>() where T : struct
-        {
-            GetEvent<T>().Clear();
-        }
+        public void Invoke<T>(T t) where T : struct=>  GetEvent<T>().Invoke(t);
+        public void Clear<T>() where T : struct=> GetEvent<T>().Clear();
         public void ClearAll()
         {
             foreach (var value in _events.Values)
@@ -73,22 +62,17 @@ namespace EasyFramework.EventKit
             _funcs.Add(typeof(T), easyFunc);
             return easyFunc;
         }
-        public IUnRegisterHandle Register<T,TReturn>(Func<T, TReturn> func) where T : struct
-        {
-            return GetFunc<T,TReturn>().Register(func);
-        }
-        public IUnRegisterHandle Register<T>(Func<T, IResult> func) where T : struct
-        {
-            return GetFunc<T>().Register(func);
-        }
-        public void UnRegister<T,TReturn>(Func<T, TReturn> func) where T : struct
-        {
-             GetFunc<T,TReturn>().UnRegister(func);
-        }
-        public void UnRegister<T>(Func<T, IResult> func) where T : struct
-        {
-            GetFunc<T>().UnRegister(func);
-        }
+        
+        public IUnRegisterHandle Register<T,TReturn>(Func<TReturn> func) where T : struct=>GetFunc<T,TReturn>().Register(func);
+        public IUnRegisterHandle Register<T,TReturn>(Func<T, TReturn> func) where T : struct=>GetFunc<T,TReturn>().Register(func);
+        public IUnRegisterHandle Register<T>(Func<IResult> func) where T : struct=>GetFunc<T>().Register(func);
+        public IUnRegisterHandle Register<T>(Func<T, IResult> func) where T : struct=>GetFunc<T>().Register(func);
+        
+        public void UnRegister<T,TReturn>(Func<TReturn> func) where T : struct=>GetFunc<T,TReturn>().UnRegister(func);
+        public void UnRegister<T,TReturn>(Func<T, TReturn> func) where T : struct=>GetFunc<T,TReturn>().UnRegister(func);
+        public void UnRegister<T>(Func<IResult> func) where T : struct=>GetFunc<T>().UnRegister(func);
+        public void UnRegister<T>(Func<T, IResult> func) where T : struct=>GetFunc<T>().UnRegister(func);
+        
         public Results<TReturn> InvokeAndReturnAll<T,TReturn>(T t) where T : struct => GetFunc<T,TReturn>().InvokeAndReturnAll(t);
         public Results<IResult> InvokeAndReturnAll<T>(T t) where T : struct => GetFunc<T>().InvokeAndReturnAll(t);
         public TReturn Invoke<T,TReturn>(T t) where T : struct => GetFunc<T,TReturn>().Invoke(t);

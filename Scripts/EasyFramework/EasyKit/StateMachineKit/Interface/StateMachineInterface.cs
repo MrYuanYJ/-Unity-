@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EasyFramework.EventKit;
 using EXFunctionKit;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace EasyFramework.StateMachineKit
         public void SetMachine(IStateMachine machine) => StateMachine = machine;
     }
 
-    public interface IStateMachine
+    public interface IStateMachine:IEasyLife
     {
         bool IsPause { get; set; }
     }
@@ -26,9 +27,9 @@ namespace EasyFramework.StateMachineKit
         TKey CurrentState { get; set; }
         TKey PreviousState{ get; set; }
         protected Func<TKey,TState,bool> BeforeStateChange { get; }
-        protected Action AfterStateChange { get; }
-        event Action<IStateMachine> OnUpdate;
-        event Action<IStateMachine> OnFixedUpdate;
+        protected Action AfterStateChange { get; } 
+        EasyEvent<IStateMachine> MUpdateEvent { get; set; }
+        EasyEvent<IStateMachine> MFixedUpdateEvent { get; set; }
 
         bool BeforeAdd(TKey key) => true;
         bool AfterAdd(TKey key) => true;
@@ -38,9 +39,9 @@ namespace EasyFramework.StateMachineKit
             if (!EqualityComparer<TKey>.Default.Equals(default, self.CurrentState))
             {
                 if (self.States[self.CurrentState] is IStateUpdate update)
-                    self.OnUpdate -= update.Update;
+                    self.MUpdateEvent.UnRegister(update.Update);
                 if (self.States[self.CurrentState] is IStateFixedUpdate fixedUpdate)
-                    self.OnFixedUpdate -= fixedUpdate.FixedUpdate;
+                    self.MFixedUpdateEvent.UnRegister(fixedUpdate.FixedUpdate);
             }
         }
         protected static void AddCurrentUpdateEvent(ISMachine<TKey, TState> self)
@@ -48,9 +49,9 @@ namespace EasyFramework.StateMachineKit
             if (!EqualityComparer<TKey>.Default.Equals(default, self.CurrentState))
             {
                 if (self.States[self.CurrentState] is IStateUpdate update)
-                    self.OnUpdate += update.Update;
+                    self.MUpdateEvent.Register(update.Update);
                 if (self.States[self.CurrentState] is IStateFixedUpdate fixedUpdate)
-                    self.OnFixedUpdate += fixedUpdate.FixedUpdate;
+                    self.MFixedUpdateEvent.Register(fixedUpdate.FixedUpdate);
             }
         }
         public static bool StateChange(ISMachine<TKey, TState> self, TKey key)
@@ -156,6 +157,7 @@ namespace EasyFramework.StateMachineKit
                 if (!EqualityComparer<TKey>.Default.Equals(self.PreviousState, default))
                     self.States[self.PreviousState].Exit(self, t, data);
                 self.States[self.CurrentState].Enter(self,t,data);
+                self.Init();
                 return true;
             }
 

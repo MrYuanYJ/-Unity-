@@ -16,3 +16,4 @@ MyFirst.cs
 *.meta
 /TextMesh Pro
 TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+Data/CodeGenKit/ScriptCreatorMgr.asset

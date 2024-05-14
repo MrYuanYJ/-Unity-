@@ -42,6 +42,8 @@ namespace EasyFramework
     {
         public static T GetModel<T>(this IStructure self) where T : class, IModel => self.Container.Get<T>();
         public static T GetSystem<T>(this IStructure self) where T : class, ISystem => self.Container.Get<T>();
+        
+        
         public static T RegisterModel<T>(this IStructure self) where T : class, IModel, new()
         {
             var t = new T();
@@ -56,7 +58,9 @@ namespace EasyFramework
             t.SetStructure(self);
             return t;
         }
-        public static T GetOrRegisterModel<T>(this IStructure self) where T : class, IModel, new()
+        
+        
+        public static T Model<T>(this IStructure self) where T : class, IModel, new()
         {
             if (!self.Container.TryGet(out T model))
             {
@@ -64,7 +68,7 @@ namespace EasyFramework
             }
             return model;
         }
-        public static T GetOrRegisterSystem<T>(this IStructure self) where T : class, ISystem, new()
+        public static T System<T>(this IStructure self) where T : class, ISystem, new()
         {
             if (!self.Container.TryGet(out T system))
             {
@@ -72,6 +76,8 @@ namespace EasyFramework
             }
             return system;
         }
+        
+        
         public static void SendCommand<T>(this IStructure self) where T : ICommand, new()
         {
             var command = new T();
@@ -88,21 +94,39 @@ namespace EasyFramework
             command.SetStructure(self);
             return command.Execute();
         }
+        
+        
         public static void SendEvent<T>(this IStructure self) where T : struct =>self.Event.Invoke<T>(default);
         public static void SendEvent<T>(this IStructure self, T t) where T : struct => self.Event.Invoke(t);
+        
+        
         public static Results<TReturn> SendFunc<T, TReturn>(this IStructure self) where T : struct => self.Func.InvokeAndReturnAll<T,TReturn>(default);
         public static Results<TReturn> SendFunc<T, TReturn>(this IStructure self, T t) where T : struct => self.Func.InvokeAndReturnAll<T,TReturn>(t);
         public static Results<IResult> SendFunc<T>(this IStructure self) where T : struct => self.Func.InvokeAndReturnAll<T>(default);
         public static Results<IResult> SendFunc<T>(this IStructure self, T t) where T : struct => self.Func.InvokeAndReturnAll(t);
+        
+        
+        public static IUnRegisterHandle RegisterEvent<T>(this IStructure self, Action action) where T : struct => self.Event.Register<T>(action);
         public static IUnRegisterHandle RegisterEvent<T>(this IStructure self, Action<T> action) where T : struct => self.Event.Register(action);
+        
+        
+        public static void UnRegisterEvent<T>(this IStructure self, Action action) where T : struct => self.Event.UnRegister<T>(action);
         public static void UnRegisterEvent<T>(this IStructure self, Action<T> action) where T : struct => self.Event.UnRegister(action);
+        
+        
+        public static IUnRegisterHandle RegisterFunc<T, TReturn>(this IStructure self, Func<TReturn> func)where T : struct => self.Func.Register<T, TReturn>(func);
         public static IUnRegisterHandle RegisterFunc<T, TReturn>(this IStructure self, Func<T, TReturn> func)where T : struct => self.Func.Register(func);
+        public static IUnRegisterHandle RegisterFunc<T>(this IStructure self, Func<IResult> func)where T : struct => self.Func.Register<T>(func);
         public static IUnRegisterHandle RegisterFunc<T>(this IStructure self, Func<T, IResult> func)where T : struct => self.Func.Register(func);
+        
+        
+        public static void UnRegisterFunc<T, TReturn>(this IStructure self, Func<TReturn> func)where T : struct => self.Func.UnRegister<T, TReturn>(func);
         public static void UnRegisterFunc<T, TReturn>(this IStructure self, Func<T, TReturn> func)where T : struct => self.Func.UnRegister(func);
-        public static void UnRegisterFunc<T>(this IStructure self, Func<T, IResult> func, bool playOnce=false)where T : struct => self.Func.UnRegister(func);
+        public static void UnRegisterFunc<T>(this IStructure self, Func<IResult> func)where T : struct => self.Func.UnRegister<T>(func);
+        public static void UnRegisterFunc<T>(this IStructure self, Func<T, IResult> func)where T : struct => self.Func.UnRegister(func);
     }
 
-    public interface IEntity : IEasyLife,IGetModelAble, IGetSystemAble, IRegisterEventAble, ISendEventAble, ISendCommandAble
+    public interface IEntity : IEasyLife,IStartAble,IGetModelAble, IGetSystemAble, IRegisterEventAble, ISendEventAble, ISendCommandAble
     {
         public IBindEntity Bind { get; }
         public IEntity Parent { get; }
@@ -134,8 +158,8 @@ namespace EasyFramework
             return entity;
         }
 
-        public static T AddNewEntity<T>(this IEntity self) where T : class, IEntity, new() => self.AddNewEntity<T>(false);
-        public static T AddNewEntity<T>(this IEntity self,bool usePool) where T : class,IEntity, new()
+        
+        public static T AddNewEntity<T>(this IEntity self,bool usePool=false) where T : class,IEntity, new()
         {
             var entity = ReferencePool.Fetch<T>(false, usePool);
             self.Container.Add(typeof(T), entity);
@@ -145,8 +169,7 @@ namespace EasyFramework
 
             return entity;
         }
-        public static IEntity AddNewEntity(this IEntity self,Type type) => self.AddNewEntity(type,false);
-        public static IEntity AddNewEntity(this IEntity self,Type type,bool usePool)
+        public static IEntity AddNewEntity(this IEntity self,Type type,bool usePool=false)
         {
             var entity = (IEntity)ReferencePool.Fetch(type,false,usePool);
             self.Container.Add(type, entity);
@@ -156,30 +179,38 @@ namespace EasyFramework
 
             return entity;
         }
-        public static void RemoveEntity<T>(this IEntity self) where T : IEntity
+        
+        
+        public static void RemoveEntity<T>(this IEntity self,bool usePool = false) where T : IEntity
         {
             if (self.Container.TryGet(typeof(T), out var entity))
-                entity.Dispose();
+                entity.Dispose(usePool);
         }
-        public static void RemoveEntity(this IEntity self,Type type)
+        public static void RemoveEntity(this IEntity self,Type type,bool usePool = false)
         {
             if (self.Container.TryGet(type, out var entity))
-                entity.Dispose();
+                entity.Dispose(usePool);
         }
+        
+        
         public static T GetEntity<T>(this IEntity self) where T : IEntity => (T) self.Container.Get(typeof(T));
         public static IEntity GetEntity(this IEntity self,Type type) => self.Container.Get(type);
-        public static T GetOrAddEntity<T>(this IEntity self) where T : class, IEntity, new()
+        
+        
+        public static T Entity<T>(this IEntity self,bool usePool=false) where T : class, IEntity, new()
         {
             if(!self.Container.TryGet(typeof(T), out var e))
-                e = self.AddNewEntity<T>();
+                e = self.AddNewEntity<T>(usePool);
             return (T)e;
         }
-        public static IEntity GetOrAddEntity(this IEntity self, Type type)
+        public static IEntity Entity(this IEntity self, Type type,bool usePool=false)
         {
             if (!self.Container.TryGet(type, out var e))
-                e = self.AddNewEntity(type);
+                e = self.AddNewEntity(type,usePool);
             return e;
         }
+        
+        
         public static bool TryGetEntity<T>(this IEntity self,out T entity) where T : IEntity
         {
             if (self.Container.TryGet(typeof(T), out var e))
@@ -199,6 +230,8 @@ namespace EasyFramework
             entity = default;
             return false;
         }
+        
+        
         public static bool HasEntity<T>(this IEntity self) where T : IEntity => self.Container.Has(typeof(T));
         public static bool HasEntity(this IEntity self,Type type) => self.Container.Has(type);
     }

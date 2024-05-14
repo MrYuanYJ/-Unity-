@@ -19,19 +19,21 @@ namespace EasyFramework.EventKit
         EasyEvent<T> PropertyEasyEvent { get; }
         Func<T, T, bool> EqualLogic { get; }
         Func<T, T> ClampLogic { get; }
+        IUnRegisterHandle Register(Action action);
         IUnRegisterHandle Register(Action<T> action);
+        void UnRegister(Action action);
         public void UnRegister(Action<T> action);
         void SetSilently(T value);
-        void Modify<M>(M newValue, EXFunctionKit.RefFunc<T, M> refFunc);
-        void Modify<M>(M newValue, EXFunctionKit.RefFunc<T, M> refFunc, Func<M, M, bool> equalLogic);
+        void Modify<M>(M newValue, RefFunc<T, M> refFunc);
+        void Modify<M>(M newValue, RefFunc<T, M> refFunc, Func<M, M, bool> equalLogic);
     }
 
     public class ESProperty<T> : IESProperty<T>
     {
         private T _value;
-        private EasyEvent<T> _propertyEasyEvent;
-        private Func<T, T, bool> _equalLogic;
-        private Func<T, T> _clampLogic;
+        private readonly EasyEvent<T> _propertyEasyEvent;
+        private readonly Func<T, T, bool> _equalLogic;
+        private readonly Func<T, T> _clampLogic;
 
         public T Value
         {
@@ -66,18 +68,14 @@ namespace EasyFramework.EventKit
             _value = initValue;
             _propertyEasyEvent = new();
             _equalLogic = equalLogic ?? EqualityComparer<T>.Default.Equals;
-            _clampLogic = clampLogic ?? null;
+            _clampLogic = clampLogic;
         }
+        public IUnRegisterHandle Register(Action action)=>_propertyEasyEvent.Register(action);
+        public IUnRegisterHandle Register(Action<T> action)=>_propertyEasyEvent.Register(action);
 
-        public IUnRegisterHandle Register(Action<T> action)
-        {
-            return _propertyEasyEvent.Register(action);
-        }
-
-        public void UnRegister(Action<T> action)
-        {
-            _propertyEasyEvent.UnRegister(action);
-        }
+        public void UnRegister(Action action)=>_propertyEasyEvent.UnRegister(action);
+        public void UnRegister(Action<T> action)=>_propertyEasyEvent.UnRegister(action);
+        
         public object GetBoxed() => Value;
         public void SetSilently(T value) => _value = value;
         public void SetBoxed(object value) => Value = (T) value;
@@ -104,7 +102,7 @@ namespace EasyFramework.EventKit
         }
 
         public bool IsDispose{ get; set; }
-        public EasyEvent<IDisposeAble> DisposeEvent { get; set; } = new();
+        public IEasyEvent DisposeEvent { get; } = new EasyEvent();
         public void OnDispose()
         {
             _value = default;
@@ -114,35 +112,112 @@ namespace EasyFramework.EventKit
 
     public static class ESPropertyEx
     {
-        public static IUnRegisterHandle BindTo<T>(this IESProperty<T> self, RefFunc<T> refFunc)
-        {
-            return self.Register(value =>
-            {
-                ref var refValue = ref refFunc.Invoke();
-                refValue = value;
-            });
-        }
-        public static void Add<T1,T2>(this IESProperty<T1> self, T2 value)  where T1: ICollection<T2>
+        public static void Add<T>(this IESProperty<List<T>> self, T value)
         {
             self.Value.Add(value);
             self.PropertyEasyEvent.Invoke(self.Value);
         }
-
-        public static void Remove<T1,T2>(this IESProperty<T1> self, T2 value)  where T1: ICollection<T2>
+        public static bool Add<K, V>(this IESProperty<Dictionary<K, V>> self, K key, V value)
         {
-            self.Value.Remove(value);
+            if(self.Value.TryAdd(key, value))
+            {
+                self.PropertyEasyEvent.Invoke(self.Value);
+                return true;
+            }
+            return false;
+        }
+        public static bool Add<T>(this IESProperty<HashSet<T>> self, T value)
+        {
+            if(self.Value.Add(value))
+            {
+                self.PropertyEasyEvent.Invoke(self.Value);
+                return true;
+            }
+            return false;
+        }
+        public static void Enqueue<T>(this IESProperty<Queue<T>> self, T value)
+        {
+            self.Value.Enqueue(value);
             self.PropertyEasyEvent.Invoke(self.Value);
         }
-        public static void SetValueForceTriggerEvent<T1>(this IESProperty<T1> self, Action<T1> set)
+        public static void Push<T>(this IESProperty<Stack<T>> self, T value)
+        {
+            self.Value.Push(value);
+            self.PropertyEasyEvent.Invoke(self.Value);
+        }
+        
+        
+        public static bool Remove<T>(this IESProperty<List<T>> self, T value)
+        {
+            if (!self.Value.Remove(value)) return false;
+            self.PropertyEasyEvent.Invoke(self.Value);
+            return true;
+
+        }
+        public static bool Remove<K, V>(this IESProperty<Dictionary<K, V>> self, K key)
+        {
+            if (!self.Value.Remove(key)) return false;
+            self.PropertyEasyEvent.Invoke(self.Value);
+            return true;
+        }
+        public static bool Remove<T>(this IESProperty<HashSet<T>> self, T value)
+        {
+            if (!self.Value.Remove(value)) return false;
+            self.PropertyEasyEvent.Invoke(self.Value);
+            return true;
+        }
+        public static void Dequeue<T>(this IESProperty<Queue<T>> self)
+        {
+            self.Value.Dequeue();
+            self.PropertyEasyEvent.Invoke(self.Value);
+        }
+        public static T Pop<T>(this IESProperty<Stack<T>> self)
+        {
+            var value =self.Value.Pop();
+            self.PropertyEasyEvent.Invoke(self.Value);
+            return value;
+        }
+        
+        
+        public static void SetValueForceTriggerEvent<T>(this IESProperty<T> self, Action<T> set)
         {
             set.Invoke(self.Value);
             self.PropertyEasyEvent.Invoke(self.Value);
         }
 
-        public static void Clear<T>(this IESProperty<ICollection<T>> self)
+        public static void Clear<T>(this IESProperty<List<T>> self)
         {
             if (self.Value.Count <= 0) return;
             
+            self.Value.Clear();
+            self.PropertyEasyEvent.Invoke(self.Value);
+        }
+        public static void Clear<K, V>(this IESProperty<Dictionary<K, V>> self)
+        {
+            if (self.Value.Count <= 0) return;
+            
+            self.Value.Clear();
+            self.PropertyEasyEvent.Invoke(self.Value);
+        }
+        public static void Clear<T>(this IESProperty<HashSet<T>> self)
+        {
+            if (self.Value.Count <= 0) return;
+            
+            self.Value.Clear();
+            self.PropertyEasyEvent.Invoke(self.Value);
+        }
+        public static void Clear<T>(this IESProperty<Queue<T>> self)
+        {
+            if (self.Value.Count <= 0) return;
+            
+            self.Value.Clear();
+            self.PropertyEasyEvent.Invoke(self.Value);
+        }
+
+        public static void Clear<T>(this IESProperty<Stack<T>> self)
+        {
+            if (self.Value.Count <= 0) return;
+
             self.Value.Clear();
             self.PropertyEasyEvent.Invoke(self.Value);
         }
