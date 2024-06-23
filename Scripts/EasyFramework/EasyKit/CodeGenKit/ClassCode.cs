@@ -52,8 +52,7 @@ namespace CodeGenKit
         string ICodeGen.Gen()
         {
             _str.Clear();
-            ((ICodeGen)this).Wrap();
-
+            
             ((IHasAttribute)this).GenAttributes();
             
             ((ICodeGen)this).Wrap();

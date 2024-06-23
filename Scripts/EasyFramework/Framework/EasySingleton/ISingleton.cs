@@ -9,7 +9,7 @@ namespace EasyFramework
         public T Get<T>() where T : class;
     }
 
-    public interface ISingleton<T> : ISingleton where T : class
+    public interface ISingleton<T> : ISingleton where T : class                                                                
     {
         public static T Instance;
     }

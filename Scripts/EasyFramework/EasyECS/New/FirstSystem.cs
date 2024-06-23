@@ -13,7 +13,7 @@ namespace EasyECS.New
     //         // for (int i = 0; i < components.Length; i++)
     //         // {
     //         //     ref var component = ref components[i];
-    //         //     if (component.Entity != null && !component.IsDispose)
+    //         //     if (component.BindEntity != null && !component.IsDispose)
     //         //     {
     //         //         
     //         //     }

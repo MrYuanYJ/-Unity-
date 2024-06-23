@@ -1,8 +1,6 @@
 #if UNITY_EDITOR
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Sirenix.OdinInspector;
 using UnityEditor;
@@ -46,7 +44,7 @@ namespace CodeGenKit
         }
 
         private ScriptableObject lastTemplate;
-        protected void AutoScriptInitSetting()
+        protected virtual void AutoScriptInitSetting()
         {
             if(lastTemplate==_template) return;
             lastTemplate = _template;
@@ -58,15 +56,15 @@ namespace CodeGenKit
 
         private IEnumerable<ScriptableObject> GetTemplateTypes()
         {
-            var q = typeof(IScriptsTemplate).Assembly.GetTypes()
+            /*var q = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(x => !x.IsAbstract) // Excludes BaseClass
                 .Where(x => typeof(IScriptsTemplate).IsAssignableFrom(x)); // Excludes classes not inheriting from BaseClass
             List<ScriptableObject> lst = new();
             foreach (var type in q)
             {
                 lst.Add((ScriptableObject) ScriptCreatorMgr.Instance.GetTemplate(type));
-            }
-            return lst;
+            }*/
+            return ScriptCreatorMgr.Instance.allTemplates;
         }
     }
 }

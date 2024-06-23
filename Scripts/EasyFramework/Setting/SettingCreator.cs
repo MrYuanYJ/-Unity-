@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 using EasyFramework.EasyResKit;
+using EasyFramework.EasySystem;
 using EasyFramework.EasyUIKit;
 using UnityEditor;
 
@@ -14,6 +15,7 @@ namespace EasyFramework
             var uiKitSetting = EasyUIKitSetting.Instance;
             var resKitSetting = EasyResKitSetting.Instance;
             var buffSetting = EasyBuffSetting.Instance;
+            var inputSetting = EasyInputSetting.Instance;
         }
         [MenuItem(itemName: "EasyFramework/Settings/Create EasyResKit Setting")]
         public static void CreateEasyUIKitSetting()
@@ -30,6 +32,11 @@ namespace EasyFramework
         public static void CreateEasyBuffSetting()
         {
             var buffSetting = EasyBuffSetting.Instance;
+        }
+        [MenuItem(itemName: "EasyFramework/Settings/Create EasyInput Setting")]
+        public static void CreateEasyInputSetting()
+        {
+            var inputSetting = EasyInputSetting.Instance;
         }
     }
 }

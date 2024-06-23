@@ -4,8 +4,8 @@ namespace EasyFramework
 {
     public interface IEasyProgressAction: IEasyAction
     {
-        float Progress { get;}
-        float Duration { get;}
+        float Progress { get; }
+        float Duration { get; }
     }
 
     public interface IEasyLerpAction
@@ -14,8 +14,8 @@ namespace EasyFramework
     }
     public interface IEasyLerpAction<T>:IEasyProgressAction, IEasyLerpAction
     {
-        T StartValue { get;}
-        T EndValue { get;}
+        T StartValue { get; }
+        T EndValue { get; }
         T GetValue();
     }
 }

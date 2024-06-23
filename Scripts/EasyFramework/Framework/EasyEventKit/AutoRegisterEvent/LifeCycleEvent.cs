@@ -8,9 +8,13 @@ namespace EasyFramework.EventKit
         IUnRegisterHandle Register(IEasyLife arg);
     }
 
-    public abstract class InitAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IEasyLife
+    public interface IAutoRegisterLifeCycleEvent<T>: IAutoRegisterLifeCycleEvent
     {
-        public Type RegisterType => typeof(T);
+        Type IAutoRegisterLifeCycleEvent.RegisterType => typeof(T);
+    }
+
+    public abstract class InitAutoEvent<T> : IAutoRegisterLifeCycleEvent<T> where T : IEasyLife
+    {
         protected abstract void OnInit(T self);
 
         public IUnRegisterHandle Register(IEasyLife self)
@@ -18,10 +22,27 @@ namespace EasyFramework.EventKit
                 .Register(() => OnInit((T)self))
                 .UnRegisterOnDispose(self);
     }
-
-    public abstract class StartAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IEasyLife,IStartAble
+    public abstract class ActiveAutoEvent<T> : IAutoRegisterLifeCycleEvent<T> where T : IActiveAble
     {
-        public Type RegisterType => typeof(T);
+        protected abstract void OnActive(T self);
+
+        public IUnRegisterHandle Register(IEasyLife self)
+            => ((T)self).ActiveEvent
+                .Register(() => OnActive((T)self))
+                .UnRegisterOnDispose(self);
+    }
+    public abstract class UnActiveAutoEvent<T> : IAutoRegisterLifeCycleEvent<T> where T : IActiveAble
+    {
+        protected abstract void OnUnActive(T self);
+
+        public IUnRegisterHandle Register(IEasyLife self)
+            => ((T)self).UnActiveEvent
+                .Register(() => OnUnActive((T)self))
+                .UnRegisterOnDispose(self);
+    }
+
+    public abstract class StartAutoEvent<T> : IAutoRegisterLifeCycleEvent<T> where T : IEasyLife,IStartAble
+    {
         protected abstract void OnStart(T self);
 
         public IUnRegisterHandle Register(IEasyLife self)
@@ -30,9 +51,8 @@ namespace EasyFramework.EventKit
                 .UnRegisterOnDispose(self);
     }
 
-    public abstract class DisposeAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IEasyLife
+    public abstract class DisposeAutoEvent<T> : IAutoRegisterLifeCycleEvent<T> where T : IEasyLife
     {
-        public Type RegisterType => typeof(T);
         protected abstract void OnInit(T self);
 
         public IUnRegisterHandle Register(IEasyLife self)
@@ -41,9 +61,8 @@ namespace EasyFramework.EventKit
                 .UnRegisterOnDispose(self);
     }
 
-    public abstract class UpdateAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IUpdateAble
+    public abstract class UpdateAutoEvent<T> : IAutoRegisterLifeCycleEvent<T> where T : IUpdateAble
     {
-        public Type RegisterType => typeof(T);
         protected abstract void OnUpdate(T self);
 
         public IUnRegisterHandle Register(IEasyLife self)
@@ -52,9 +71,8 @@ namespace EasyFramework.EventKit
                 .UnRegisterOnDispose(self);
     }
 
-    public abstract class FixedUpdateAutoEvent<T> : IAutoRegisterLifeCycleEvent where T : IFixedUpdateAble
+    public abstract class FixedUpdateAutoEvent<T> : IAutoRegisterLifeCycleEvent<T> where T : IFixedUpdateAble
     {
-        public Type RegisterType => typeof(T);
         protected abstract void OnFixedUpdate(T self);
 
         public IUnRegisterHandle Register(IEasyLife self)

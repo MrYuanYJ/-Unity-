@@ -3,7 +3,7 @@ namespace EasyFramework
     [System.Flags]
     public enum EventScope: long
     {
-        Global=1<<0,
+        Main=1<<0,
         Framework=1<<1,
         Scene=1<<2,
         GameObject=1<<3,

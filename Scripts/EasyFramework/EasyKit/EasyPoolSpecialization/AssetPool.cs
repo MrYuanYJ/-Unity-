@@ -1,5 +1,3 @@
-using EasyFramework.EasyResKit;
-using EasyFramework.EventKit;
 using EXFunctionKit;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -14,12 +12,15 @@ namespace EasyFramework
             pool.gameObject.SetParent(transform);
             return pool;
         }
-    }
-    public class AssetPoolOnGameInitEvent : AutoClassEvent<GlobalEvent.ApplicationInit,IStructure>
-    {
-        protected override void Run(IStructure a)
+
+        protected override void OnInit()
         {
-            GlobalEvent.RecycleAsset.RegisterEvent(obj=>AssetPool.Instance.Recycle(EasyRes.GetAssetPath(obj),obj));
+            ForceRegister();
+            EasyRes.RecycleAsset.RegisterEvent(obj=>Recycle(EasyRes.GetAssetPath.InvokeFunc(obj),obj)).UnRegisterOnDispose(this);
+            EasyRes.FetchAsset.RegisterFunc(Fetch).UnRegisterOnDispose(this);
+            EasyRes.ReleaseAsset.RegisterEvent(ClearTarget).UnRegisterOnDispose(this);
+            EasyRes.ReleaseAll.RegisterEvent(Clear).UnRegisterOnDispose(this);
         }
+        
     }
 }

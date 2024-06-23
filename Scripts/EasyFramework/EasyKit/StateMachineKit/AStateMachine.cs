@@ -5,14 +5,17 @@ using UnityEngine;
 
 namespace EasyFramework.StateMachineKit
 {
+    [System.Serializable]
     public abstract class ASM<TKey, TState>: ISMachine<TKey,TState> where TState : IState
     {
         public bool IsPause { get; set; }
 
         Dictionary<TKey, TState> ISMachine<TKey, TState>.States { get; } = new();
 
-        public TKey CurrentState { get; set; }
-        public TKey PreviousState { get; set; }
+        [SerializeField]private TKey currentState;
+        [SerializeField]private TKey previousState;
+        public TKey CurrentState{get=> currentState; set=> currentState = value;}
+        public TKey PreviousState { get=> previousState; set=> previousState = value; }
 
         Func<TKey, TState, bool> ISMachine<TKey, TState>.BeforeStateChange => (key, state) => !IsPause;
 
@@ -20,30 +23,28 @@ namespace EasyFramework.StateMachineKit
         public bool IsInit { get; set; }
         public IEasyEvent InitEvent { get; }=new EasyEvent();
         public IEasyEvent DisposeEvent { get; }=new EasyEvent();
+
         public IEasyEvent UpdateEvent { get; } = new EasyEvent();
         public IEasyEvent FixedUpdateEvent { get; } = new EasyEvent();
-        public EasyEvent<IStateMachine> MUpdateEvent { get; set; } = new();
-        public EasyEvent<IStateMachine> MFixedUpdateEvent { get; set; } = new();
+        public Action<IStateMachine> MUpdateAction { get; set; }
+        public Action<IStateMachine> MFixedUpdateAction { get; set; }
+        
 
-        public void OnUpdate() { }
-        public void OnFixedUpdate() { }
-
-
-        public void OnInit()
+        void IInitAble.OnInit()
         {
             UpdateEvent.Register(() =>
             {
                 if(!IsPause)
-                    MUpdateEvent?.Invoke(this);
+                    MUpdateAction?.Invoke(this);
                 Debug.Log(this.GetType().Name + " Update");
             }).UnRegisterOnDispose(this);
             FixedUpdateEvent.Register(() =>
             {
                 if (!IsPause)
-                    MFixedUpdateEvent?.Invoke(this);
+                    MFixedUpdateAction?.Invoke(this);
             }).UnRegisterOnDispose(this);
         }
-        public void OnDispose(){}
+        void IDisposeAble.OnDispose(bool usePool) {}
     }
     public abstract class AStateMachine<TKey,TState>: ASM<TKey, TState>,IStateMachine<TKey,TState> where TState : IEasyState 
     {

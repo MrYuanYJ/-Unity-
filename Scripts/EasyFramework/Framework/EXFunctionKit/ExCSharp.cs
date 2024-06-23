@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Sirenix.Utilities;
@@ -15,9 +16,64 @@ namespace EXFunctionKit
     public delegate ref T RefFunc<T>();
     public delegate ref T2 RefFunc<T1, T2>(ref T1 value);
 
+    public struct And<T>: ICollection<T>
+    {
+        public List<T> Values;
+        public IEnumerator<T> GetEnumerator()=> Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()=>GetEnumerator();
+        public void Add(T item)=> Values.Add(item);
+        public void Clear()=> Values.Clear();
+        public bool Contains(T item)=> Values.Contains(item);
+        public void CopyTo(T[] array, int arrayIndex)=> Values.CopyTo(array, arrayIndex);
+        public bool Remove(T item)=> Values.Remove(item);
+        public int Count => Values.Count;
+        bool ICollection<T>.IsReadOnly => false;
+    }
+
     public static class ExCSharp
     {
+        private static Lazy<Dictionary<string, Delegate>> _expressionCache =
+            new Lazy<Dictionary<string, Delegate>>(() => new Dictionary<string, Delegate>());
         public static Type Type<T>(this T self)=> typeof(T);
+
+        public static And<T> And<T>(this T self, params T[] values)
+        {
+            var and = new And<T>(){Values = new List<T>()};
+            and.Values.Add(self);
+            and.Values.AddRange(values);
+            return and;
+        }
+        public static And<T> And<T>(this And<T> self, params T[] values)
+        {
+            self.Values.AddRange(values);
+            return self;
+        }
+        public static T Modify<TClass, T>(TClass self, Expression<Func<TClass, T>> expression, T newValue,Action<TClass> onChange=null,Func<T,T,bool> compare=null)
+        {
+            if (!_expressionCache.Value.TryGetValue($"[{typeof(TClass).Name}]{expression}", out var Action))
+            {
+                var getOldValue = expression.Compile();
+                var memberExpression = expression.Body;
+                var newValueExpression = Expression.Constant(newValue);
+                var assignExpression = Expression.Assign(memberExpression, newValueExpression);
+                var lambdaExpression = Expression.Lambda<Action<TClass>>(assignExpression, expression.Parameters);
+                var action = lambdaExpression.Compile();
+                compare ??= EqualityComparer<T>.Default.Equals;
+                Action = new Action<TClass, T>((TClass tClass, T value) =>
+                {
+                    if (!compare(getOldValue(tClass), value))
+                    {
+                        action(tClass);
+                        onChange?.Invoke(tClass);
+                    }
+                });
+                _expressionCache.Value.Add($"[{typeof(TClass).Name}]{expression}", Action);
+            }
+
+            ((Action<TClass, T>)Action)(self, newValue);
+            return newValue;
+        }
+        
         /// <summary>
         /// 将对象转换为指定类型。
         /// </summary>
@@ -257,7 +313,8 @@ namespace EXFunctionKit
         public static bool AsBool(this long self) => self != 0;
         public static bool AsBool(this double self) => self != 0;
         public static bool AsBool(this bool self) => self;
-        public static bool AsBool<T>(this IEnumerable<T> self) => self.Any();
+        public static bool AsBool(this IEnumerable self) => self != null && self.Cast<object>().Any();
+        public static bool AsBool<T>(this IEnumerable<T> self) => self != null && self.Any();
         public static bool InRange(this int self, int min, int max) => self >= min && self < max;
         public static bool InRange(this float self, float min, float max) => self >= min && self < max;
         public static bool InRange(this long self, long min, long max) => self >= min && self < max;
@@ -1074,36 +1131,6 @@ namespace EXFunctionKit
             return arr;
         }
 
-        public static bool Or(this bool self, bool judge, params bool[] judges)
-        {
-            if (self || judge)
-                return true;
-
-            foreach (var tempJudge in judges)
-            {
-                if (tempJudge)
-                    return true;
-            }
-
-            return false;
-        }
-
-        public static bool And(this bool self, bool judge, params bool[] judges)
-        {
-            if (self && judge)
-            {
-                foreach (var tempJudge in judges)
-                {
-                    if (!tempJudge)
-                        return false;
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
         public static bool IsEqualsAny<T>(this T self, T item, params T[] items)
         {
             bool result = EqualityComparer<T>.Default.Equals(self, item);
@@ -1119,6 +1146,17 @@ namespace EXFunctionKit
             return result;
         }
 
+        public static T Get<T>(this IEnumerable<T> self, Predicate<T> predicate, T defaultValue = default)
+        {
+            if(self == null)
+                return defaultValue;
+            foreach (var item in self)
+            {
+                if(predicate(item))
+                    return item;
+            }
+            return defaultValue;
+        }
         public static float MaxFloat<T>(this IEnumerable<T> self, Func<T, float> selector)
         {
             var max=float.MinValue;
@@ -1192,5 +1230,14 @@ namespace EXFunctionKit
             return last;
         }
         public static T OneLast<T>(this IEnumerable<T> self)=> self.LastOrDefault();
+        
+        
+        public static string TryCreateDirectory(this string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+        
     }
 }

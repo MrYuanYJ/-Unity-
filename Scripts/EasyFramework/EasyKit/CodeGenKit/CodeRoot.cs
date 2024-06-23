@@ -55,7 +55,7 @@ namespace CodeGenKit
         {
             _str.Clear();
    
-            _str.Append(_using.Gen());
+            _str.Append(_using?.Gen());
             ((IEnumContainer)this).GenEnum();
             ((IStructContainer)this).GenStruct();
             ((IClassContainer)this).GenClass();

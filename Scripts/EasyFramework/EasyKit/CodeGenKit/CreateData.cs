@@ -2,8 +2,10 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using EXFunctionKit;
 using Sirenix.Utilities;
+using UnityEditor;
 using UnityEngine;
 
 namespace CodeGenKit
@@ -20,9 +22,10 @@ namespace CodeGenKit
         
         public Type GetScriptType()
         {
-            if(NameSpace.IsNullOrWhitespace())
-                return Type.GetType($"{ScriptName}");
-            return Type.GetType($"{NameSpace}.{ScriptName}");
+            MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(Path + "/" + ScriptName + ".cs");
+            var type = script.GetClass();
+            
+            return type;
         }
 
         public void BindLinkData(Component component)
@@ -31,12 +34,11 @@ namespace CodeGenKit
             {
                 if (typeof(IScriptCreator).IsAssignableFrom(Type.GetType(item.Type)))
                 {
-                    var targetScriptCreator = item.Object.GetComponent<ScriptCreator>();
-                    GetScriptType().GetField(item.Name).SetValue(component,
-                        item.Object.GetComponent(ScriptCreatorMgr.Instance.createLst.First(data =>
+                    var targetScriptCreator = item.Object.TryGetComponent<ScriptCreator>();
+                    component.GetType().GetField(item.Name).SetValue(component,
+                        item.Object.TryGetComponent(ScriptCreatorMgr.Instance.createLst.First(data =>
                                 data.NameSpace == targetScriptCreator.nameSpace &&
-                                data.ScriptName == targetScriptCreator.scriptName)
-                            .GetScriptType()));
+                                data.ScriptName == targetScriptCreator.scriptName).GetScriptType()));
                 }
                 else
                 {
@@ -58,7 +60,7 @@ namespace CodeGenKit
                                 referenceLinkData.Object = go;
                         }
                     }
-                    GetScriptType().GetField(item.Name).SetValue(component, item.Object);
+                    component.GetType().GetField(item.Name).SetValue(component, item.Object);
                 }
             }
         }
@@ -68,7 +70,7 @@ namespace CodeGenKit
             {
                 var type = Type.GetType(item.Type);
                 if (typeof(IScriptCreator).IsAssignableFrom(type))
-                    fieldContainer.Field((IScriptCreator)item.Object.GetComponent(typeof(IScriptCreator)),item, code =>
+                    fieldContainer.Field((IScriptCreator)item.Object.TryGetComponent(typeof(IScriptCreator)),item, code =>
                         code.PublicType(EPublicType.Public));
                 else
                     fieldContainer.Field(type, item.Name, code =>

@@ -4,13 +4,16 @@ namespace EasyFramework
 {
     public interface IStartAble
     {
+        bool IsStart { get; set; }
         IEasyEvent StartEvent { get;}
         void Start()
         {
+            if (IsStart) return;
+            IsStart = true;
             OnStart();
-            StartEvent.Invoke();
+            StartEvent.BaseInvoke();
         }
-        void OnStart();
+        protected void OnStart();
     }
     // public interface IStartAble<T> : IStartAble
     // {

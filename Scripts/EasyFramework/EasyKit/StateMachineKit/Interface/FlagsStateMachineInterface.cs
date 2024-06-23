@@ -12,9 +12,9 @@ namespace EasyFramework.StateMachineKit
             if (key!=0)
             {
                 if (self.States[key] is IStateUpdate update)
-                    self.MUpdateEvent.UnRegister(update.Update);
+                    self.MUpdateAction-=update.Update;
                 if (self.States[key] is IStateFixedUpdate fixedUpdate)
-                    self.MFixedUpdateEvent.UnRegister(fixedUpdate.FixedUpdate);
+                    self.MFixedUpdateAction+=fixedUpdate.FixedUpdate;
             }
         }
         private static void AddCurrentUpdateEvent(IFlagsSMachine<TEnum, TState> self,int key)
@@ -22,9 +22,9 @@ namespace EasyFramework.StateMachineKit
             if (key!=0)
             {
                 if (self.States[key] is IStateUpdate update)
-                    self.MUpdateEvent.Register(update.Update);
+                    self.MUpdateAction+=update.Update;
                 if (self.States[key] is IStateFixedUpdate fixedUpdate)
-                    self.MFixedUpdateEvent.Register(fixedUpdate.FixedUpdate);
+                    self.MFixedUpdateAction+=fixedUpdate.FixedUpdate;
             }
         }
         public static bool SingleEnter(IFlagsSMachine<TEnum, TState> self,int key)

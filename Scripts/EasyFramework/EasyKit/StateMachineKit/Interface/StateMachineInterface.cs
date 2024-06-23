@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using EasyFramework.EventKit;
-using EXFunctionKit;
-using Unity.VisualScripting;
-using UnityEngine;
 
 namespace EasyFramework.StateMachineKit
 {
@@ -28,8 +24,8 @@ namespace EasyFramework.StateMachineKit
         TKey PreviousState{ get; set; }
         protected Func<TKey,TState,bool> BeforeStateChange { get; }
         protected Action AfterStateChange { get; } 
-        EasyEvent<IStateMachine> MUpdateEvent { get; set; }
-        EasyEvent<IStateMachine> MFixedUpdateEvent { get; set; }
+        Action<IStateMachine> MUpdateAction { get; set; }
+        Action<IStateMachine> MFixedUpdateAction { get; set; }
 
         bool BeforeAdd(TKey key) => true;
         bool AfterAdd(TKey key) => true;
@@ -39,9 +35,9 @@ namespace EasyFramework.StateMachineKit
             if (!EqualityComparer<TKey>.Default.Equals(default, self.CurrentState))
             {
                 if (self.States[self.CurrentState] is IStateUpdate update)
-                    self.MUpdateEvent.UnRegister(update.Update);
+                    self.MUpdateAction-=update.Update;
                 if (self.States[self.CurrentState] is IStateFixedUpdate fixedUpdate)
-                    self.MFixedUpdateEvent.UnRegister(fixedUpdate.FixedUpdate);
+                    self.MFixedUpdateAction-=fixedUpdate.FixedUpdate;
             }
         }
         protected static void AddCurrentUpdateEvent(ISMachine<TKey, TState> self)
@@ -49,9 +45,9 @@ namespace EasyFramework.StateMachineKit
             if (!EqualityComparer<TKey>.Default.Equals(default, self.CurrentState))
             {
                 if (self.States[self.CurrentState] is IStateUpdate update)
-                    self.MUpdateEvent.Register(update.Update);
+                    self.MUpdateAction+=update.Update;
                 if (self.States[self.CurrentState] is IStateFixedUpdate fixedUpdate)
-                    self.MFixedUpdateEvent.Register(fixedUpdate.FixedUpdate);
+                    self.MFixedUpdateAction+=fixedUpdate.FixedUpdate;
             }
         }
         public static bool StateChange(ISMachine<TKey, TState> self, TKey key)

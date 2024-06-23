@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using EasyFramework.EventKit;
+using EXFunctionKit;
 
 namespace EasyFramework
 {
@@ -12,18 +15,7 @@ namespace EasyFramework
             set => IsInit = !value;
         }
     }
-
-    public interface IEasyLife<T> : IInitAble<T>,IEasyLife
-    {
-    }
-
-    public interface IEasyLife<T1, T2> : IInitAble<T1, T2>, IEasyLife
-    {
-    }
-
-   
-
-
+    
     public static class EasyLifeExtensions
     {
         public static void TryInit(this object self)
@@ -31,25 +23,17 @@ namespace EasyFramework
             if(self is IInitAble easyLife)
                 easyLife.Init();
         }
-        public static void TryInit<T>(this object self, T t)
-        {
-            if (self is IInitAble<T> easyLife)
-                easyLife.Init(t);
-        }
-        public static void TryInit<T1, T2>(this object self, T1 t1, T2 t2)
-        {
-            if (self is IInitAble<T1, T2> easyLife)
-                easyLife.Init(t1, t2);
-        }
         public static void TryDispose(this object self)
         {
             if (self is IDisposeAble easyLife)
                 easyLife.Dispose();
         }
-
-        public static void Init(this IEasyLife self)=> self.Init();
-        public static void Dispose(this IEasyLife self)=> self.Dispose();
+        public static void Init(this IInitAble self)=> self.Init();
+        public static void Dispose(this IDisposeAble self)=> self.Dispose();
         public static void Dispose(this IEasyLife self,bool usePool)=> self.Dispose(usePool);
+        public static void Enable(this IActiveAble self) => self.IsActive.Value = true;
+        public static void Disable(this IActiveAble self) => self.IsActive.Value = false;
+        public static void SetActive(this IActiveAble self, bool isActive) => self.IsActive.Value = isActive;
     }
 
     public static class EasyLifeCycleExtensions
@@ -64,7 +48,28 @@ namespace EasyFramework
             easyLife.DisposeEvent.Register(self.UnRegister).OnlyPlayOnce();
             return self;
         }
+        public static IUnRegisterHandle UnRegisterOnActive(this IUnRegisterHandle self, IActiveAble activeAble, bool onlyUnRegisterOnce = false)
+        {
+            if (onlyUnRegisterOnce)
+                activeAble.ActiveEvent.Register(self.UnRegister).OnlyPlayOnce();
+            else
+                activeAble.ActiveEvent.Register(self.UnRegister);
+            return self;
+        }
+        public static IUnRegisterHandle UnRegisterOnUnActive(this IUnRegisterHandle self, IActiveAble activeAble, bool onlyUnRegisterOnce = false)
+        {
+            if (onlyUnRegisterOnce)
+                activeAble.UnActiveEvent.Register(self.UnRegister).OnlyPlayOnce();
+            else
+                activeAble.UnActiveEvent.Register(self.UnRegister);
+            return self;
+        }
         public static IUnRegisterHandle RegisterOnDispose(this IDisposeAble self, Action action) => self.DisposeEvent.Register(action).OnlyPlayOnce();
+        public static IUnRegisterHandle RegisterOnActive(this IActiveAble self, Action action) => self.ActiveEvent.Register(action);
+        public static IUnRegisterHandle RegisterOnUnActive(this IActiveAble self, Action action) => self.UnActiveEvent.Register(action);
+        public static void UnRegisterDisposeEvent(this IDisposeAble self, Action action) => self.DisposeEvent.UnRegister(action);
+        public static void UnRegisterActiveEvent(this IActiveAble self, Action action) => self.ActiveEvent.UnRegister(action);
+        public static void UnRegisterUnActiveEvent(this IActiveAble self, Action action) => self.UnActiveEvent.UnRegister(action);
 
         public static CancellationTokenSource CancelOnDispose(this IDisposeAble self)
         {

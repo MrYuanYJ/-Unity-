@@ -9,9 +9,9 @@ namespace EasyFramework
         void Update()
         {
             OnUpdate();
-            UpdateEvent.Invoke();
+            UpdateEvent.BaseInvoke();
         }
-        void OnUpdate();
+        protected void OnUpdate();
     }
 
     // public interface IUpdateAble<T> : IUpdateAble

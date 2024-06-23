@@ -1,18 +1,16 @@
 using System.Collections.Generic;
-using EasyFramework.EventKit;
-using Sirenix.Utilities;
 using UnityEngine;
 
 namespace EasyFramework
 {
-    public abstract class AMonoKeyPool<T,TValue>:AutoMonoSingleton<T> where T : AMonoKeyPool<T,TValue> where TValue : Object
+    public abstract class AMonoKeyPool<T,TValue>: MonoSingleton<T>,IInitAble where T : AMonoKeyPool<T,TValue> where TValue : Object
     {
         private readonly Dictionary<string, AMonoValuePool<TValue>> _pool = new Dictionary<string, AMonoValuePool<TValue>>();
         public void Clear()
         {
             Destroy(this);
         }
-        public void Clear(string key)
+        public void ClearTarget(string key)
         {
             if (_pool.TryGetValue(key,out AMonoValuePool<TValue> pool))
             {

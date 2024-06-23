@@ -1,18 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using EasyFramework.EasyResKit;
 using EasyFramework.EasyTaskKit;
 using UnityEngine;
 
 namespace EasyFramework.EasyUIKit
 {
-    public class EasyUIMgr: AutoSingleton<EasyUIMgr>
+    public class EasyUIMgr: Singleton<EasyUIMgr>
     {
-        protected EasyUIMgr()
+        public EasyUIMgr()
         {
-            UIRoot = EasyUIRoot.MEasyUIRoot.Value;
-            UIRoot.EventSystem.gameObject.SetActive(true);
+    
         }
         private IEasyUIRoot UIRoot;
         private Dictionary<Type, IEasyUI> _uiDic = new();
@@ -23,9 +21,9 @@ namespace EasyFramework.EasyUIKit
             if (!_uiDic.TryGetValue(typeof(T), out var panel))
             {
                 //从资源中加载预制体
-                var loadHandle = EasyRes.LoadPrefabAsync<T>();
+                var loadHandle = (CoroutineHandle<GameObject>)EasyRes.LoadPrefabByTypeAsync.InvokeFunc(typeof(T),true);
                 yield return loadHandle;
-                panel = loadHandle.Result;
+                panel = loadHandle.Result.GetComponent<T>();
                 _uiDic[typeof(T)] = panel;
             }
 
@@ -101,6 +99,12 @@ namespace EasyFramework.EasyUIKit
         public static void PanelClose(IEasyPanel panel)
         {
             
+        }
+
+        protected override void OnInit()
+        {
+            UIRoot = EasyUIRoot.MEasyUIRoot.Value;
+            UIRoot.EventSystem.gameObject.SetActive(true);
         }
     }
 }

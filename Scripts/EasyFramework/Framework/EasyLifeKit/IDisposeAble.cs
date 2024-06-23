@@ -11,31 +11,44 @@ namespace EasyFramework
         void IDisposable.Dispose()=> Dispose();
         void Dispose(bool usePool=false)
         {
-            if(!BeforeDisposeEvent(this)) return;
-            DisposeEvent.Invoke();
+            if(!BeforeDisposeEvent(this, usePool)) return;
+            DisposeEvent.BaseInvoke();
             AfterDisposeEvent(this, usePool);
         }
-        void OnDispose();
-        void DisposeDo() => GlobalEvent.DisposeDo.InvokeEvent(this);
-        public static bool BeforeDisposeEvent(IDisposeAble self)
+        protected void OnDispose(bool usePool);
+        protected void DisposeDo(bool usePool) => GlobalEvent.DisposeDo.InvokeEvent(this);
+        public static bool BeforeDisposeEvent(IDisposeAble self,bool usePool)
         {
             if (self.IsDispose) return false;
+            if(self is IActiveAble activeAble)
+                activeAble.Disable();
             self.IsDispose = true;
-            self.OnDispose();
+            self.OnDispose(usePool);
             return true;
         }
         public static void AfterDisposeEvent(IDisposeAble self,bool usePool)
         {
-            self.DisposeDo();
+            self.DisposeDo(usePool);
             self.DisposeEvent.Clear();
             if(self is IInitAble initAble)
                 initAble.InitEvent.Clear();
+            if (self is IActiveAble activeAble)
+            {
+                activeAble.ActiveEvent.Clear();
+                activeAble.UnActiveEvent.Clear();
+            }
+
+            if (self is IStartAble startAble)
+            {
+                startAble.IsStart = false;
+                startAble.StartEvent.Clear();
+            }
             if(self is IUpdateAble update)
                 update.UpdateEvent.Clear();
             if(self is IFixedUpdateAble fixedUpdate)
                 fixedUpdate.FixedUpdateEvent.Clear();
             if (usePool)
-                GlobalEvent.RecycleClass.InvokeEvent(self);
+                ReferencePool.Recycle(self);
         }
     }
 

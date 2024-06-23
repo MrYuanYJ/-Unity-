@@ -19,17 +19,17 @@ namespace EasyFramework
         private readonly Queue<Action> _setQueue = new Queue<Action>();
         private static EasyBuffSetting Setting => EasyBuffSetting.Instance;
 
-        public override void OnInit()
+        protected override void OnInit()
         {
             base.OnInit();
+            Setting.Init();
             BuffEvent.AddBuff.RegisterEvent(AddBuff);
             BuffEvent.AddBuffByMeans.RegisterEvent(AddBuffByMeans);
             BuffEvent.RemoveBuff.RegisterEvent(RemoveBuff);
         }
 
-        public override void OnDispose()
+        protected override void OnDispose(bool usePool)
         {
-            base.OnDispose();
             BuffEvent.AddBuff.UnRegisterEvent(AddBuff);
             BuffEvent.AddBuffByMeans.UnRegisterEvent(AddBuffByMeans);
             BuffEvent.RemoveBuff.UnRegisterEvent(RemoveBuff);
@@ -134,7 +134,7 @@ namespace EasyFramework
         }
         public IEasyEvent UpdateEvent { get; } = new EasyEvent();
 
-        public void OnUpdate()
+        void IUpdateAble.OnUpdate()
         {
             foreach (IBuffableUnit unit in _pollLst) { unit.PollBuffs(); }
             

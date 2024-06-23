@@ -15,7 +15,7 @@ namespace EasyFramework
         public readonly Dictionary<EBuff, HashSet<Reactor>> ReactorDic = new();
         public readonly Dictionary<EMeans, float> MeansToElementBuffDic = new();
 
-        private void OnEnable()
+        public void Init()
         {
             foreach (var reactor in reactors)
             {

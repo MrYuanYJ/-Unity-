@@ -15,8 +15,19 @@ namespace EasyFramework
         {
             Dic.Clear();
         }
-        public void Add<T>(T obj) where T : TResult => Dic.Add(typeof(T), obj);
-        public void Add(Type type, TResult obj)=> Dic.Add(type, obj);
+        public void Set<T>(T obj) where T : TResult => Dic[typeof(T)] = obj;
+        public void Set(Type type, TResult obj) => Dic[type] = obj;
+        public void Add<T>(T obj) where T : TResult
+        {
+            if (obj != null)
+                Dic.Add(typeof(T), obj);
+        }
+
+        public void Add(Type type, TResult obj)
+        {
+            if (obj != null)
+                Dic.Add(type, obj);
+        }
 
         public bool TryAdd<T>(T obj) where T : TResult => Dic.TryAdd(typeof(T), obj);
         public bool TryAdd(Type type, TResult obj) => Dic.TryAdd(type, obj);

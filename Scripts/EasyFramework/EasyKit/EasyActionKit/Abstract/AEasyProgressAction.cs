@@ -24,11 +24,10 @@ namespace EasyFramework
 
     public abstract class AEasyProgressAndExLoopAction : AEasyProgressAction, IEasyExLoopAction
     {
-        public LoopType LoopType { get; protected set; }
+        public LoopType LoopType { get; set; }
         public float MaxProgress { get; protected set; }
         public bool IsReverse { get; protected set; }
         
-        public void SetLoopType(LoopType loopType)=> LoopType = loopType;
         public void SetMaxProgress(float maxProgress)=> MaxProgress = maxProgress;
         public void SetReverse(bool isReverse)=> IsReverse = isReverse;
 
@@ -64,11 +63,10 @@ namespace EasyFramework
         public T StartValue { get;  protected set; }
         public T EndValue { get;  protected set; }
 
-        public LoopType LoopType { get;  protected set; }
+        public LoopType LoopType { get; set; }
         public float MaxProgress { get;  protected set; }
         public bool IsReverse { get;  protected set; }
         public abstract T GetValue();
-        public void SetLoopType(LoopType loopType)=> LoopType = loopType;
         public void SetMaxProgress(float maxProgress)=> MaxProgress = maxProgress;
         public void SetReverse(bool isReverse)=> IsReverse = isReverse;
 

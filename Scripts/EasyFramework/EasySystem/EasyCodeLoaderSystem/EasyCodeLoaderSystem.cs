@@ -6,11 +6,12 @@ namespace EasyFramework.EasySystem
 {
     public class EasyCodeLoaderSystem: ASystem
     {
-        private readonly Dictionary<string,Type> _allTypes = new ();
+        public readonly Dictionary<string,Type> AllTypes = new ();
+        public static event Action<Type> OnCodeLoaded;
 
         private const string Framework = "EasyFramework";
         
-        public override void OnInit()
+        protected override void OnInit()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
@@ -23,16 +24,17 @@ namespace EasyFramework.EasySystem
                         if(type.IsAbstract||
                            type.IsInterface)
                             continue;
-                        _allTypes.Add(type.FullName, type);
-                        GlobalEvent.RegisterAutoEvent.InvokeEvent(type);
+                        AllTypes.Add(type.FullName, type);
+                        OnCodeLoaded?.Invoke(type);
                     }
                 }
             }
         }
 
-        public override void OnDispose()
+        protected override void OnDispose(bool usePool)
         {
-            _allTypes.Clear();
+            AllTypes.Clear();
+            OnCodeLoaded = null;
         }
     }
 }

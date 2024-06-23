@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using EasyFramework.EasyResKit;
 using UnityEngine;
 
 namespace EasyFramework.EasyUIKit
@@ -124,7 +123,7 @@ namespace EasyFramework.EasyUIKit
                 OnClose();
                 InvokeClosedEvent();
                 isOpen = false;
-                GameObjectPool.Instance.Recycle(EasyRes.GetAssetPath(this), gameObject);
+                EasyRes.RecycleGo.InvokeEvent(gameObject);
             });
         }
 

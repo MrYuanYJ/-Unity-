@@ -1,23 +1,8 @@
 using System;
 using System.Collections.Generic;
-using EasyFramework.EventKit;
-using UnityEngine;
 
 namespace EasyFramework
 {
-    public class DefaultRecycleEvent: AutoClassEvent<GlobalEvent.RecycleClass,object>
-    {
-        protected override void Run(object a)
-        {
-            if(a is Component component)
-                GlobalEvent.RecycleGObject.InvokeEvent(component.gameObject);
-            else if(a is GameObject go)
-                GlobalEvent.RecycleGObject.InvokeEvent(go);
-            else
-                ReferencePool.Recycle(a);
-        }
-    }
-
     public class ReferencePool
     {
         private static Dictionary<Type, EasyPool<object>> _pools = new();

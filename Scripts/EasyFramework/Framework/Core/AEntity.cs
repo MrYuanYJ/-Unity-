@@ -6,41 +6,69 @@ namespace EasyFramework
     {
         private readonly ContainerDic<IEntity> _container = new();
         private IEntity _parent;
-        private IBindEntity _bind;
-        public abstract IStructure GetStructure();
+        private IStructure _structure;
+        public abstract IStructure Structure{ get; }
         public bool IsInit { get; set; }
-        public IEasyEvent InitEvent { get; }=new EasyEvent();
-        public IEasyEvent StartEvent { get; }=new EasyEvent();
-        public IEasyEvent DisposeEvent { get; }=new EasyEvent();
+        public bool IsStart { get; set; }
+        public ESProperty<bool> IsActive { get; set; } = new(true);
+        public IEasyEvent InitEvent { get; } = new EasyEvent();
+        public IEasyEvent StartEvent { get; } = new EasyEvent();
+        public IEasyEvent ActiveEvent { get; } = new EasyEvent();
+        public IEasyEvent UnActiveEvent { get; } = new EasyEvent();
+        public IEasyEvent DisposeEvent { get; } = new EasyEvent();
 
-        public virtual void OnInit()
+        void IInitAble.OnInit()
         {
-            GetStructure().RegisterOnDispose(this.Dispose);
+            Structure.RegisterOnDispose(this.Dispose);
+            OnInit();
             GlobalEvent.LifeCycleRegister<IEntity>.InvokeEvent(this);
+        }
+
+        void IInitAble.InitDo()
+        {
+            GlobalEvent.InitDo.InvokeEvent(this);
             _container.InitAll();
         }
-        public virtual void OnStart(){}
-        public virtual void OnDispose()
+        void IDisposeAble.OnDispose(bool usePool)
         {
+            OnDispose(usePool);
             _container.DisposeAll();
             _container.Clear();
             if (_parent != null && !_parent.IsDispose)
                 _parent.Container.Remove(_parent.GetType());
             _parent = null;
-            _bind = null;
+            BindObj = null;
+            BindEntity = null;
         }
-        public IBindEntity Bind => _bind;
+
+        void IStartAble.OnStart() => OnStart();
+        void IActiveAble.OnActive() => OnActive();
+        void IActiveAble.OnUnActive() => OnUnActive();
+
+        protected virtual void OnInit() { }
+        protected virtual void OnActive() { }
+        protected virtual void OnStart() { }
+        protected virtual void OnUnActive() { }
+        protected virtual void OnDispose(bool usePool) { }
+        public object BindObj { get; private set; }
+        public IEntity BindEntity { get; private set; }
         public IEntity Parent => _parent;
         public ContainerDic<IEntity> Container => _container;
-        void IEntity.EntityBind(IBindEntity bind)=>_bind = bind;
+
+        void IEntity.EntityBind(object bindObj, IEntity bindEntity)
+        {
+            BindObj = bindObj;
+            BindEntity = bindEntity;
+        }
+
         void IEntity.SetParent(IEntity parent)
         {
             _parent = parent;
             if (parent != null)
             {
-                _bind = _parent.Bind;
+                BindEntity = _parent.BindEntity;
                 foreach (IEntity entity in _container.Values)
-                    entity.EntityBind(_bind);
+                    entity.SetParent(this);
             }
         }
     }

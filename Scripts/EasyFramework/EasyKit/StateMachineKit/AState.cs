@@ -1,3 +1,5 @@
+using System;
+
 namespace EasyFramework.StateMachineKit
 {
     public abstract class AState: IEasyState
@@ -8,10 +10,26 @@ namespace EasyFramework.StateMachineKit
         public IStateMachine Machine() => Self.StateMachine;
         public T Machine<T>() where T : IStateMachine => (T) Self.StateMachine;
 
-        public virtual bool OnEnterCondition() => true;
-        public virtual bool OnExitCondition() => true;
-        public abstract void OnEnter(object[] objects);
-        public abstract void OnExit(object[] objects);
+        Func<bool> IState.EnterConditionFunc { get; set; }
+
+        Func<bool> IState.ExitConditionFunc { get; set; }
+
+        bool IState.OnEnterCondition()=> OnEnterCondition();
+
+        bool IState.OnExitCondition()=> OnExitCondition();
+
+        protected virtual bool OnEnterCondition() => true;
+        protected virtual bool OnExitCondition() => true;
+
+        Action<object[]> IEasyState.EnterAction { get; set; }
+
+        Action<object[]> IEasyState.ExitAction { get; set; }
+
+        void IEasyState.OnEnter(object[] objects)=> OnEnter(objects);
+
+        void IEasyState.OnExit(object[] objects)=> OnExit(objects);
+        protected abstract void OnEnter(object[] objects);
+        protected abstract void OnExit(object[] objects);
     }
 
     public abstract class AState<TValue> : IEasyState<TValue>
@@ -22,10 +40,24 @@ namespace EasyFramework.StateMachineKit
         public IStateMachine Machine() => Self.StateMachine;
         public T Machine<T>() where T : IStateMachine => (T) Self.StateMachine;
 
-        public virtual bool OnEnterCondition() => true;
-        public virtual bool OnExitCondition() => true;
-        public abstract void OnEnter(TValue t, object[] objects);
-        public abstract void OnExit(TValue t, object[] objects);
+        Func<bool> IState.EnterConditionFunc { get; set; }
+
+        Func<bool> IState.ExitConditionFunc { get; set; }
+
+        protected virtual bool OnEnterCondition() => true;
+        bool IState.OnExitCondition()=> OnExitCondition();
+        bool IState.OnEnterCondition()=>OnEnterCondition();
+
+        protected virtual bool OnExitCondition() => true;
+
+        Action<TValue, object[]> IEasyState<TValue>.EnterAction { get; set; }
+
+        Action<TValue, object[]> IEasyState<TValue>.ExitAction { get; set; }
+
+        void IEasyState<TValue>.OnEnter(TValue t, object[] objects)=>OnEnter(t, objects);
+        void IEasyState<TValue>.OnExit(TValue t, object[] objects)=> OnExit(t, objects);
+        protected abstract void OnEnter(TValue t, object[] objects);
+        protected abstract void OnExit(TValue t, object[] objects);
     }
 
     public abstract class AProcedure : AState, IProcedure

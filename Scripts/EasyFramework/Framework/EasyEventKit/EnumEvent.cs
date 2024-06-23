@@ -27,12 +27,12 @@ namespace EasyFramework.EventKit
         private readonly Dictionary<State, EasyEvent> _actionDic = new();
 
         public EnumEvent() => IEnumDelegate.Fill(_actionDic);
-        public void Invoke(State state)=>_actionDic[state].Invoke();
+        public void Invoke(State state)=>_actionDic[state].BaseInvoke();
         public void InvokeAll()
         {
             foreach (var easyEvent in _actionDic.Values)
             {
-                easyEvent.Invoke();
+                easyEvent.BaseInvoke();
             }
         } 
         public IUnRegisterHandle Register(State state, Action action)=> _actionDic[state].Register(action);
@@ -146,16 +146,16 @@ namespace EasyFramework.EventKit
         private readonly Dictionary<State, EasyFunc<Return>> _funcDic = new();
 
         public EnumFunc() => IEnumDelegate.Fill(_funcDic);
-        public Results<Return> InvokeAndReturnAll(State state)=>_funcDic[state].InvokeAndReturnAll();
-        public Results<Return> InvokeAndReturnAll()
+        public Return[] InvokeAndReturnAll(State state)=>_funcDic[state].InvokeAndReturnAll();
+        public Return[] InvokeAndReturnAll()
         {
-            var results = new List<Results<Return>>();
+            var results = new List<Return>();
             foreach (var easyEvent in _funcDic.Values)
             {
-                results.Add(easyEvent.InvokeAndReturnAll());
+                results.AddRange(easyEvent.InvokeAndReturnAll());
             }
 
-            return new Results<Return>(results.ToArray());
+            return results.ToArray();
         }
         public Return Invoke(State state)=> _funcDic[state].Invoke();
         public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
@@ -163,21 +163,21 @@ namespace EasyFramework.EventKit
         public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
-    public class EnumFunc<State, Return, A>: IEnumDelegate where State : Enum
+    public class EnumFunc<State,A,Return>: IEnumDelegate where State : Enum
     {
-        private readonly Dictionary<State, EasyFunc<Return, A>> _funcDic = new();
+        private readonly Dictionary<State, EasyFunc<A,Return>> _funcDic = new();
 
         public EnumFunc() => IEnumDelegate.Fill(_funcDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a)=> _funcDic[state].InvokeAndReturnAll(a);
-        public Results<Return> InvokeAndReturnAll(A a)
+        public Return[] InvokeAndReturnAll(State state, A a)=> _funcDic[state].InvokeAndReturnAll(a);
+        public Return[] InvokeAndReturnAll(A a)
         {
-            var results = new List<Results<Return>>();
+            var results = new List<Return>();
             foreach (var easyEvent in _funcDic.Values)
             {
-                results.Add(easyEvent.InvokeAndReturnAll(a));
+                results.AddRange(easyEvent.InvokeAndReturnAll(a));
             }
 
-            return new Results<Return>(results.ToArray());
+            return results.ToArray();
         }
         public Return Invoke(State state, A a)=> _funcDic[state].Invoke(a);
         public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
@@ -187,21 +187,21 @@ namespace EasyFramework.EventKit
         public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
-    public class EnumFunc<State, Return, A, B>: IEnumDelegate where State : Enum
+    public class EnumFunc<State, A, B, Return>: IEnumDelegate where State : Enum
     {
-        private readonly Dictionary<State, EasyFunc<Return, A, B>> _funcDic = new();
+        private readonly Dictionary<State, EasyFunc<A, B, Return>> _funcDic = new();
 
         public EnumFunc() => IEnumDelegate.Fill(_funcDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a, B b)=> _funcDic[state].InvokeAndReturnAll(a, b);
-        public Results<Return> InvokeAndReturnAll(A a, B b)
+        public Return[] InvokeAndReturnAll(State state, A a, B b)=> _funcDic[state].InvokeAndReturnAll(a, b);
+        public Return[] InvokeAndReturnAll(A a, B b)
         {
-            var results = new List<Results<Return>>();
+            var results = new List<Return>();
             foreach (var easyEvent in _funcDic.Values)
             {
-                results.Add(easyEvent.InvokeAndReturnAll(a,b));
+                results.AddRange(easyEvent.InvokeAndReturnAll(a,b));
             }
 
-            return new Results<Return>(results.ToArray());
+            return results.ToArray();
         }
         public Return Invoke(State state, A a, B b)=> _funcDic[state].Invoke(a, b);
         public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
@@ -211,21 +211,21 @@ namespace EasyFramework.EventKit
         public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
-    public class EnumFunc<State, Return, A, B, C>: IEnumDelegate where State : Enum
+    public class EnumFunc<State, A, B, C, Return>: IEnumDelegate where State : Enum
     {
-        private readonly Dictionary<State, EasyFunc<Return, A, B, C>> _funcDic = new();
+        private readonly Dictionary<State, EasyFunc<A, B, C, Return>> _funcDic = new();
         
         public EnumFunc() => IEnumDelegate.Fill(_funcDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c)=> _funcDic[state].InvokeAndReturnAll(a, b, c);
-        public Results<Return> InvokeAndReturnAll(A a, B b, C c)
+        public Return[] InvokeAndReturnAll(State state, A a, B b, C c)=> _funcDic[state].InvokeAndReturnAll(a, b, c);
+        public Return[] InvokeAndReturnAll(A a, B b, C c)
         {
-            var results = new List<Results<Return>>();
+            var results = new List<Return>();
             foreach (var easyEvent in _funcDic.Values)
             {
-                results.Add(easyEvent.InvokeAndReturnAll(a,b,c));
+                results.AddRange(easyEvent.InvokeAndReturnAll(a,b,c));
             }
 
-            return new Results<Return>(results.ToArray());
+            return results.ToArray();
         }
         public Return Invoke(State state, A a, B b, C c)=> _funcDic[state].Invoke(a, b, c);
         public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
@@ -235,21 +235,21 @@ namespace EasyFramework.EventKit
         public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
-    public class EnumFunc<State, Return, A, B, C, D>: IEnumDelegate where State : Enum
+    public class EnumFunc<State, A, B, C, D, Return>: IEnumDelegate where State : Enum
     {
-        private readonly Dictionary<State, EasyFunc<Return, A, B, C, D>> _funcDic = new();
+        private readonly Dictionary<State, EasyFunc<A, B, C, D, Return>> _funcDic = new();
         
         public EnumFunc() => IEnumDelegate.Fill(_funcDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c, D d)=> _funcDic[state].InvokeAndReturnAll(a, b, c, d);
-        public Results<Return> InvokeAndReturnAll(A a, B b, C c, D d)
+        public Return[] InvokeAndReturnAll(State state, A a, B b, C c, D d)=> _funcDic[state].InvokeAndReturnAll(a, b, c, d);
+        public Return[] InvokeAndReturnAll(A a, B b, C c, D d)
         {
-            var results = new List<Results<Return>>();
+            var results = new List<Return>();
             foreach (var easyEvent in _funcDic.Values)
             {
-                results.Add(easyEvent.InvokeAndReturnAll(a,b,c,d));
+                results.AddRange(easyEvent.InvokeAndReturnAll(a,b,c,d));
             }
 
-            return new Results<Return>(results.ToArray());
+            return results.ToArray();
         }
         public Return Invoke(State state, A a, B b, C c, D d)=> _funcDic[state].Invoke(a, b, c, d);
         public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
@@ -259,21 +259,21 @@ namespace EasyFramework.EventKit
         public void Clear() => IEnumDelegate.Clear(_funcDic);
     }
 
-    public class EnumFunc<State, Return, A, B, C, D, E>: IEnumDelegate where State : Enum
+    public class EnumFunc<State, A, B, C, D, E, Return>: IEnumDelegate where State : Enum
     {
-        private readonly Dictionary<State, EasyFunc<Return, A, B, C, D, E>> _funcDic = new();
+        private readonly Dictionary<State, EasyFunc<A, B, C, D, E, Return>> _funcDic = new();
         
         public EnumFunc() => IEnumDelegate.Fill(_funcDic);
-        public Results<Return> InvokeAndReturnAll(State state, A a, B b, C c, D d, E e)=> _funcDic[state].InvokeAndReturnAll(a, b, c, d, e);
-        public Results<Return> InvokeAndReturnAll(A a, B b, C c, D d, E e)
+        public Return[] InvokeAndReturnAll(State state, A a, B b, C c, D d, E e)=> _funcDic[state].InvokeAndReturnAll(a, b, c, d, e);
+        public Return[] InvokeAndReturnAll(A a, B b, C c, D d, E e)
         {
-            var results = new List<Results<Return>>();
+            var results = new List<Return>();
             foreach (var easyEvent in _funcDic.Values)
             {
-                results.Add(easyEvent.InvokeAndReturnAll(a,b,c,d,e));
+                results.AddRange(easyEvent.InvokeAndReturnAll(a,b,c,d,e));
             }
 
-            return new Results<Return>(results.ToArray());
+            return results.ToArray();
         }
         public Return Invoke(State state, A a, B b, C c, D d, E e)=> _funcDic[state].Invoke(a, b, c, d, e);
         public IUnRegisterHandle Register(State state, Func<Return> action)=>_funcDic[state].Register(action);
@@ -294,13 +294,13 @@ namespace EasyFramework.EventKit
             foreach (var value in _actionDic.Values)
                 IEnumDelegate.Fill(value);
         }
-        public void Invoke(State state, LifeType lifeType)=>_actionDic[state][lifeType].Invoke();
+        public void Invoke(State state, LifeType lifeType)=>_actionDic[state][lifeType].BaseInvoke();
 
         public void InvokeAll()
         {
             foreach (var dic in _actionDic.Values)
             {
-                foreach (var easyEvent in dic.Values) { easyEvent.Invoke(); }
+                foreach (var easyEvent in dic.Values) { easyEvent.BaseInvoke(); }
             }
         }
 

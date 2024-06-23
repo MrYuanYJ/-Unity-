@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using EasyFramework.EasySystem;
 using EasyFramework.EventKit;
 
 namespace EasyFramework
@@ -7,15 +8,14 @@ namespace EasyFramework
     public class EasyLifeCycleEventSystem: ASystem
     {
         private readonly Dictionary<Type,HashSet<IAutoRegisterLifeCycleEvent>> _allAutoEvents= new ();
-        public override void OnInit()
+        protected override void OnInit()
         {
-            GlobalEvent.RegisterAutoEvent.RegisterEvent(RegisterAutoEvent).UnRegisterOnDispose(this);
             GlobalEvent.LifeCycleRegister<IEntity>.RegisterEvent(OnEntityInit).UnRegisterOnDispose(this);
+            EasyCodeLoaderSystem.OnCodeLoaded += RegisterAutoEvent;
         }
 
-        public override void OnDispose()
+        protected override void OnDispose(bool usePool)
         {
-            base.OnDispose();
             _allAutoEvents.Clear();
         }
 
@@ -34,12 +34,13 @@ namespace EasyFramework
         {
             if (typeof(IAutoRegisterLifeCycleEvent).IsAssignableFrom(type))
             {
-                var obj = (IAutoRegisterLifeCycleEvent)Activator.CreateInstance(type);
+                var obj = (IAutoRegisterLifeCycleEvent) Activator.CreateInstance(type);
                 if (!_allAutoEvents.TryGetValue(obj.RegisterType, out var set))
                 {
                     set = new HashSet<IAutoRegisterLifeCycleEvent>();
-                    _allAutoEvents[obj.RegisterType]= set;
+                    _allAutoEvents[obj.RegisterType] = set;
                 }
+
                 set.Add(obj);
             }
         }

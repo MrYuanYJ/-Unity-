@@ -9,9 +9,9 @@ namespace EasyFramework
         void FixedUpdate()
         {
             OnFixedUpdate();
-            FixedUpdateEvent.Invoke();
+            FixedUpdateEvent.BaseInvoke();
         }
-        void OnFixedUpdate();
+        protected void OnFixedUpdate();
     }
 
     // public interface IFixedUpdateAble<T> : IFixedUpdateAble

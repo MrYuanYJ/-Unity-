@@ -24,39 +24,53 @@ namespace EasyFramework
     }
     public interface IGetStructureAble
     {
-        IStructure GetStructure();
+        IStructure Structure { get; }
     }
     public interface IBindEntity
     {
         object BindObj => this;
-        public IEntity Entity { get; }
+        public IEntity BindEntity { get; }
     }
-    public interface IStructure : IEasyLife
+    public interface IStructure : IEasyLife,IGetEasyEventDic, IGetEasyFuncDic
     {
         public ContainerDic<object> Container { get;}
         public EasyEventDic Event { get; }
         public EasyFuncDic Func { get; }
+        EasyEventDic IGetEasyEventDic.EventDic => Event;
+        EasyFuncDic IGetEasyFuncDic.FuncDic => Func;
     }
 
     public static class StructureExtensions
     {
         public static T GetModel<T>(this IStructure self) where T : class, IModel => self.Container.Get<T>();
         public static T GetSystem<T>(this IStructure self) where T : class, ISystem => self.Container.Get<T>();
+        public static T GetMember<T>(this IStructure self) where T : class, IEasyLife => self.Container.Get<T>();
         
         
         public static T RegisterModel<T>(this IStructure self) where T : class, IModel, new()
         {
             var t = new T();
-            self.Container.Add(t);
+            self.Container.Set(t);
             t.SetStructure(self);
             return t;
         }
         public static T RegisterSystem<T>(this IStructure self) where T : class, ISystem, new()
         {
             var t = new T();
-            self.Container.Add(t);
+            self.Container.Set(t);
             t.SetStructure(self);
             return t;
+        }
+        
+        public static T Member<T>(this IStructure self,T member) where T : IEasyLife
+        {
+            if(member==null) return default;
+            self.Container.Set(member);
+            if(member is ISetStructureAbleAble setStructureAble)
+                setStructureAble.SetStructure(self);
+            else if (self.IsInit)
+                member.Init();
+            return member;
         }
         
         
@@ -100,10 +114,14 @@ namespace EasyFramework
         public static void SendEvent<T>(this IStructure self, T t) where T : struct => self.Event.Invoke(t);
         
         
-        public static Results<TReturn> SendFunc<T, TReturn>(this IStructure self) where T : struct => self.Func.InvokeAndReturnAll<T,TReturn>(default);
-        public static Results<TReturn> SendFunc<T, TReturn>(this IStructure self, T t) where T : struct => self.Func.InvokeAndReturnAll<T,TReturn>(t);
-        public static Results<IResult> SendFunc<T>(this IStructure self) where T : struct => self.Func.InvokeAndReturnAll<T>(default);
-        public static Results<IResult> SendFunc<T>(this IStructure self, T t) where T : struct => self.Func.InvokeAndReturnAll(t);
+        public static TReturn InvokeFunc<T, TReturn>(this IStructure self) where T : struct => self.Func.Invoke<T, TReturn>(default);
+        public static TReturn InvokeFunc<T, TReturn>(this IStructure self, T t) where T : struct => self.Func.Invoke<T, TReturn>(t);
+        public static IResult InvokeFunc<T>(this IStructure self) where T : struct => self.Func.Invoke<T>(default);
+        public static IResult InvokeFunc<T>(this IStructure self, T t) where T : struct => self.Func.Invoke(t);
+        public static TReturn[] InvokeFuncAndReturnAll<T, TReturn>(this IStructure self) where T : struct => self.Func.InvokeAndReturnAll<T,TReturn>(default);
+        public static TReturn[] InvokeFuncAndReturnAll<T, TReturn>(this IStructure self, T t) where T : struct => self.Func.InvokeAndReturnAll<T,TReturn>(t);
+        public static IResult[] InvokeFuncAndReturnAll<T>(this IStructure self) where T : struct => self.Func.InvokeAndReturnAll<T>(default);
+        public static IResult[] InvokeFuncAndReturnAll<T>(this IStructure self, T t) where T : struct => self.Func.InvokeAndReturnAll(t);
         
         
         public static IUnRegisterHandle RegisterEvent<T>(this IStructure self, Action action) where T : struct => self.Event.Register<T>(action);
@@ -126,29 +144,25 @@ namespace EasyFramework
         public static void UnRegisterFunc<T>(this IStructure self, Func<T, IResult> func)where T : struct => self.Func.UnRegister(func);
     }
 
-    public interface IEntity : IEasyLife,IStartAble,IGetModelAble, IGetSystemAble, IRegisterEventAble, ISendEventAble, ISendCommandAble
+    public interface IEntity : IStartAble,IActiveAble,IGetModelAble, IGetSystemAble, IRegisterEventAble, ISendEventAble, ISendCommandAble
     {
-        public IBindEntity Bind { get; }
+        public object BindObj { get; }
+        public IEntity BindEntity { get; }
         public IEntity Parent { get; }
         public ContainerDic<IEntity> Container { get;}
-        public void EntityBind(IBindEntity bind);
+        public void EntityBind(object bindObj, IEntity bindEntity);
         public void SetParent(IEntity parent);
+    }
+
+    public interface IEntityChildOf<TParent> : IEntity where TParent : IEntity
+    {
     }
 
     public static class EntityExtensions
     {
-        public static T AddEntity<T>(this IEntity self,T entity) where T : IEntity
-        {
-            entity.Parent?.Container.Remove<T>();
-            self.Container.Add(typeof(T), entity);
-            entity.SetParent(self);
-            if (self.IsInit)
-                entity.Init();
-
-            return entity;
-        }
         public static IEntity AddEntity(this IEntity self,IEntity entity)
         {
+            if(entity==null) return null;
             entity.Parent?.Container.Remove(entity.GetType());
             self.Container.Add(entity.GetType(), entity);
             entity.SetParent(self);
@@ -157,8 +171,6 @@ namespace EasyFramework
 
             return entity;
         }
-
-        
         public static T AddNewEntity<T>(this IEntity self,bool usePool=false) where T : class,IEntity, new()
         {
             var entity = ReferencePool.Fetch<T>(false, usePool);
@@ -238,5 +250,5 @@ namespace EasyFramework
 
     public interface IModel : IEasyLife,ISetStructureAbleAble,IRegisterEventAble  { }
 
-    public interface ISystem : IEasyLife,IGetModelAble,ISetStructureAbleAble, IRegisterEventAble,ISendEventAble,ISendCommandAble { }
+    public interface ISystem : IActiveAble,IGetModelAble,ISetStructureAbleAble, IRegisterEventAble,ISendEventAble,ISendCommandAble { }
 }

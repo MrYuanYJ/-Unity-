@@ -39,7 +39,7 @@ namespace EasyFramework
        protected abstract void OnExecute();
        protected abstract void OnUndo();
 
-       public IStructure GetStructure()=> _structure;
+       public IStructure Structure=> _structure;
 
        IStructure ISetStructureAbleAble.Structure
        {
@@ -67,7 +67,7 @@ namespace EasyFramework
        protected abstract TReturn OnExecute();
        protected abstract void OnUndo();
 
-       public IStructure GetStructure() => _structure;
+       public IStructure Structure => _structure;
 
        IStructure ISetStructureAbleAble.Structure
        {

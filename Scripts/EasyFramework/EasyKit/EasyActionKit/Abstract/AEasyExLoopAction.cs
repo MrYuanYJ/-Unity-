@@ -2,11 +2,10 @@ namespace EasyFramework
 {
     public abstract class AEasyExLoopAction: AEasyAction,IEasyExLoopAction
     {
-        public LoopType LoopType { get; protected set; }
+        public LoopType LoopType { get; set; }
         public float MaxProgress { get; protected set; }
         public bool IsReverse { get; protected set; }
-        
-        public void SetLoopType(LoopType loopType)=> LoopType = loopType;
+  
         public void SetMaxProgress(float maxProgress)=> MaxProgress = maxProgress;
 
         public void SetReverse(bool isReverse)=> IsReverse = isReverse;

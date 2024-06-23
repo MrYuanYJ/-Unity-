@@ -16,10 +16,8 @@ namespace EasyFramework
         {
             return EasyFramework.Condition.Fetch(condition, loopCount);
         }
-
         public static Condition Condition(Func<bool> condition) { return EasyFramework.Condition.Fetch(condition); }
-
-
+        
         public static Sequence Sequence(int loopCount, LoopType loopType)
         {
             return EasyFramework.Sequence.Fetch(loopCount, loopType);
@@ -143,7 +141,7 @@ namespace EasyFramework
         }
         public static T LoopType<T>(this T self, LoopType loopType) where T : IEasyExLoopAction
         {
-            self.SetLoopType(loopType);
+            self.LoopType = loopType;
             return self;
         }
         public static T Ease<T>(this T self, EaseType easeType) where T : IEasyLerpAction

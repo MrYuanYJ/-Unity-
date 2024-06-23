@@ -1,12 +1,14 @@
+using System;
 using System.Collections;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace EasyFramework.EasyResKit
 {
     public interface IEasyResLoader
     {
         IEnumerator InitAsync();
-        CoroutineHandle<T> LoadAssetAsync<T>(CoroutineHandle<T> handle, string path, bool instantiate) where T : Object;
-        CoroutineHandle<GameObject> LoadPrefabAsync(CoroutineHandle<GameObject> handle, string path, bool instantiate);
+
+        CoroutineHandle<Object> LoadAssetAsync(CoroutineHandle<Object> handle, Type assetType, string path, bool instantiate);
     }
 }

@@ -41,7 +41,29 @@ namespace EasyFramework.StateMachineKit
 
     public static class ProcedureSMachineExtension
     {
-        public static bool AddStateBefore<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TKey newKey, TState addState)
+        public static bool AddProcedure<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TState addState)
+            where TState : IProcedure, new()
+        {
+            if (self.BeforeAdd(key) && self.States.TryAdd(key, addState))
+            {
+                self.Procedures.AddLast(key);
+                return true;
+            }
+
+            return false;
+        }
+        public static bool RemoveProcedure<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key)
+            where TState : IProcedure
+        {
+            if (self.RemoveState(key))
+            {
+                self.Procedures.Remove(key);
+                return true;
+            }
+
+            return false;
+        }
+        public static bool AddProcedureBefore<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TKey newKey, TState addState)
             where TState : IProcedure, new()
         {
             var node = self.Procedures.Find(key);
@@ -54,7 +76,7 @@ namespace EasyFramework.StateMachineKit
 
             return false;
         }
-        public static bool AddStateAfter<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TKey newKey, TState addState)
+        public static bool AddProcedureAfter<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TKey newKey, TState addState)
             where TState : IProcedure, new()
         {
             var node = self.Procedures.Find(key);
@@ -67,7 +89,7 @@ namespace EasyFramework.StateMachineKit
 
             return false;
         }
-        public static bool MoveStateBefore<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TKey moveKey)
+        public static bool MoveProcedureBefore<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TKey moveKey)
             where TState : IProcedure
         {
             var node = self.Procedures.Find(key);
@@ -81,7 +103,7 @@ namespace EasyFramework.StateMachineKit
 
             return false;
         }
-        public static bool MoveStateAfter<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TKey moveKey)
+        public static bool MoveProcedureAfter<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TKey moveKey)
             where TState : IProcedure
         {
             var node = self.Procedures.Find(key);
@@ -103,12 +125,12 @@ namespace EasyFramework.StateMachineKit
 
     public static class TypeProcedureSMachineExtension
     {
-        public static bool AddStateAfter<TState>(this ITypeProcedureSMachine<TState> self, Type key, TState addState)
+        public static bool AddProcedureAfter<TState>(this ITypeProcedureSMachine<TState> self, Type key, TState addState)
             where TState : IProcedure, new()
-            => self.AddStateAfter(key, addState.GetType(), addState);
-        public static bool AddStateBefore<TState>(this ITypeProcedureSMachine<TState> self, Type key, TState addState)
+            => self.AddProcedureAfter(key, addState.GetType(), addState);
+        public static bool AddProcedureBefore<TState>(this ITypeProcedureSMachine<TState> self, Type key, TState addState)
             where TState : IProcedure, new()
-            => self.AddStateBefore(key, addState.GetType(), addState);
+            => self.AddProcedureBefore(key, addState.GetType(), addState);
     }
 
 
@@ -119,7 +141,7 @@ namespace EasyFramework.StateMachineKit
 
     public static class ProcedureStateMachineValueExtension
     {
-        public static bool NextState<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self,
+        public static bool NextProcedure<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self,
             TValue t, params object[] data)
             where TState : IEasyState<TValue>, IProcedure
         {
@@ -131,7 +153,7 @@ namespace EasyFramework.StateMachineKit
                 return self.ExitCurrentState(t, data);
         }
 
-        public static bool PreviousState<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self,
+        public static bool PreviousProcedure<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self,
             TValue t, params object[] data)
             where TState : IEasyState<TValue>, IProcedure
         {
@@ -161,7 +183,7 @@ namespace EasyFramework.StateMachineKit
 
     public static class ProcedureStateMachineExtension
     {
-        public static bool NextState<TKey, TState>(this IProcedureStateMachine<TKey, TState> self, params object[] data)
+        public static bool NextProcedure<TKey, TState>(this IProcedureStateMachine<TKey, TState> self, params object[] data)
             where TState : IEasyState, IProcedure
         {
             var node = self.Procedures.Find(self.CurrentState);
@@ -171,7 +193,7 @@ namespace EasyFramework.StateMachineKit
                 return self.ExitCurrentState(data);
         }
 
-        public static bool PreviousState<TKey, TState>(this IProcedureStateMachine<TKey, TState> self, params object[] data)
+        public static bool PreviousProcedure<TKey, TState>(this IProcedureStateMachine<TKey, TState> self, params object[] data)
             where TState : IEasyState, IProcedure
         {
             var node = self.Procedures.Find(self.CurrentState);

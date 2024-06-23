@@ -37,6 +37,7 @@ namespace CodeGenKit
         {
             if (Attributes.Count > 0)
             {
+                Wrap();
                 str.Append("[");
                 bool needComma = false;
                 foreach (var attribute in Attributes)
@@ -297,12 +298,15 @@ namespace CodeGenKit
         {
             return self.ReturnType(Type.GetType(typeAssemblyQualifiedName));
         }
-        public static T ReturnType<T>(this T self, Type returnType) where T: IHasReturnType
+
+        public static T ReturnType<T>(this T self, Type returnType) where T : IHasReturnType
         {
-            self.Root.Using(returnType.Namespace, null);
+            if (returnType.Namespace != null)
+                self.Root.Using(returnType.Namespace, null);
             self.ReturnType = returnType.Name;
             return self;
         }
+
         public static T Parameter<T>(this T self, string typeAssemblyQualifiedName,string name) where T: IHasParameter
         {
             return self.Parameter(Type.GetType(typeAssemblyQualifiedName),name);

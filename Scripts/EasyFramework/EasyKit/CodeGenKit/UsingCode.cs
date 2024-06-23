@@ -42,8 +42,7 @@ namespace CodeGenKit
 
         public UsingCode Using(string nameSpace)
         {
-            if (!_usingNameSpaseLst.Contains(nameSpace))
-                _usingNameSpaseLst.Add(nameSpace);
+            _usingNameSpaseLst.Add(nameSpace);
             return this;
         }
     }

@@ -8,12 +8,7 @@ namespace EasyFramework.EventKit
     public interface IUnityEventBinder
     {
         IEasyEvent Event { get; }
-        UnityEvent UnityEvent{ get; }
-    }
-
-    public interface IUnityEventBinder<T> : IUnityEventBinder
-    {
-        UnityEvent<T> TUnityEvent { get; }
+        UnityEventBase UnityEvent{ get; }
     }
     public abstract class AUnityEventBinder: MonoBehaviour,IUnityEventBinder
     {
@@ -22,7 +17,7 @@ namespace EasyFramework.EventKit
         
         IEasyEvent IUnityEventBinder.Event => easyEvent;
         public EasyEvent Event => easyEvent;
-        public UnityEvent UnityEvent => unityEvent;
+        public UnityEventBase UnityEvent => unityEvent;
 
         public void Invoke()
         {
@@ -30,22 +25,19 @@ namespace EasyFramework.EventKit
             unityEvent?.Invoke();
         }
     }
-    public abstract class AUnityEventBinder<T>: MonoBehaviour,IUnityEventBinder<T>
+    public abstract class AUnityEventBinder<T>: MonoBehaviour,IUnityEventBinder
     {
         protected EasyEvent<T> easyEvent=new EasyEvent<T>();
-        [SerializeField]protected UnityEvent unityEvent=new UnityEvent();
-        [SerializeField]protected UnityEvent<T> tUnityEvent=new UnityEvent<T>();
+        [SerializeField]protected UnityEvent<T> unityEvent=new UnityEvent<T>();
         
         IEasyEvent IUnityEventBinder.Event => easyEvent;
         public EasyEvent<T> Event => easyEvent;
-        public UnityEvent UnityEvent => unityEvent;
-        public UnityEvent<T> TUnityEvent => tUnityEvent;
+        public UnityEventBase UnityEvent => unityEvent;
 
         public void Invoke(T t)
         {
             easyEvent?.Invoke(t);
-            unityEvent?.Invoke();
-            tUnityEvent?.Invoke(t);
+            unityEvent?.Invoke(t);
         }
     }
 }

@@ -8,11 +8,10 @@ namespace EasyFramework
     }
     public interface IEasyExLoopAction
     {
-        LoopType LoopType { get;}
-        float MaxProgress { get;}
-        bool IsReverse { get;}
+        LoopType LoopType { get; set; }
+        float MaxProgress { get; }
+        bool IsReverse { get; }
 
-        void SetLoopType(LoopType loopType);
         void SetMaxProgress(float maxProgress);
         void SetReverse(bool isReverse);
     }

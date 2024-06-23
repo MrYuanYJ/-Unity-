@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
+using Object = UnityEngine.Object;
 
 namespace EasyFramework
 {
@@ -19,7 +20,7 @@ namespace EasyFramework
             handle._tcs = new TaskCompletionSource<bool>();
             handle._tokenSource = new CancellationTokenSource();
             handle.Canceled = null;
-            handle.Completed = null;
+            handle._completed = null;
             return handle;
         }
         
@@ -30,7 +31,19 @@ namespace EasyFramework
         public CancellationToken Token=> _tokenSource.Token;
         public bool IsRecycled => ((IRecycleable) this).IsRecycled;
         public event Action<CoroutineHandle> Canceled;
-        public event Action<CoroutineHandle> Completed;
+        private event Action<CoroutineHandle> _completed;
+        public event Action<CoroutineHandle> Completed
+        {
+            add
+            {
+                _completed += value;
+                if(_tcs.Task.IsCompleted)
+                {
+                    value(this);
+                }
+            }
+            remove => _completed -= value;
+        }
         
         void IEnumerator.Reset(){}
         bool IEnumerator.MoveNext() => !Task.IsCompleted;
@@ -50,7 +63,7 @@ namespace EasyFramework
         {
             if(_tcs.TrySetResult(true))
             {
-                Completed?.Invoke(this);
+                _completed?.Invoke(this);
                 Pool.Recycle(this);
             }
         }
@@ -73,7 +86,7 @@ namespace EasyFramework
             handle._tokenSource = new CancellationTokenSource();
             handle._result = default;
             handle.Canceled = null;
-            handle.Completed = null;
+            handle._completed = null;
             return handle;
         }
         
@@ -88,7 +101,19 @@ namespace EasyFramework
         public bool IsRecycled => ((IRecycleable) this).IsRecycled;
 
         public event Action<CoroutineHandle<TResult>> Canceled;
-        public event Action<CoroutineHandle<TResult>> Completed;
+        private event Action<CoroutineHandle<TResult>> _completed;
+        public event Action<CoroutineHandle<TResult>> Completed
+        {
+            add
+            {
+                _completed += value;
+                if(_tcs.Task.IsCompleted)
+                {
+                    value(this);
+                }
+            }
+            remove => _completed -= value;
+        }
         
         void IEnumerator.Reset(){}
         bool IEnumerator.MoveNext() => !Task.IsCompleted;
@@ -109,7 +134,7 @@ namespace EasyFramework
         {
             if(_tcs.TrySetResult(_result))
             {
-                Completed?.Invoke(this);
+                _completed?.Invoke(this);
                 Pool.Recycle(this);
             }
         }
@@ -122,5 +147,6 @@ namespace EasyFramework
 
         bool IRecycleable.IsRecycled { get; set; }
         void IRecycleable.Recycle(){}
+        
     }
 }

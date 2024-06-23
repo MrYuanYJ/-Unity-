@@ -11,6 +11,7 @@ namespace CodeGenKit
     public class ScriptCreatorMgr : ScriptableObject
     {
         private static ScriptCreatorMgr _instance;
+        public List<ScriptableObject> allTemplates = new();
 
         public static readonly Lazy<string> GenKitDir = new Lazy<string>(() =>
         {
@@ -65,12 +66,14 @@ namespace CodeGenKit
             }
         }
 
+        public static ScriptCreatorMgr Get() => _instance;
+
         [DidReloadScripts]
         public static void AfterScriptReload()
         {
+            if(!Instance) return;
             foreach (var createData in Instance.createLst)
                 createData.RootGameObject.AddComponent(createData.GetScriptType());
-
             foreach (var createData in Instance.createLst)
                 createData.BindLinkData(createData.RootGameObject.GetComponent(createData.GetScriptType()));
             foreach (var createData in Instance.createLst)

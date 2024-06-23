@@ -1,4 +1,3 @@
-using System;
 using EasyFramework.EventKit;
 
 namespace EasyFramework
@@ -12,10 +11,12 @@ namespace EasyFramework
         public IEasyEvent StartEvent { get; }=new EasyEvent();
         public IEasyEvent DisposeEvent { get; }=new EasyEvent();
 
-        public virtual void OnInit() { }
-        public virtual void OnStart() { }
-        public virtual void OnDispose()
+        protected virtual void OnInit() { }
+        protected virtual void OnDispose(bool usePool) { }
+        void IInitAble.OnInit()=>OnInit();
+        void IDisposeAble.OnDispose(bool usePool)
         {
+            OnDispose(usePool);
             if (_structure != null&& !_structure.IsDispose)
                 _structure.Container.Remove(this.GetType());
             _structure = null;
@@ -23,9 +24,9 @@ namespace EasyFramework
 
 
         void IInitAble.InitDo() { }
-        void IDisposeAble.DisposeDo() { }
+        void IDisposeAble.DisposeDo(bool usePool) { }
 
-        public IStructure GetStructure() => _structure;
+        public IStructure Structure => _structure;
 
         IStructure ISetStructureAbleAble.Structure
         {

@@ -21,11 +21,13 @@ namespace EasyFramework
         public void Recycle(TValue t)
         {
             _pool.Push(t);
-            t.GameObject()?.SetParentRetainLocal(transform).SetActive(false);
+            t.TryGetGameObject()?.SetParentRetainLocal(transform).SetActive(false);
         }
 
         public TValue Fetch()
         {
+            if (_pool.Count == 0)
+                return null;
             return _pool.Pop();
         }
     }

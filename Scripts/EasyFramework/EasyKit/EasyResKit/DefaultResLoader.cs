@@ -17,7 +17,7 @@ namespace EasyFramework.EasyResKit
             EasyReskit.Setting.loadMode = LoadMode.Othres;
 
 #endif
-            if (EasyRes.Setting.loadMode != LoadMode.EditorAssetBundle)
+            if (EasyResSystem.Setting.loadMode != LoadMode.EditorAssetBundle)
             {
                 //初始化接入的资源管理系统
                 //var handle = CoroutineHandle.Fetch();
@@ -27,47 +27,32 @@ namespace EasyFramework.EasyResKit
             yield break;
         }
 
-        private void LoadAssetFromExternalSystem<T>(string path, Action<T> callback)
+        private void LoadAssetFromExternalSystem(Type assetType,string path, Action<Object> callback)
         {
             //TODO: 待接入资源管理系统后，在运行时加载资源
             throw new Exception("未接入资源管理系统，无法加载资源！！");
             //Addressables.LoadAssetAsync<T>(path).Completed += x => callback(x.Result);
         }
 
-        public CoroutineHandle<T> LoadAssetAsync<T>(CoroutineHandle<T> handle, string path, bool instantiate) where T : Object
+        public CoroutineHandle<Object> LoadAssetAsync(CoroutineHandle<Object> handle,Type assetType, string path, bool instantiate)
         {
-            if (EasyRes.Setting.loadMode == LoadMode.EditorAssetBundle)
-                EasyTask.RegisterResultCoroutine(LoadAsset<T>, handle, path, instantiate);
+            if (EasyResSystem.Setting.loadMode == LoadMode.EditorAssetBundle)
+                EasyTask.RegisterResultCoroutine(LoadAsset, handle,assetType, path, instantiate);
             else
             {
-                LoadAssetFromExternalSystem<T>(path,
-                    x => { EasyCoroutine.ReturnResult(handle, instantiate ? EasyRes.InstantiateAsset(path, x) : x); });
+                LoadAssetFromExternalSystem(assetType,path,
+                    x => { EasyCoroutine.ReturnResult(handle, instantiate ? EasyResSystem.InstantiateAsset(path, x) : x); });
             }
 
             return handle;
         }
+        
 
-        public CoroutineHandle<GameObject> LoadPrefabAsync(CoroutineHandle<GameObject> handle, string path, bool instantiate)
-        {
-            if (EasyRes.Setting.loadMode == LoadMode.EditorAssetBundle)
-                EasyTask.RegisterResultCoroutine(LoadAsset, handle, path, instantiate);
-            else
-            {
-                LoadAssetFromExternalSystem<GameObject>(path,
-                    x =>
-                    {
-                        EasyCoroutine.ReturnResult(handle, instantiate ? EasyRes.InstantiateAsset(path, x) : x);
-                    });
-            }
-
-            return handle;
-        }
-
-        private IEnumerator LoadAsset<T>(CoroutineHandle<T> handle, string path, bool instantiate) where T : Object
+        private IEnumerator LoadAsset(CoroutineHandle<Object> handle,Type assetType, string path, bool instantiate)
         {
 #if UNITY_EDITOR
-            T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
-            EasyCoroutine.ReturnResult(handle, instantiate ? EasyRes.InstantiateAsset(path, asset) : asset);
+            Object asset = UnityEditor.AssetDatabase.LoadAssetAtPath(path,assetType);
+            EasyCoroutine.ReturnResult(handle, instantiate ? EasyResSystem.InstantiateAsset(path, asset) : asset);
             yield return null;
 #else
             throw new System.Exception("Runtime load asset is not supported in editor mode.");

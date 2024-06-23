@@ -7,7 +7,6 @@ using UnityEditor.Experimental.GraphView;
 
 namespace CodeGenKit
 {
-    [FilePath("Data/CodeGenKit/TestTemplate.so",FilePathAttribute.Location.PreferencesFolder)]
     public class TestTemplate: AScriptsTemplate<TestTemplate>
     {
         public string prefabPath=PrefabPath.Value;
@@ -33,7 +32,6 @@ namespace CodeGenKit
                                 .Function("OnShow", functionCode => functionCode.Keywords("override").PublicType(EPublicType.Protected))
                                 .Function("OnHide", functionCode => functionCode.Keywords("override").PublicType(EPublicType.Protected))
                                 .Function("OnClose", functionCode => functionCode.Keywords("override").PublicType(EPublicType.Protected));
-
                             CreateData.CreateFiled(classCode);
                         })
                 ).Gen();

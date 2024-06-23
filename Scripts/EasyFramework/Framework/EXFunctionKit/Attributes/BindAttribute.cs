@@ -2,7 +2,11 @@ using System;
 
 namespace EasyFramework
 {
-    public class BindAttribute : Attribute
+    public class BaseBindAttribute : Attribute
+    {
+        
+    }
+    public class BindAttribute : BaseBindAttribute
     {  
         public Type Type { get; set; }
         public BindAttribute(Type type)  

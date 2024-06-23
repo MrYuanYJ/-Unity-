@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace EXFunctionKit
 {
-    public static class ExUnity
+    public static partial class ExUnity
     {
         public static bool AsBool(this Vector2 self) => self!= Vector2.zero;
         public static bool AsBool(this Vector3 self) => self!= Vector3.zero;
@@ -413,7 +414,7 @@ namespace EXFunctionKit
         public static Vector3 LocalScale(this GameObject self) => self.transform.localScale;
         public static Vector3 LocalScale(this Component self) => self.transform.localScale;
 
-        public static GameObject GameObject(this Object self)
+        public static GameObject TryGetGameObject(this Object self)
         {
             if (self is GameObject go)
                 return go;
@@ -421,7 +422,7 @@ namespace EXFunctionKit
                 return c.gameObject;
             throw new ArgumentException($"Object [{self}] is not a GameObject or Component");
         }
-        public static GameObject GameObject(this object self)
+        public static GameObject TryGetGameObject(this object self)
         {
             if (self is GameObject go)
                 return go;
@@ -430,7 +431,7 @@ namespace EXFunctionKit
             throw new ArgumentException($"object [{self}] is not a GameObject or Component");
         }
 
-        public static T GetComponent<T>(this Object self)
+        public static T TryGetComponent<T>(this Object self)
         {
             if (self is GameObject go)
                 return go.GetComponent<T>();
@@ -438,7 +439,7 @@ namespace EXFunctionKit
                 return c.gameObject.GetComponent<T>();
             throw new ArgumentException($"Object [{self}] is not a GameObject or Component");
         }
-        public static Component GetComponent(this Object self,Type type)
+        public static Component TryGetComponent(this Object self,Type type)
         {
             if (self is GameObject go)
                 return go.GetComponent(type);
@@ -446,7 +447,7 @@ namespace EXFunctionKit
                 return c.gameObject.GetComponent(type);
             throw new ArgumentException($"Object [{self}] is not a GameObject or Component");
         }
-        public static T GetComponent<T>(this object self)
+        public static T TryGetComponent<T>(this object self)
         {
             if (self is GameObject go)
                 return go.GetComponent<T>();
@@ -454,25 +455,13 @@ namespace EXFunctionKit
                 return c.gameObject.GetComponent<T>();
             throw new ArgumentException($"Object [{self}] is not a GameObject or Component");
         }
-        public static Component GetComponent(this object self,Type type)
+        public static Component TryGetComponent(this object self,Type type)
         {
             if (self is GameObject go)
                 return go.GetComponent(type);
             if (self is Component c)
                 return c.gameObject.GetComponent(type);
             throw new ArgumentException($"Object [{self}] is not a GameObject or Component");
-        }
-        
-        public static void DebugLog(this string self)
-        {
-            Debug.Log(self);
-        }
-        public static void DebugLogs(this string[] self)
-        {
-            foreach (var str in self)
-            {
-                Debug.Log(str);
-            }
         }
     }
 }

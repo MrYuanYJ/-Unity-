@@ -15,11 +15,11 @@ namespace EasyFramework
         }
     }
 
-    public class EasyCoroutine : AutoMonoSingleton<EasyCoroutine>
+    public class EasyCoroutine : MonoSingleton<EasyCoroutine>
     {
-        private Lazy<Dictionary<ICoroutineHandle, Coroutine>> _coroutineDic = new(new Dictionary<ICoroutineHandle, Coroutine>());
-        private Lazy<Dictionary<float,WaitForSeconds>> _secondsDic = new(new Dictionary<float, WaitForSeconds>());
-        private Lazy<Dictionary<float,WaitForSecondsRealtime>> _secondsRealTimeDic = new(new Dictionary<float, WaitForSecondsRealtime>());
+        private readonly Lazy<Dictionary<ICoroutineHandle, Coroutine>> _coroutineDic = new(new Dictionary<ICoroutineHandle, Coroutine>());
+        private readonly Lazy<Dictionary<float,WaitForSeconds>> _secondsDic = new(new Dictionary<float, WaitForSeconds>());
+        private readonly Lazy<Dictionary<float,WaitForSecondsRealtime>> _secondsRealTimeDic = new(new Dictionary<float, WaitForSecondsRealtime>());
 
         private void OnDestroy()
         {
@@ -28,22 +28,22 @@ namespace EasyFramework
 
         public static ICoroutineHandle RegisterCoroutine(ICoroutineHandle handle, IEnumerator enumerator)
         {
-            Instance._coroutineDic.Value.Add(handle, Instance.StartCoroutine(enumerator));
+            TryRegister()._coroutineDic.Value.Add(handle, Instance.StartCoroutine(enumerator));
             return handle;
         }
         public static void StopCoroutine(ICoroutineHandle handle)
         {
-            if(!Get()) return;
-            if (Instance._coroutineDic.Value.TryGetValue(handle, out var coroutine))
+            if(!Instance) return;
+            if (GetInstance()._coroutineDic.Value.TryGetValue(handle, out var coroutine))
             {
-                Instance.StopCoroutine(coroutine);
-                Instance._coroutineDic.Value.Remove(handle);
+                GetInstance().StopCoroutine(coroutine);
+                GetInstance()._coroutineDic.Value.Remove(handle);
             }
         }
 
         public static void StopAllCoroutine()
         {
-            if(!Get()) return;
+            if(!Instance) return;
             var handles = Instance._coroutineDic.Value.Keys.ToArray();
             foreach (var handle in handles)
             {
@@ -54,6 +54,7 @@ namespace EasyFramework
 
         public static void CoroutineCompleted(ICoroutineHandle handle)
         {
+            if(!Instance) return;
             handle.Complete();
             Instance._coroutineDic.Value.Remove(handle);
         }
@@ -129,7 +130,7 @@ namespace EasyFramework
         {
             if (isIgnoreTimescale)
             {
-                if (!Instance._secondsRealTimeDic.Value.TryGetValue(seconds, out var wait))
+                if (!TryRegister()._secondsRealTimeDic.Value.TryGetValue(seconds, out var wait))
                 {
                     wait = new WaitForSecondsRealtime(seconds);
                     Instance._secondsRealTimeDic.Value[seconds] = wait;
@@ -159,7 +160,7 @@ namespace EasyFramework
                 {
                     if (isIgnoreTimescale)
                     {
-                        if (!Instance._secondsRealTimeDic.Value.TryGetValue(interval, out var wait))
+                        if (!TryRegister()._secondsRealTimeDic.Value.TryGetValue(interval, out var wait))
                         {
                             wait = new WaitForSecondsRealtime(interval);
                             Instance._secondsRealTimeDic.Value[interval] = wait;
@@ -210,6 +211,16 @@ namespace EasyFramework
                     yield break;
                 }
             }
+        }
+
+        protected override void OnInit()
+        {
+            
+        }
+
+        protected override void OnDispose(bool usePool)
+        {
+            StopAllCoroutines();
         }
     }
 }

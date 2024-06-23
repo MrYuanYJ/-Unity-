@@ -4,26 +4,26 @@ using UnityEngine;
 
 namespace EasyFramework
 {
-    public class EasyActionSingleton: AutoMonoSingleton<EasyActionSingleton>
+    public class EasyActionSingleton: MonoSingleton<EasyActionSingleton>
     {
-        private static long actionId = 0;
-        private Dictionary<long,IEasyAction> actionDict = new Dictionary<long, IEasyAction>();
-        private Queue<Action> setActionQueue = new Queue<Action>();
+        private static long _actionId = 0;
+        private readonly Dictionary<long,IEasyAction> _actionDict = new Dictionary<long, IEasyAction>();
+        private readonly Queue<Action> _setActionQueue = new Queue<Action>();
         
 
-        public static long GetActionId()=> ++actionId;
+        public static long GetActionId()=> ++_actionId;
 
         public static void AddAction(IEasyAction action)
         {
-            Instance.setActionQueue.Enqueue(()=>Instance.actionDict.Add(action.ActionID, action));
+            GetInstance()._setActionQueue.Enqueue(()=>GetInstance()._actionDict.Add(action.ActionID, action));
         }
         public static void RemoveAction(long actionId,Action callback)
         {
-            Instance.setActionQueue.Enqueue(() =>
+            GetInstance()._setActionQueue.Enqueue(() =>
             {
-                if (Instance.actionDict.ContainsKey(actionId))
+                if (GetInstance()._actionDict.ContainsKey(actionId))
                 {
-                    Instance.actionDict.Remove(actionId);
+                    GetInstance()._actionDict.Remove(actionId);
                     callback?.Invoke();
                 }
             });
@@ -34,16 +34,16 @@ namespace EasyFramework
         }
         public static IEasyAction GetAction(long actionId)
         {
-            if (Instance.actionDict.ContainsKey(actionId))
+            if (GetInstance()._actionDict.ContainsKey(actionId))
             {
-                return Instance.actionDict[actionId];
+                return GetInstance()._actionDict[actionId];
             }
             return null;
         }
 
         public void Update()
         {
-            foreach (var action in actionDict.Values)
+            foreach (var action in _actionDict.Values)
             {
                 if (!action.IsPause && action.Update(Time.deltaTime))
                 {
@@ -51,8 +51,19 @@ namespace EasyFramework
                 }
             }
 
-            for (int i = setActionQueue.Count; i > 0; i--)
-                setActionQueue.Dequeue()();
+            for (int i = _setActionQueue.Count; i > 0; i--)
+                _setActionQueue.Dequeue()();
+        }
+
+        protected override void OnInit()
+        {
+            
+        }
+
+        protected override void OnDispose(bool usePool)
+        {
+            _actionDict.Clear();
+            _setActionQueue.Clear();
         }
     }
 }
