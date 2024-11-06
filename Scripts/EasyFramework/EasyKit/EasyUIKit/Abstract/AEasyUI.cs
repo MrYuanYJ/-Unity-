@@ -74,8 +74,7 @@ namespace EasyFramework.EasyUIKit
             handle?.Cancel();
             if (ShowAni != null && ShowAni.Anis.Any())
             {
-                handle = CoroutineHandle.Fetch();
-                ShowAni.Run(handle, () =>
+                handle = ShowAni.Run(() =>
                 {
                     OnShow();
                     InvokeShowedEvent();
@@ -99,8 +98,7 @@ namespace EasyFramework.EasyUIKit
             handle?.Cancel();
             if (HideAni != null && HideAni.Anis.Any())
             {
-                handle = CoroutineHandle.Fetch();
-                HideAni.Run(handle, () =>
+                handle = HideAni.Run(() =>
                 {
                     OnHide();
                     InvokeHidedEvent();

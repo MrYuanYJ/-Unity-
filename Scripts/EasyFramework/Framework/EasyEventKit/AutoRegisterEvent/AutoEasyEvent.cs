@@ -1,4 +1,4 @@
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public abstract class AutoEasyEvent<T>: IAutoRegisterEvent where T : struct
     {

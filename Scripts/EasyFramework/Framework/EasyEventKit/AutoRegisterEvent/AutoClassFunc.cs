@@ -1,5 +1,5 @@
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public abstract class AutoClassFunc<T,R> :IAutoRegisterEvent where T : AFuncIndex<T,R>
     {

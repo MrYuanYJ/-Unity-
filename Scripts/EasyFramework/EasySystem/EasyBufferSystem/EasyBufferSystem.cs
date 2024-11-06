@@ -1,57 +1,74 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EasyFramework.EasySystem
 {
-    public class EasyBufferSystem: ASystem
+    public class EasyBufferSystem: ASystem,IUpdateAble
     {
-        Dictionary<Type,HashSet<IBufferAble>> buffers = new();
+        Dictionary<Type,IBufferContainer> buffers = new();
+
+        public static void SetAccessSequence<T>(EAccessSequence accessSequence) where T : IBufferAble => BufferContainer<T>.AccessSequence = accessSequence;
+        public static void SetEquals<T>(Func<T,T,bool> equals) where T : IBufferAble =>BufferContainer<T>.BufferEqualsLogic = equals;
+        public static void SetMerge<T>(Func<T,T,T> merge) where T : IBufferAble =>BufferContainer<T>.BufferMergeLogic = merge;
+        public static void SetOnAdd<T>(Action onAdd) where T : IBufferAble =>BufferContainer<T>.BufferOnAdd = onAdd;
+        
+        public BufferContainer<T> Container<T>() where T : IBufferAble
+        {
+            if (!buffers.TryGetValue(typeof(T), out var bufferContainer))
+            {
+                bufferContainer = new BufferContainer<T>();
+                buffers.Add(typeof(T), bufferContainer);
+            }
+            return (BufferContainer<T>) bufferContainer;
+        }
 
         public void Add<T>(T buffer) where T : IBufferAble
         {
-            if (!buffers.TryGetValue(typeof(T), out var bufferSet))
-            {
-                bufferSet = new HashSet<IBufferAble>();
-                buffers.Add(typeof(T), bufferSet);
-            }
-            bufferSet.Add(buffer);
+            Container<T>().Add(buffer);
         }
-
-        public T Dequeue<T>() where T : IBufferAble
+        public T GetCurrent<T>() where T : IBufferAble
         {
-            if (buffers.TryGetValue(typeof(T), out var bufferSet))
-            {
-                var buffer = bufferSet.FirstOrDefault();
-                bufferSet.Remove(buffer);
-                return (T)buffer;
-            }
-            return default;
+            return Container<T>().GetCurrent();
         }
-        public T Pop<T>() where T : IBufferAble
+        public T GetCurrent<T>(EAccessSequence accessSequence) where T : IBufferAble
         {
-            if (buffers.TryGetValue(typeof(T), out var bufferSet))
-            {
-                var buffer = bufferSet.LastOrDefault();
-                bufferSet.Remove(buffer);
-                return (T)buffer;
-            }
-            return default;
+            return Container<T>().GetCurrent(accessSequence);
         }
-        
+        public T GetAndRemoveCurrent<T>() where T : IBufferAble
+        {
+            return Container<T>().GetAndRemoveCurrent();
+        }
+        public T GetAndRemoveCurrent<T>(EAccessSequence accessSequence) where T : IBufferAble
+        {
+            return Container<T>().GetAndRemoveCurrent(accessSequence);
+        }
         public void Remove<T>(T buffer) where T : IBufferAble
         {
-            if (buffers.TryGetValue(typeof(T), out var bufferSet))
+            Container<T>().Remove(buffer);
+        }
+        public void Remove<T>() where T : IBufferAble
+        {
+            Container<T>().Remove();
+        }
+
+        public void Clear<T>() where T : IBufferAble
+        {
+            Container<T>().Clear();
+        }
+        public void Clear()
+        {
+            foreach (var bufferContainer in buffers.Values)
             {
-                bufferSet.Remove(buffer);
+                bufferContainer.Clear();
             }
         }
 
-        public void Clear()
+        public IEasyEvent UpdateEvent { get; } = new EasyEvent();
+        void IUpdateAble.OnUpdate()
         {
-            foreach (var bufferSet in buffers.Values)
+            foreach (var bufferContainer in buffers.Values)
             {
-                bufferSet.Clear();
+                bufferContainer.Update(EasyTime.DeltaTime);
             }
         }
     }

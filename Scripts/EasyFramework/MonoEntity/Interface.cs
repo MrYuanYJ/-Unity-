@@ -10,18 +10,18 @@ namespace EasyFramework
         void TryCreateEntity();
     }
 
-    internal interface IMonoEntity : IEntity
+    public interface IMonoEntity : IEntity
     {
         Type MonoType { get; }
+        IEntity Root { get; }
     }
-    internal interface IMonoEntity<T> : IMonoEntity where T: MonoBehaviour
+    public interface IMonoEntity<T> : IMonoEntity where T: AMonoEntityCarrier
     {
         Type IMonoEntity.MonoType=> typeof(T);
         T Mono { get; }
-        IEntity Root { get; }
     }
 
-    public abstract class AMonoEntity<T> : AEntity, IMonoEntity<T> where T : MonoBehaviour
+    public abstract class AMonoEntity<T> : AEntity, IMonoEntity<T> where T : AMonoEntityCarrier
     {
         public T Mono => (T) BindObj;
         public IEntity Root => BindEntity;

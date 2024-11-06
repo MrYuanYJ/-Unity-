@@ -87,11 +87,13 @@ namespace EasyFramework
             var mono = menuCommand.context as AMonoEntityCarrier;
             if (mono != null)
             {
-                var transform = mono.transform;
-                DestroyImmediate(mono);
-                if (transform.parent != null)
-                    foreach (var aMonoEntity in transform.parent.GetComponents<AMonoEntityCarrier>())
+                var gameObject = mono.gameObject;
+                var parent = mono.transform.parent;
+                Undo.DestroyObjectImmediate(mono);
+                if (parent != null)
+                    foreach (var aMonoEntity in parent.GetComponents<AMonoEntityCarrier>())
                         aMonoEntity.ReFreshChildren();
+                EditorUtility.SetDirty(gameObject);
             }
         }
     }

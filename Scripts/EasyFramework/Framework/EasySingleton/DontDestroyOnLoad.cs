@@ -57,4 +57,5 @@ public enum EDontDestroy
     Normal,
     Singleton,
     UI,
+    AudioTrack,
 }

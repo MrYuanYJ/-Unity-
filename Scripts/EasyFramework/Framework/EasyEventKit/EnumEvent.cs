@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 { 
     public interface IEnumDelegate
     {

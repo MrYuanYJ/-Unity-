@@ -1,6 +1,6 @@
 using UnityEngine.EventSystems;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public class UIUpdateSelectedListener: AUISelectEventListener,IUpdateSelectedHandler
     {

@@ -1,63 +1,57 @@
 using System;
 
-namespace EasyFramework.StateMachineKit
+namespace EasyFramework
 {
-    public abstract class AState: IEasyState
+    public abstract class AStateBase : IStateBase
     {
-        private IEasyState Self => this;
-        IStateMachine IGetMachineAble.StateMachine { get; set; }
+        public IStateMachineBase StateMachineBase { get; set; }
+        public T Machine<T>() where T : IStateMachineBase => (T) StateMachineBase;
+        bool IStateBase.OnBeforeAdd() => OnBeforeAdd();
+        bool IStateBase.OnAfterAdd() => OnAfterAdd();
+        bool IStateBase.OnBeforeRemove() => OnBeforeRemove();
+        bool IStateBase.OnAfterRemove() => OnAfterRemove();
+        protected virtual bool OnBeforeAdd() => true;
+        protected virtual bool OnAfterAdd() => true;
+        protected virtual bool OnBeforeRemove() => true;
+        protected virtual bool OnAfterRemove() => true;
+    }
+    public abstract class AState: AStateBase,IState
+    {
+        public Func<bool> EnterConditionFunc { get; set; }
+        public Func<bool> ExitConditionFunc { get; set; }
+        public Action EnterAction { get; set; }
+        public Action ExitAction { get; set; }
 
-        public IStateMachine Machine() => Self.StateMachine;
-        public T Machine<T>() where T : IStateMachine => (T) Self.StateMachine;
 
-        Func<bool> IState.EnterConditionFunc { get; set; }
-
-        Func<bool> IState.ExitConditionFunc { get; set; }
-
+        void IState.OnEnter() => OnEnter();
+        void IState.OnExit()=> OnExit();
         bool IState.OnEnterCondition()=> OnEnterCondition();
 
         bool IState.OnExitCondition()=> OnExitCondition();
 
         protected virtual bool OnEnterCondition() => true;
         protected virtual bool OnExitCondition() => true;
-
-        Action<object[]> IEasyState.EnterAction { get; set; }
-
-        Action<object[]> IEasyState.ExitAction { get; set; }
-
-        void IEasyState.OnEnter(object[] objects)=> OnEnter(objects);
-
-        void IEasyState.OnExit(object[] objects)=> OnExit(objects);
-        protected abstract void OnEnter(object[] objects);
-        protected abstract void OnExit(object[] objects);
+        protected abstract void OnEnter();
+        protected abstract void OnExit();
     }
 
-    public abstract class AState<TValue> : IEasyState<TValue>
+    public abstract class AState<TValue> : AStateBase,IState<TValue>
     {
-        private IEasyState<TValue> Self => this;
-        IStateMachine IGetMachineAble.StateMachine { get; set; }
+        public Func<TValue, bool> EnterConditionFunc { get; set; }
+        public Func<TValue, bool> ExitConditionFunc { get; set; }
+        public Action<TValue> EnterAction { get; set; }
+        public Action<TValue> ExitAction { get; set; }
+        void IState<TValue>.OnEnter(TValue param) => OnEnter(param);
+        void IState<TValue>.OnExit(TValue param) => OnExit(param);
+        bool IState<TValue>.OnEnterCondition(TValue param) => OnEnterCondition(param);
+        bool IState<TValue>.OnExitCondition(TValue param) => OnExitCondition(param);
 
-        public IStateMachine Machine() => Self.StateMachine;
-        public T Machine<T>() where T : IStateMachine => (T) Self.StateMachine;
+        protected virtual bool OnEnterCondition(TValue param) => true;
+        protected virtual bool OnExitCondition(TValue param) => true;
 
-        Func<bool> IState.EnterConditionFunc { get; set; }
 
-        Func<bool> IState.ExitConditionFunc { get; set; }
-
-        protected virtual bool OnEnterCondition() => true;
-        bool IState.OnExitCondition()=> OnExitCondition();
-        bool IState.OnEnterCondition()=>OnEnterCondition();
-
-        protected virtual bool OnExitCondition() => true;
-
-        Action<TValue, object[]> IEasyState<TValue>.EnterAction { get; set; }
-
-        Action<TValue, object[]> IEasyState<TValue>.ExitAction { get; set; }
-
-        void IEasyState<TValue>.OnEnter(TValue t, object[] objects)=>OnEnter(t, objects);
-        void IEasyState<TValue>.OnExit(TValue t, object[] objects)=> OnExit(t, objects);
-        protected abstract void OnEnter(TValue t, object[] objects);
-        protected abstract void OnExit(TValue t, object[] objects);
+        protected abstract void OnEnter(TValue param);
+        protected abstract void OnExit(TValue param);
     }
 
     public abstract class AProcedure : AState, IProcedure
@@ -72,23 +66,21 @@ namespace EasyFramework.StateMachineKit
         public bool IsEnable => _isEnable;
         public void SetEnable(bool isEnable) => _isEnable = isEnable;
     }
-    public abstract class AEasyState<TMachine>: AState where TMachine : IStateMachine
+    public abstract class AEasyState<TMachine>: AState where TMachine : IStateMachineBase
     {
-        private IEasyState Self => this;
-        public new TMachine Machine() => (TMachine) Self.StateMachine;
+        public TMachine Machine() => (TMachine)StateMachineBase;
     }
-    public abstract class AEasyState<TMachine,TValue>: AState<TValue> where TMachine : IStateMachine
+    public abstract class AEasyState<TMachine,TValue>: AState<TValue> where TMachine : IStateMachineBase
     {
-        private IEasyState<TValue> Self => this;
-        public new TMachine Machine() => (TMachine) Self.StateMachine;
+        public TMachine Machine() => (TMachine)StateMachineBase;
     }
-    public abstract class AEasyProcedure<TMachine> : AEasyState<TMachine>, IProcedure where TMachine : IStateMachine
+    public abstract class AEasyProcedure<TMachine> : AEasyState<TMachine>, IProcedure where TMachine : IStateMachineBase
     {
         private bool _isEnable = true;
         public bool IsEnable => _isEnable;
         public void SetEnable(bool isEnable) => _isEnable = isEnable;
     }
-    public abstract class AEasyProcedure<TMachine,TValue> : AEasyState<TMachine,TValue>, IProcedure where TMachine : IStateMachine
+    public abstract class AEasyProcedure<TMachine,TValue> : AEasyState<TMachine,TValue>, IProcedure where TMachine : IStateMachineBase
     {
         private bool _isEnable = true;
         public bool IsEnable => _isEnable;

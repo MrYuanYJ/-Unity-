@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using EasyFramework.EasySystem;
-using EasyFramework.EventKit;
 
 namespace EasyFramework
 {

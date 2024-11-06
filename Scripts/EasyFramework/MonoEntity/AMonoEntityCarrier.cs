@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using EasyFramework.EasySystem.EasyAttributeSystem;
-using EasyFramework.EventKit;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -23,7 +22,15 @@ namespace EasyFramework
         
         [SerializeField][ShowIf("@childrenTrans!=null")] protected List<AMonoEntityCarrier> children = new();
         [SerializeField][ShowIf("@parent!=null")][ReadOnly] protected AMonoEntityCarrier parent;
-        public bool IsInit { get; set; }
+        private bool _isInit;
+
+        public bool IsInit
+        {
+            get => _isInit && Entity != null && Entity.IsInit;
+            set => _isInit = value;
+        }
+
+        public bool InitDone { get; set; }
         public IEasyEvent InitEvent { get; set; } = new EasyEvent();
         public IEasyEvent DisposeEvent { get; set; }= new EasyEvent();
     }

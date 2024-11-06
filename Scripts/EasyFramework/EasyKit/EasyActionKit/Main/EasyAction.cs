@@ -154,28 +154,17 @@ namespace EasyFramework
             self.Ease.SetEase(animationCurve);
             return self;
         }
-        public static T Update<T>(this T self, Action action) where T : IEasyActionEvent
+        public static T OnUpdate<T>(this T self, Action action) where T : IEasyActionEvent
         {
-            self.OnRunning+= action;
+            self.Running+= action;
             return self;
         }
-        public static T Complete<T>(this T self, Action action) where T : IEasyActionEvent
+        public static T OnEnd<T>(this T self, Action action) where T : IEasyActionEvent
         {
-            self.OnCompleted+= action;
-            return self;
-        }
-        public static T Canceled<T>(this T self, Action action) where T : IEasyActionEvent
-        {
-            self.OnCanceled+= action;
-            return self;
-        }
-        public static T End<T>(this T self, Action action) where T : IEasyActionEvent
-        {
-            self.OnEnd+= action;
+            self.End+= action;
             return self;
         }
         
-
         #endregion
 
     }

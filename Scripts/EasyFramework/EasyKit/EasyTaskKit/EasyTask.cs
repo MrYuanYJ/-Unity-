@@ -3,53 +3,40 @@ using System.Collections;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using EasyFramework.EventKit;
 using UnityEngine;
 
-namespace EasyFramework.EasyTaskKit
+namespace EasyFramework
 {
     public static partial class EasyTask
     {
+        public static CoroutineHandle DelayFrame(int frameCount)
+        {
+            return EasyCoroutine.DelayFrame(frameCount);
+        }
         public static CoroutineHandle Delay(float second, bool isIgnoreTimeScale = false)
         {
             return EasyCoroutine.Delay(second, isIgnoreTimeScale);
         }
-
-        public static CoroutineHandle Delay(CoroutineHandle handle, float second, bool isIgnoreTimeScale = false)
-        {
-            return EasyCoroutine.Delay(handle, second, isIgnoreTimeScale);
-        }
-
         public static CoroutineHandle Seconds(float interval, float second, Action<float> action, bool isIgnoreTimeScale = false)
         {
             return EasyCoroutine.Seconds(interval, second, action, isIgnoreTimeScale);
         }
-
-        public static CoroutineHandle Seconds(CoroutineHandle handle, float interval, float second, Action<float> action,
-            bool isIgnoreTimeScale = false)
-        {
-            return EasyCoroutine.Seconds(handle, interval, second, action, isIgnoreTimeScale);
-        }
-
         public static CoroutineHandle TimeTask(float second, Action<float> action, bool isIgnoreTimeScale = false)
         {
             return EasyCoroutine.TimeTask(second, action, isIgnoreTimeScale);
         }
-
-        public static CoroutineHandle TimeTask(CoroutineHandle handle, float second, Action<float> action,
-            bool isIgnoreTimeScale = false)
-        {
-            return EasyCoroutine.TimeTask(handle, second, action, isIgnoreTimeScale);
-        }
-        
-        public static CoroutineHandle Loop(IEnumerator enumerator, int loopCount)
+        public static CoroutineHandle Loop(Func<IEnumerator> enumerator, int loopCount)
         {
             return EasyCoroutine.Loop(enumerator, loopCount);
         }
 
-        public static CoroutineHandle Loop(CoroutineHandle handle, IEnumerator enumerator, int loopCount)
+        public static CoroutineHandle Condition(Func<bool> condition)
         {
-            return EasyCoroutine.Loop(handle, enumerator, loopCount);
+            return EasyCoroutine.Condition(condition);
+        }
+        public static void WaitEndOfFrame(Action action)
+        { 
+            EasyCoroutine.WaitEndOfFrame(action);
         }
 
 
@@ -62,7 +49,8 @@ namespace EasyFramework.EasyTaskKit
                     throw;
             }
         }
-        public static async void ViewError<T>(this T self, Action<T> onCompleted, Action<Exception> onError=null) where T : Task
+        public static async void ViewError<T>(this T self, Action<T> onCompleted, Action<Exception> onError = null)
+            where T : Task
         {
             try
             {
@@ -81,44 +69,28 @@ namespace EasyFramework.EasyTaskKit
             }
         }
 
-        public static async Task RunTask(this Task self, ICoroutineHandle handle)
-        {
-            await self;
-            handle.Complete();
-        }
-        public static async Task RunTaskResult<T, TResult>(this Task<TResult> self, ICoroutineHandle<T,TResult> handle) where T : ICoroutineHandle<T, TResult>
-        {
-            handle.Complete(await self);
-        }
-
         public static CancellationTokenSource CancelOnDestroy(this MonoBehaviour self)
         {
             CancellationTokenSource tokenSource = new();
             self.gameObject.RegisterOnDestroy(tokenSource.Cancel);
             return tokenSource;
         }
-
         public static CancellationTokenSource CancelOnDestroy(this CancellationTokenSource self, MonoBehaviour mono)
         {
             mono.gameObject.RegisterOnDestroy(self.Cancel);
             return self;
         }
-
-        public static void WhenAll<T>(Action allComplete, params T[] handles)
-            where T : class,ICoroutineHandle<T>
+        public static void WhenAll(Action allComplete, params CoroutineHandle[] handles)
         {
-            void AllComplete(T handle)
+            void AllComplete()
             {
-                if (handles.All(h => h.Task.IsCompleted))
+                if (handles.All(h => h.IsDone))
                 {
                     allComplete();
                     foreach (var h in handles)
                     {
-                        if (h != handle)
-                        {
-                            h.Completed -= AllComplete;
-                            h.Canceled -= AllComplete;
-                        }
+                        h.Completed -= AllComplete;
+                        h.Cancelled -= AllComplete;
                     }
                 }
             }
@@ -126,7 +98,7 @@ namespace EasyFramework.EasyTaskKit
             {
 
                 handle.Completed += AllComplete;
-                handle.Canceled += AllComplete;
+                handle.Cancelled += AllComplete;
             }
         }
     }

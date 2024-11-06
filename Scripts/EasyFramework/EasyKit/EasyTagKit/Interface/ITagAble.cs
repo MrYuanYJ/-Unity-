@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyFramework.EasyTagKit
+namespace EasyFramework
 {
     public interface ITagAble
     {

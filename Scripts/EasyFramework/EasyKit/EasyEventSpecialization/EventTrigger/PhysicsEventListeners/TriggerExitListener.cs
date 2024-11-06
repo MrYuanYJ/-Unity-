@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
-    public class ExitListenerListener: AListenerListener
+    public class TriggerExitListener: AListenerListener
     {
         private void OnTriggerExit(Collider other) { Invoke(other); }
     }

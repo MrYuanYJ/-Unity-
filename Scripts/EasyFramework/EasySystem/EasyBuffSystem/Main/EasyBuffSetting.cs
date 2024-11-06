@@ -17,6 +17,7 @@ namespace EasyFramework
 
         public void Init()
         {
+            AllBuff.Clear();
             foreach (var reactor in reactors)
             {
                 if (!ReactorDic.ContainsKey(reactor.Material1.Buff))
@@ -36,8 +37,8 @@ namespace EasyFramework
                 {
                     var attribute = (BindAttribute) attributes[0];
                     var ebuff = (EBuff) values[i - 1];
-                    AllBuff.Add(ebuff, attribute.Type);
-                    var buffCategoryAttributes = attribute.Type.GetCustomAttributes(typeof(BuffTagAttribute), true);
+                    AllBuff.Add(ebuff, attribute.BindType);
+                    var buffCategoryAttributes = attribute.BindType.GetCustomAttributes(typeof(BuffTagAttribute), true);
                     foreach (BuffTagAttribute buffCategoryAttribute in buffCategoryAttributes)
                     {
                         if (!BuffTagDic.ContainsKey(ebuff))

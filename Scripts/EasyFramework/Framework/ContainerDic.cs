@@ -11,6 +11,12 @@ namespace EasyFramework
         public Dictionary<Type, TResult>.KeyCollection Keys => Dic.Keys;
         public Dictionary<Type, TResult>.ValueCollection Values => Dic.Values;
 
+        public TResult this[Type type]
+        {
+            get => Dic[type];
+            set => Dic[type] = value;
+        }
+
         public void Clear()
         {
             Dic.Clear();

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using EasyFramework.EasyTagKit;
 using EXFunctionKit;
 
 namespace EasyFramework
@@ -10,17 +9,16 @@ namespace EasyFramework
         Dictionary<int, HashSet<IBuff>> IBuffableUnit.PollOrder { get; set; }
         Dictionary<EBuff, IBuff> IBuffableUnit.Buffs { get; set; }
         Dictionary<EMeans, Dictionary<EBuff, CoroutineHandle>> IBuffableUnit.Timers { get; set; }
-        public override IStructure GetStructure() => Battle.Instance;
+        public override IStructure Structure => BattleStructure.TryRegister();
 
-        public override void OnInit()
+        protected override void OnInit()
         {
             base.OnInit();
             this.As<IBuffableUnit>().InitBuffableUnit();
         }
 
-        public override void OnDispose()
+        protected override void OnDispose(bool usePool)
         {
-            base.OnDispose();
             this.As<IBuffableUnit>().Set(unit =>
             {
                 unit.TagMap?.Clear();
@@ -36,5 +34,7 @@ namespace EasyFramework
                 }));
             });
         }
+
+        public IEasyEvent UpdateEvent { get; }= new EasyEvent();
     }
 }

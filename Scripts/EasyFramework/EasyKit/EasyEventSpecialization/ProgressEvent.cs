@@ -1,5 +1,5 @@
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public interface IProgressEvent<T>
     {

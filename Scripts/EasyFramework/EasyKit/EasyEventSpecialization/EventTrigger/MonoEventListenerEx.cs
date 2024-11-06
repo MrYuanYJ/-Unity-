@@ -2,7 +2,7 @@ using System;
 using EXFunctionKit;
 using UnityEngine;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public interface IEventListener
     {

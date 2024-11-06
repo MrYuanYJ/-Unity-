@@ -1,5 +1,4 @@
 using System;
-using EasyFramework.EventKit;
 
 namespace EasyFramework
 {
@@ -7,14 +6,8 @@ namespace EasyFramework
     {
         public sealed class ApplicationInit : AEventIndex<ApplicationInit, IStructure> { }
         public sealed class ApplicationQuit : AEventIndex<ApplicationQuit, IStructure> { }
-        
         public sealed class MainStructure: AFuncIndex<MainStructure, IStructure> { }
         
-        
-        public sealed class InitDo : AEventIndex<InitDo, object> { }
-        public sealed class DisposeDo : AEventIndex<DisposeDo, object> { }
-        public sealed class Enable: AEventIndex<Enable, object> { }
-        public sealed class Disable: AEventIndex<Disable, object> { }
         public sealed class LifeCycleRegister<T> : AEventIndex<LifeCycleRegister<T>, T> { }
         
         

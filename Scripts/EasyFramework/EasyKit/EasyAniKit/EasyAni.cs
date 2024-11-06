@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using EasyFramework.EasyTaskKit;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -28,18 +26,13 @@ namespace EasyFramework
         [SerializeField]private UnityEvent finished;
         [SerializeField]private List<SingleAni> anis;
         
-        [Button]
+
         public CoroutineHandle Run(Action onFinished, params object[] args)
         {
-            var handle = CoroutineHandle.Fetch();
-            return Run(handle, onFinished, args);
-        }
-
-        public CoroutineHandle Run(CoroutineHandle handle,Action onFinished, params object[] args)
-        {
-            handle.Completed += _ => ((IEasyAni)this).Finish();
+            var handle=EasyTask.TimeTask(Duration, Play, IsUnscaledTime);
             Finished += onFinished;
-            return EasyTask.TimeTask(handle, Duration, Play, IsUnscaledTime);
+            handle.Completed += () => ((IEasyAni)this).Finish();
+            return handle;
         }
 
         private void Play(float progress)

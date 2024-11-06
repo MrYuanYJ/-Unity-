@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using EasyFramework.EventKit;
 using EXFunctionKit;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace EasyFramework.EasySystem
+namespace EasyFramework
 {
     public class EasyInputSetting: AScriptableObjectSingleton<EasyInputSetting>
     {
@@ -13,10 +13,10 @@ namespace EasyFramework.EasySystem
         {
             foreach (var data in KeyCodeListenable)
             {
-                if (!KeyCodeListenerDict.TryGetValue(data.InputType, out var set))
+                if (!KeyCodeListenerDict.TryGetValue(data.eInput, out var set))
                 {
                     set = new HashSet<KeyCodeListenerData>();
-                    KeyCodeListenerDict[data.InputType] = set;
+                    KeyCodeListenerDict[data.eInput] = set;
                 }
                 set.Add(data);
             }
@@ -29,13 +29,13 @@ namespace EasyFramework.EasySystem
         public float InputSmooth = 999f;
         public float InputSmoothMultiplier = 999f;
         
-        public Dictionary<InputType,HashSet<KeyCodeListenerData>> KeyCodeListenerDict = new();
-        public Dictionary<InputType, InputState> InputStateDict = new();
+        public Dictionary<EInput,HashSet<KeyCodeListenerData>> KeyCodeListenerDict = new();
+        public Dictionary<EInput, InputState> InputStateDict = new();
         public SESProperty<Vector2> MoveInput = new(Vector2.zero, null, v2 => v2.magnitude < 1 ? v2 : v2.normalized);
     }
     
     
-    public enum InputType
+    public enum EInput
     {
         Up,
         Down,
@@ -52,7 +52,7 @@ namespace EasyFramework.EasySystem
     [Serializable]
     public class KeyCodeListenerData
     {
-        public InputType InputType;
+        [FormerlySerializedAs("InputType")] public EInput eInput;
         public KeyCode KeyCode;
         public bool IsPressed;
         public float TimePressed;

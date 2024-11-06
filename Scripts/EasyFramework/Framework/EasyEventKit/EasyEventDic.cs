@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public interface IGetEasyEventDic
     {
@@ -101,7 +101,11 @@ namespace EasyFramework.EventKit
         public void UnRegister<T>(Action action) where T : struct=> GetOrAddEasyEvent<T>().UnRegister(action);
         public void UnRegister<T>(Action<T> action) where T : struct=>GetOrAddEasyEvent<T>().UnRegister(action);
 
-        public void Invoke<T>(T t) where T : struct=>  GetOrAddEasyEvent<T>().Invoke(t);
+        public void Invoke<T>(T t) where T : struct
+        {
+            if (_events.TryGetValue(typeof(T), out var @event))
+                ((EasyEvent<T>)@event).Invoke(t);
+        }
 
         public EasyEventDic EventDic => this;
         Dictionary<Type, IEasyEvent> IEasyEventDic.Events => _events;

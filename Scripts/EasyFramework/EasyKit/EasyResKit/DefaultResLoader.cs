@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using EasyFramework.EasyTaskKit;
-using UnityEngine;
 //using UnityEngine.AddressableAssets;
 using Object = UnityEngine.Object;
 
@@ -21,7 +19,7 @@ namespace EasyFramework.EasyResKit
             {
                 //初始化接入的资源管理系统
                 //var handle = CoroutineHandle.Fetch();
-                //Addressables.InitializeAsync().Completed+=_=> ((ICoroutineHandle)handle).Complete();
+                //Addressables.InitializeAsync().Completed+=_=> ((IYieldAble)handle).Complete();
             }
 
             yield break;
@@ -40,8 +38,8 @@ namespace EasyFramework.EasyResKit
                 EasyTask.RegisterResultCoroutine(LoadAsset, handle,assetType, path, instantiate);
             else
             {
-                LoadAssetFromExternalSystem(assetType,path,
-                    x => { EasyCoroutine.ReturnResult(handle, instantiate ? EasyResSystem.InstantiateAsset(path, x) : x); });
+                LoadAssetFromExternalSystem(assetType, path,
+                    x => EasyCoroutine.ReturnResult(handle, instantiate ? EasyResSystem.InstantiateAsset(path, x) : x));
             }
 
             return handle;
@@ -52,8 +50,8 @@ namespace EasyFramework.EasyResKit
         {
 #if UNITY_EDITOR
             Object asset = UnityEditor.AssetDatabase.LoadAssetAtPath(path,assetType);
-            EasyCoroutine.ReturnResult(handle, instantiate ? EasyResSystem.InstantiateAsset(path, asset) : asset);
             yield return null;
+            EasyCoroutine.ReturnResult(handle, instantiate ? EasyResSystem.InstantiateAsset(path, asset) : asset);
 #else
             throw new System.Exception("Runtime load asset is not supported in editor mode.");
 #endif

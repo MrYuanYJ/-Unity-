@@ -1,5 +1,4 @@
 using System;
-using EasyFramework.EventKit;
 
 namespace EasyFramework
 {
@@ -16,12 +15,15 @@ namespace EasyFramework
             AfterDisposeEvent(this, usePool);
         }
         protected void OnDispose(bool usePool);
-        protected void DisposeDo(bool usePool) => GlobalEvent.DisposeDo.InvokeEvent(this);
+        protected void DisposeDo(bool usePool) => EasyLifeCycle.DisposeDo.InvokeEvent(this);
         public static bool BeforeDisposeEvent(IDisposeAble self,bool usePool)
         {
             if (self.IsDispose) return false;
-            if(self is IActiveAble activeAble)
-                activeAble.Disable();
+
+            if (self is IActiveAble activeAble)
+                IActiveAble.ActiveAbleDispose(activeAble);
+            else
+                EasyLifeEx.DisableLifeCycle(self);
             self.IsDispose = true;
             self.OnDispose(usePool);
             return true;
@@ -30,7 +32,7 @@ namespace EasyFramework
         {
             self.DisposeDo(usePool);
             self.DisposeEvent.Clear();
-            if(self is IInitAble initAble)
+            if (self is IInitAble initAble)
                 initAble.InitEvent.Clear();
             if (self is IActiveAble activeAble)
             {
@@ -47,6 +49,7 @@ namespace EasyFramework
                 update.UpdateEvent.Clear();
             if(self is IFixedUpdateAble fixedUpdate)
                 fixedUpdate.FixedUpdateEvent.Clear();
+            
             if (usePool)
                 ReferencePool.Recycle(self);
         }

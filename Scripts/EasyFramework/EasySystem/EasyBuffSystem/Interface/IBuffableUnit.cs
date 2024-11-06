@@ -32,7 +32,7 @@ namespace EasyFramework
             {
                 foreach (var buff in buffs)
                 {
-                    buff.Running(Time.deltaTime);
+                    buff.Running(EasyTime.DeltaTime);
                 }
             }
         }

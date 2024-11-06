@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public class CollisionEnterListener: ACollisionListener
     {

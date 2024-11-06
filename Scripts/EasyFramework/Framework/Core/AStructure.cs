@@ -1,6 +1,3 @@
-using System;
-using EasyFramework.EventKit;
-
 namespace EasyFramework
 {
     public abstract class AStructure<TStructure> : Singleton<TStructure>, IStructure where TStructure : AStructure<TStructure>

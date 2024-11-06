@@ -1,11 +1,13 @@
-using EasyFramework.EventKit;
+
 
 namespace EasyFramework
 {
     public interface IFixedUpdateAble : IEasyLife
     {
         IEasyEvent FixedUpdateEvent { get; }
-
+        
+        static void EnableFixedUpdateAble(IFixedUpdateAble fixedUpdateAble)=>EasyLifeCycle.FixedUpdate.RegisterEvent(fixedUpdateAble.FixedUpdate);
+        static void DisableFixedUpdateAble(IFixedUpdateAble fixedUpdateAble)=>EasyLifeCycle.FixedUpdate.UnRegisterEvent(fixedUpdateAble.FixedUpdate);
         void FixedUpdate()
         {
             OnFixedUpdate();

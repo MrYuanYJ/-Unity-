@@ -48,8 +48,8 @@ namespace EasyFramework
             }
         }
 
-        public float Sine(int count,float input)=>Mathf.Sin(count*input*Mathf.PI*2);
-        public float Cosine(int count,float input)=>Mathf.Cos(count*input*Mathf.PI*2);
+        public static float Sine(int count,float input)=>Mathf.Sin(count*input*Mathf.PI*2);
+        public static float Cosine(int count,float input)=>Mathf.Cos(count*input*Mathf.PI*2);
         public static float Evaluate(EaseType easeType, float time)
         {
             switch (easeType)
@@ -130,8 +130,12 @@ namespace EasyFramework
                 case EaseType.EaseInOutBounce:
                     if (time < 0.5f) return (1 - Evaluate(EaseType.EaseOutBounce, 1 - 2 * time)) / 2;
                     return (1 + Evaluate(EaseType.EaseOutBounce, 2 * time - 1)) / 2;
+                case EaseType.Sin:
+                    return Sine(1, time);
+                case EaseType.Cos:
+                    return Cosine(1, time);
                 default:
-                    return time;
+                    return 1;
             }
         }
     }
@@ -172,5 +176,6 @@ namespace EasyFramework
         EaseInOutBounce,
         Sin,
         Cos,
+        None
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public class ProgressIntEventListener: MonoBehaviour,IProgressEvent<int>
     {

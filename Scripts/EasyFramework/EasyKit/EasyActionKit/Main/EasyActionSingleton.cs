@@ -6,12 +6,11 @@ namespace EasyFramework
 {
     public class EasyActionSingleton: MonoSingleton<EasyActionSingleton>
     {
-        private static long _actionId = 0;
         private readonly Dictionary<long,IEasyAction> _actionDict = new Dictionary<long, IEasyAction>();
         private readonly Queue<Action> _setActionQueue = new Queue<Action>();
         
 
-        public static long GetActionId()=> ++_actionId;
+        public static long GetActionId()=> EasyID.GetNewID.InvokeFunc();
 
         public static void AddAction(IEasyAction action)
         {
@@ -45,7 +44,7 @@ namespace EasyFramework
         {
             foreach (var action in _actionDict.Values)
             {
-                if (!action.IsPause && action.Update(Time.deltaTime))
+                if (!action.IsPause && action.Update(EasyTime.DeltaTime))
                 {
                     action.Complete();
                 }

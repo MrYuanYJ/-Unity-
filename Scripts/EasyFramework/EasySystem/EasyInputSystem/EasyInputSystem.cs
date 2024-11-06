@@ -1,9 +1,7 @@
 using System;
-using EasyFramework.EventKit;
-using EXFunctionKit;
 using UnityEngine;
 
-namespace EasyFramework.EasySystem
+namespace EasyFramework
 {
     public class EasyInputSystem: ASystem,IUpdateAble
     {
@@ -97,13 +95,13 @@ namespace EasyFramework.EasySystem
         private void SetMoveInput()
         {
             var direction = Vector2.zero;
-            if(_setting.InputStateDict[InputType.Left].IsPressed.Value)
+            if(_setting.InputStateDict[EInput.Left].IsPressed.Value)
                 direction.x--;
-            if(_setting.InputStateDict[InputType.Right].IsPressed.Value)
+            if(_setting.InputStateDict[EInput.Right].IsPressed.Value)
                 direction.x ++;
-            if(_setting.InputStateDict[InputType.Up].IsPressed.Value)
+            if(_setting.InputStateDict[EInput.Up].IsPressed.Value)
                 direction.y ++;
-            if(_setting.InputStateDict[InputType.Down].IsPressed.Value)
+            if(_setting.InputStateDict[EInput.Down].IsPressed.Value)
                 direction.y --;
 
             _setting.MoveInput.Value = new Vector2(
@@ -117,7 +115,7 @@ namespace EasyFramework.EasySystem
                         : _setting.InputSmooth * _setting.InputSmoothMultiplier * Time.deltaTime));
         }
         
-        public IUnRegisterHandle OnInputChange(InputType inputType,Action<bool> action)=> _setting.InputStateDict[inputType].IsPressed.Register(action);
-        public IUnRegisterHandle OnInputPress(InputType inputType,Action<float> action)=> _setting.InputStateDict[inputType].TimePressed.Register(action);
+        public IUnRegisterHandle OnInputChange(EInput eInput,Action<bool> action)=> _setting.InputStateDict[eInput].IsPressed.Register(action);
+        public IUnRegisterHandle OnInputPress(EInput eInput,Action<float> action)=> _setting.InputStateDict[eInput].TimePressed.Register(action);
     }
 }

@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using EasyFramework.EasyTaskKit;
 using EXFunctionKit;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 
@@ -57,8 +55,8 @@ namespace EasyFramework.EasyUIKit
             while (loopCount<0)
             {
                 var handle=OneByOneAni(_currentVisibleCharCount, UpAndDown).RegisterEasyCoroutine();
-                handle.Completed += h => _handles.Remove(h);
-                handle.Canceled += h => _handles.Remove(h);
+                handle.Completed += () => _handles.Remove(handle);
+                handle.Cancelled += () => _handles.Remove(handle);
                 _handles.Add(handle);
                 yield return EasyCoroutine.Delay(loopInterval, false);
             }
@@ -101,8 +99,8 @@ namespace EasyFramework.EasyUIKit
                 var tmpAniCoroutine = tmpAniCoroutines[i];
                 var handle = tmpAniCoroutine(currentCharIndex,vertexIndex, materialIndex);
                 tmpAniHandles[i]=handle;
-                handle.Completed += h => _handles.Remove(h);
-                handle.Canceled += h => _handles.Remove(h);
+                handle.Completed += () => _handles.Remove(handle);
+                handle.Cancelled += ()=> _handles.Remove(handle);
                 _handles.Add(handle);
             }
             return tmpAniHandles;
@@ -166,7 +164,7 @@ namespace EasyFramework.EasyUIKit
             }
 
             var handle = EasyCoroutine.Delay(speed, false);
-            handle.Completed += _ => _currentVisibleCharCount = currentCharIndex + 1;
+            handle.Completed += () => _currentVisibleCharCount = currentCharIndex + 1;
             return handle;
         }
         private CoroutineHandle FadeIn(int currentCharIndex,int vertexIndex, int materialIndex)

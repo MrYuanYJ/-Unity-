@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using Sirenix.Utilities;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 
 namespace EXFunctionKit
@@ -30,11 +33,76 @@ namespace EXFunctionKit
         bool ICollection<T>.IsReadOnly => false;
     }
 
-    public static class ExCSharp
+    public static partial class ExCSharp
     {
         private static Lazy<Dictionary<string, Delegate>> _expressionCache =
             new Lazy<Dictionary<string, Delegate>>(() => new Dictionary<string, Delegate>());
         public static Type Type<T>(this T self)=> typeof(T);
+
+        public static object GetValueRecursive(this object self, string[] paths)
+        {
+            return GetValueRecursive(self, paths, 0);
+        }
+
+        private static object GetValueRecursive(object obj, string[] paths, int index)
+        {
+            if(paths==null || paths.Length==0)
+                return obj;
+            var path = paths[index];
+            if(string.IsNullOrEmpty(path))
+                return obj;
+
+            FieldInfo fldInfo = null;
+            var tempType = obj.GetType();
+            while (fldInfo == null)
+            {
+                // attempt to get information about the field
+                fldInfo = tempType.GetField(path, BindingFlags.IgnoreCase | BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                if (fldInfo != null ||
+                    tempType.BaseType == null) break;
+
+                // if the field information is missing, it may be in the base class
+                tempType = tempType.BaseType;
+            }
+
+            // If array, path = Array.data[index]
+            if (fldInfo == null && path == "Array")
+            {
+                try
+                {
+                    path = paths[++index];
+                    var m = Regex.Match(path, @"(.+)\[([0-9]+)*\]");
+                    var arrayIndex = int.Parse(m.Groups[2].Value);
+                    var arrayValue = (obj as System.Collections.IList)[arrayIndex];
+                    if (index < paths.Length - 1)
+                    {
+                        return GetValueRecursive(arrayValue, paths, ++index);
+                    }
+                    else
+                    {
+                        return arrayValue;
+                    }
+                }
+                catch
+                {
+                    Debug.Log("PropertyDrawer Exception, objType:" + obj.GetType().Name + " path:" + string.Join(", ", paths));
+                    throw;
+                }
+            }
+            else if (fldInfo == null)
+            {
+                throw new Exception("Can't decode path:" + string.Join(", ", paths));
+            }
+
+            var v = fldInfo.GetValue(obj);
+            if (index < paths.Length - 1)
+            {
+                return GetValueRecursive(v, paths, ++index);
+            }
+
+            return v;
+        }
 
         public static And<T> And<T>(this T self, params T[] values)
         {
@@ -48,30 +116,64 @@ namespace EXFunctionKit
             self.Values.AddRange(values);
             return self;
         }
-        public static T Modify<TClass, T>(TClass self, Expression<Func<TClass, T>> expression, T newValue,Action<TClass> onChange=null,Func<T,T,bool> compare=null)
+        public static T Modify<TClass, T>(this TClass self, Expression<Func<TClass, T>> expression, T newValue, Func<T, T> filter = null,Func<T,T,bool> compare=null,Action<TClass> onChange=null)
         {
-            if (!_expressionCache.Value.TryGetValue($"[{typeof(TClass).Name}]{expression}", out var Action))
+            if (!_expressionCache.Value.TryGetValue($"[{typeof(T).Name}]{expression}", out var action))
             {
-                var getOldValue = expression.Compile();
+                var getValue = expression.Compile();
                 var memberExpression = expression.Body;
                 var newValueExpression = Expression.Constant(newValue);
                 var assignExpression = Expression.Assign(memberExpression, newValueExpression);
                 var lambdaExpression = Expression.Lambda<Action<TClass>>(assignExpression, expression.Parameters);
-                var action = lambdaExpression.Compile();
-                compare ??= EqualityComparer<T>.Default.Equals;
-                Action = new Action<TClass, T>((TClass tClass, T value) =>
-                {
-                    if (!compare(getOldValue(tClass), value))
+                var modifyAction = lambdaExpression.Compile();
+                
+                action = new Func<TClass,T, Func<T, T, bool>, Func<T, T>, Action<TClass>,T>(
+                    (TClass obj,T mValue, Func<T, T, bool> mCompare, Func<T, T> mFilter, Action<TClass> mOnChange) =>
                     {
-                        action(tClass);
-                        onChange?.Invoke(tClass);
-                    }
-                });
-                _expressionCache.Value.Add($"[{typeof(TClass).Name}]{expression}", Action);
-            }
+                        if(mFilter!= null)
+                            mValue = mFilter(mValue);
+                        mCompare ??= EqualityComparer<T>.Default.Equals;
+                        if (!mCompare(getValue(obj), mValue))
+                        {
+                            modifyAction(obj);
+                            mOnChange?.Invoke(obj);
+                        }
 
-            ((Action<TClass, T>)Action)(self, newValue);
-            return newValue;
+                        return getValue(obj);
+                    });
+                _expressionCache.Value.Add($"[{typeof(T).Name}]{expression}", action);
+            }
+            return ((Func<TClass,T, Func<T, T, bool>, Func<T, T>, Action<TClass>,T>)action)(self,newValue, compare, filter, onChange);
+        }
+
+        public static T Modify<T>(Expression<Func<T>> getValueExpression, T newValue, Func<T, T, bool> compare = null, Func<T, T> filter = null, Action<T> onChange = null)
+        {
+            if (!_expressionCache.Value.TryGetValue($"[{typeof(T).Name}]{getValueExpression}", out var action))
+            {
+                var getValue = getValueExpression.Compile();
+                var memberExpression = getValueExpression.Body;
+                var newValueExpression = Expression.Constant(newValue);
+                var assignExpression = Expression.Assign(memberExpression, newValueExpression);
+                var lambdaExpression = Expression.Lambda<Action>(assignExpression);
+                var modifyAction = lambdaExpression.Compile();
+                
+                action = new Func<T, Func<T, T, bool>, Func<T, T>, Action<T>,T>(
+                    (T mValue, Func<T, T, bool> mCompare, Func<T, T> mFilter, Action<T> mOnChange) =>
+                    {
+                        if(mFilter!= null)
+                            mValue = mFilter(mValue);
+                        mCompare ??= EqualityComparer<T>.Default.Equals;
+                        if (!mCompare(getValue(), mValue))
+                        {
+                            modifyAction();
+                            mOnChange?.Invoke(mValue);
+                        }
+
+                        return getValue();
+                    });
+                _expressionCache.Value.Add($"[{typeof(T).Name}]{getValueExpression}", action);
+            }
+            return ((Func<T, Func<T, T, bool>, Func<T, T>, Action<T>,T>)action)(newValue, compare, filter, onChange);
         }
         
         /// <summary>
@@ -1238,6 +1340,35 @@ namespace EXFunctionKit
                 Directory.CreateDirectory(path);
             return path;
         }
-        
+        public static Dictionary<K, V> AsDictionary<K, V>(this IEnumerable<V> self, Func<V, K> keySelector,Dictionary<K,V> targetDic)
+        {
+            targetDic ??= new Dictionary<K, V>();
+            foreach (var item in self)
+            {
+                targetDic[keySelector(item)]= item;
+            }
+            return targetDic;
+        }
+        public static Dictionary<K, HashSet<V>> AsTable<K, V>(this IEnumerable<V> self, Func<V, K> keySelector,Dictionary<K, HashSet<V>> targetTable)
+        {
+            targetTable ??= new Dictionary<K, HashSet<V>>();
+            foreach (var item in self)
+            {
+                var key = keySelector(item);
+                if (!targetTable.ContainsKey(key))
+                    targetTable[key]= new HashSet<V>();
+                targetTable[key].Add(item);
+            }
+            return targetTable;
+        }
+        public static Dictionary<K, V> AsDictionary<K, V>(this IEnumerable<V> self, Func<V, K> keySelector)
+        {
+            return self.AsDictionary(keySelector, null);
+        }
+
+        public static Dictionary<K, HashSet<V>> AsTable<K, V>(this IEnumerable<V> self, Func<V, K> keySelector)
+        {
+           return self.AsTable(keySelector, null);
+        }
     }
 }

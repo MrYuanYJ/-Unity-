@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace EasyFramework.EasyTaskKit
+namespace EasyFramework
 {
     public static partial class EasyTask
     {

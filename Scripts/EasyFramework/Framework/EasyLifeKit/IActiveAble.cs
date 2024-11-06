@@ -1,33 +1,66 @@
-using EasyFramework.EventKit;
 
 namespace EasyFramework
 {
     public interface IActiveAble: IEasyLife
     {
-        ESProperty<bool> IsActive{ get; set; }
+        bool _isActive
+        {
+            get => IsActive;
+            set
+            {
+                if(value==IsActive)
+                    return;
+                var enable = Enable;
+                IsActive = value;
+                if (!IsDispose 
+                    &&(value && Enable ||!value && enable) )
+                {
+                    ActiveChange();
+                }
+            }
+        }
+
+        bool Enable => IsActive;
+        bool IsActive { get; set; }
+
         IEasyEvent ActiveEvent { get; }
         IEasyEvent UnActiveEvent { get; }
 
+        internal static void ActiveAbleInit(IActiveAble activeAble)
+        {
+            if (activeAble.Enable)
+                activeAble.ActiveInvoke();
+        }
+        internal static void ActiveAbleDispose(IActiveAble activeAble)
+        {
+            if(activeAble.Enable)
+                activeAble.UnActiveInvoke();
+        }
         void ActiveChange()
         {
-            if (IsActive.Value)
+            if (IsActive)
                 ActiveInvoke();
-            else
+            else 
                 UnActiveInvoke();
         }
 
         public void ActiveInvoke()
         {
-            GlobalEvent.Enable.InvokeEvent(this);
+            if(!IsInit)
+                return;
+            EasyLifeEx.EnableLifeCycle(this);
             OnActive();
             ActiveEvent.BaseInvoke();
         }
         public void UnActiveInvoke()
         {
-            GlobalEvent.Disable.InvokeEvent(this);
+            if(!IsInit)
+                return;
+            EasyLifeEx.DisableLifeCycle(this);
             OnUnActive();
             UnActiveEvent.BaseInvoke();
         }
+        
 
 
         protected void OnActive();

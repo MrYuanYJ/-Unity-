@@ -15,6 +15,7 @@ namespace EasyFramework
 
         protected override void OnInit()
         {
+            base.OnInit();
             ForceRegister();
             EasyRes.RecycleAsset.RegisterEvent(obj=>Recycle(EasyRes.GetAssetPath.InvokeFunc(obj),obj)).UnRegisterOnDispose(this);
             EasyRes.FetchAsset.RegisterFunc(Fetch).UnRegisterOnDispose(this);

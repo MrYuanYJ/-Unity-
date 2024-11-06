@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using EasyFramework.EasyTaskKit;
 using EXFunctionKit;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -19,14 +18,20 @@ namespace EasyFramework.EasyResKit
 
         protected override void OnInit()
         {
-            EasyRes.GetAssetPath.RegisterFunc(GetAssetPath).UnRegisterOnDispose(this);
-            EasyRes.LoadAssetAsync.RegisterFunc(LoadAssetAsync).UnRegisterOnDispose(this);
-            EasyRes.LoadPrefabByTypeAsync.RegisterFunc(LoadPrefabAsync).UnRegisterOnDispose(this);
-            EasyRes.ReleaseAll.RegisterEvent(AssetCache.Clear).UnRegisterOnDispose(this);
+            EasyRes.GetAssetPath.RegisterFunc(GetAssetPath);
+            EasyRes.LoadAssetAsync.RegisterFunc(LoadAssetAsync);
+            EasyRes.LoadPrefabByTypeAsync.RegisterFunc(LoadPrefabAsync);
+            EasyRes.LoadPrefabByPathAsync.RegisterFunc(LoadPrefabAsync);
+            EasyRes.ReleaseAll.RegisterEvent(AssetCache.Clear);
         }
 
         protected override void OnDispose(bool usePool)
         {
+            EasyRes.GetAssetPath.UnRegisterFunc(GetAssetPath);
+            EasyRes.LoadAssetAsync.UnRegisterFunc(LoadAssetAsync);
+            EasyRes.LoadPrefabByTypeAsync.UnRegisterFunc(LoadPrefabAsync);
+            EasyRes.LoadPrefabByPathAsync.UnRegisterFunc(LoadPrefabAsync);
+            EasyRes.ReleaseAll.UnRegisterEvent(AssetCache.Clear);
             ReleaseAllAssets();
         }
 
@@ -92,7 +97,7 @@ namespace EasyFramework.EasyResKit
             if (!_isInit)
             {
                 var handle=EasyTask.RegisterEasyCoroutine(Init);
-                handle.Completed += _ =>LoadAssetFromPoolOrLoader(returnHandle,assetType, path, instantiate);
+                handle.Completed += () =>LoadAssetFromPoolOrLoader(returnHandle,assetType, path, instantiate);
             }
             else
             {
@@ -108,35 +113,41 @@ namespace EasyFramework.EasyResKit
         public static CoroutineHandle<T> LoadAssetAsync<T>(string path,bool instantiate=true) where T : Object
         {
             var handle=CoroutineHandle<T>.Fetch();
-            LoadAssetAsync(typeof(T),path,instantiate).OnCompleted(h=>EasyCoroutine.ReturnResult(handle,(T)h.Result));
+            LoadAssetAsync(typeof(T),path,instantiate)
+                .Out(out var h)
+                .OnCompleted(()=>EasyCoroutine.ReturnResult(handle,(T)h.Result));
             return handle;
         }
         public static CoroutineHandle<GameObject> LoadPrefabAsync(string path, bool instantiate = true)
             => LoadAssetAsync<GameObject>(path, instantiate);
         public static CoroutineHandle<GameObject> LoadPrefabAsync(Type type, bool instantiate = true)
-            => LoadAssetAsync<GameObject>(GetAssetPathByType(type), instantiate);
+            => LoadAssetAsync<GameObject>(GetAssetPathByName(type.Name), instantiate);
         public static CoroutineHandle<T> LoadPrefabAsync<T>(string path,bool instantiate=true) where T : Component
         {
             var handle=CoroutineHandle<T>.Fetch();
-            LoadAssetAsync(typeof(GameObject),path,instantiate).OnCompleted(h=>EasyCoroutine.ReturnResult(handle,h.Result.TryGetComponent<T>()));
+            LoadAssetAsync(typeof(GameObject),path,instantiate)
+                .Out(out var h)
+                .OnCompleted(()=>EasyCoroutine.ReturnResult(handle,h.Result.TryGetComponent<T>()));
             return handle;
         }
         public static CoroutineHandle<T> LoadPrefabAsync<T>(bool instantiate=true) where T : Component
         {
             var handle=CoroutineHandle<T>.Fetch();
-            LoadAssetAsync(typeof(GameObject),GetAssetPathByType(typeof(T)),instantiate).OnCompleted(h=>EasyCoroutine.ReturnResult(handle,h.Result.TryGetComponent<T>()));
+            LoadAssetAsync(typeof(GameObject),GetAssetPathByName(typeof(T).Name),instantiate)
+                .Out(out var h)
+                .OnCompleted(()=>EasyCoroutine.ReturnResult(handle,h.Result.TryGetComponent<T>()));
             return handle;
         }
 
-        private static string GetAssetPathByType(Type type)
+        private static string GetAssetPathByName(string name)
         {
             #if UNITY_EDITOR
             if (Setting.loadMode == LoadMode.EditorAssetBundle)
-                return UnityEditor.AssetDatabase.GetAssetPathsFromAssetBundleAndAssetName(EasyResKitSetting.Instance.defaultAssetBundleName, type.Name)[0];
+                return UnityEditor.AssetDatabase.GetAssetPathsFromAssetBundleAndAssetName(EasyResKitSetting.Instance.defaultAssetBundleName, name)[0];
             else
-                return type.Name;
+                return name;
             #else
-                return type.Name;
+                return name;
             #endif
         }
     }

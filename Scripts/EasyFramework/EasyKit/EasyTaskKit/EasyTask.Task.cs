@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EasyFramework.EasyTaskKit
+namespace EasyFramework
 {
-    public static partial class EasyTask
+   /* public static partial class EasyTask
     {
         /// <summary>
         /// 注册一个异步方法，并返回一个协程handle,注意！！这样注册的异步方法无法使用handle.Cancel()方法取消
@@ -537,5 +537,5 @@ namespace EasyFramework.EasyTaskKit
             self(arg1, arg2, arg3, arg4, arg5, handle.Token).RunTaskResult(handle).ViewError();
             return handle;
         }
-    }
+    }*/
 }

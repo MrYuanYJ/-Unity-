@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using EasyFramework.EasyTaskKit;
-using EasyFramework.EventKit;
 using EXFunctionKit;
 using UnityEngine;
 
@@ -63,7 +61,7 @@ namespace EasyFramework
             {
                 var cd=Setting.GetAddElementBuffByMeanCd(means);
                 unit.Timers[means][buffType]=EasyTask.Delay(cd);
-                unit.Timers[means][buffType].Completed += _ =>
+                unit.Timers[means][buffType].Completed += () =>
                 {
                     unit.Timers[means][buffType] = null;
                 };

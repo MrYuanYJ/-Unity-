@@ -8,10 +8,16 @@ namespace EasyFramework
     }
     public class BindAttribute : BaseBindAttribute
     {  
-        public Type Type { get; set; }
-        public BindAttribute(Type type)  
+        public Type BindType { get; set; }
+        public object BindObject { get; set; }
+        public BindAttribute(Type bindType)  
         {  
-            Type = type;  
+            BindType = bindType;
+            BindObject = BindType;
+        }
+        public BindAttribute(object bindObject)
+        {
+            BindObject = bindObject;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     #region AEventIndex
     

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using EXFunctionKit;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public interface IESProperty: IDisposeAble
     {
@@ -118,7 +118,7 @@ namespace EasyFramework.EventKit
         }
         public void Modify<M>(Expression<Func<T, M>> expression, M newValue)
         {
-            ExCSharp.Modify(Value, expression, newValue, _propertyEvent.Invoke);
+            Value.Modify(expression, newValue, onChange:_propertyEvent.Invoke);
         }
 
         public bool IsDispose{ get; set; }

@@ -1,7 +1,4 @@
 using System;
-using System.Threading;
-using EasyFramework.EventKit;
-
 namespace EasyFramework
 {
     public static class OOPEx

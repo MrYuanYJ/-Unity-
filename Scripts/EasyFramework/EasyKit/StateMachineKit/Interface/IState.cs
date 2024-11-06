@@ -1,35 +1,10 @@
 using System;
 
-namespace EasyFramework.StateMachineKit
+namespace EasyFramework
 {
-    public interface IState:IGetMachineAble
-    {
-        bool EnterCondition(IStateMachine machine)
-        {
-            SetMachine(machine);
-            if (EnterConditionFunc != null)
-                return OnEnterCondition() && EnterConditionFunc();
-            return OnEnterCondition();
-        }
-
-        bool ExitCondition(IStateMachine machine)
-        {
-            SetMachine(machine);
-            if (ExitConditionFunc != null)
-                return OnExitCondition() && ExitConditionFunc();
-            return OnExitCondition();
-        }
-
-        Func<bool> EnterConditionFunc{ get; set; }
-        Func<bool> ExitConditionFunc{ get; set; }
-        
-        protected bool OnEnterCondition();
-        protected bool OnExitCondition();
-    }
-
     public interface IStateUpdate: IState
     {
-        void Update(IStateMachine machine)
+        void Update(IStateMachineBase machine)
         {
             SetMachine(machine);
             OnUpdate();
@@ -40,7 +15,7 @@ namespace EasyFramework.StateMachineKit
     }
     public interface IStateFixedUpdate: IState
     {
-        void FixedUpdate(IStateMachine machine)
+        void FixedUpdate(IStateMachineBase machine)
         {
             SetMachine(machine);
             OnFixedUpdate();
@@ -49,47 +24,126 @@ namespace EasyFramework.StateMachineKit
         Action FixedUpdateAction{ get; set; }
         protected void OnFixedUpdate();
     }
-    
-    public interface IEasyState : IState
-    {
-        void Enter(IStateMachine machine, params object[] obj)
+
+    public interface IStateBase : IGetMachineAble
+    { 
+        bool BeforeAdd(IStateMachineBase machine)
         {
             SetMachine(machine);
-            OnEnter(obj);
-            EnterAction?.Invoke(obj);
+            return OnBeforeAdd();
         }
-        void Exit(IStateMachine machine, params object[] obj)
+        bool AfterAdd(IStateMachineBase machine)
         {
             SetMachine(machine);
-            OnExit(obj);
-            ExitAction?.Invoke(obj);
+            return OnAfterAdd();
         }
-        Action<object[]> EnterAction{ get; set; }
-        Action<object[]> ExitAction{ get; set; }
-        protected void OnEnter(object[] objects);
-        protected void OnExit(object[] objects);
+        bool BeforeRemove(IStateMachineBase machine)
+        {
+            SetMachine(machine);
+            return OnBeforeRemove();
+        }
+        bool AfterRemove(IStateMachineBase machine)
+        {
+            SetMachine(machine);
+            return OnAfterRemove();
+        }
+        protected bool OnBeforeAdd();
+        protected bool OnAfterAdd();
+        protected bool OnBeforeRemove();
+        protected bool OnAfterRemove();
+        void Reset(){}
     }
-    public interface IEasyState<T>:IState
+    public interface IState: IStateBase
     {
-        void Enter(IStateMachine machine,T t, params object[] obj)
+        bool EnterCondition(IStateMachineBase machine)
+        {
+            SetMachine(machine);
+            if (EnterConditionFunc != null)
+                return OnEnterCondition() && EnterConditionFunc();
+            return OnEnterCondition();
+        }
+        bool ExitCondition(IStateMachineBase machine)
+        {
+            SetMachine(machine);
+            if (ExitConditionFunc != null)
+                return OnExitCondition() && ExitConditionFunc();
+            return OnExitCondition();
+        }
+        void Enter(IStateMachineBase machine)
+        {
+            SetMachine(machine);
+            EnterAction?.Invoke();
+            OnEnter();
+        }
+        void Exit(IStateMachineBase machine)
+        {
+            SetMachine(machine);
+            ExitAction?.Invoke();
+            OnExit();
+        }
+        Func<bool> EnterConditionFunc{ get; set; }
+        Func<bool> ExitConditionFunc{ get; set; }
+        Action EnterAction{ get; set; }
+        Action ExitAction{ get; set; }
+        protected void OnEnter();
+        protected void OnExit();
+        protected bool OnEnterCondition();
+        protected bool OnExitCondition();
+
+        void IStateBase.Reset()
+        {
+            EnterAction = null;
+            ExitAction = null;
+            EnterConditionFunc = null;
+            ExitConditionFunc = null;
+        }
+    }
+    public interface IState<T>:IStateBase
+    {
+        bool EnterCondition(IStateMachineBase machine,T param)
+        {
+            SetMachine(machine);
+            if (EnterConditionFunc != null)
+                return OnEnterCondition(param) && EnterConditionFunc(param);
+            return OnEnterCondition(param);
+        }
+        bool ExitCondition(IStateMachineBase machine,T param)
+        {
+            SetMachine(machine);
+            if (ExitConditionFunc != null)
+                return OnExitCondition(param) && ExitConditionFunc(param);
+            return OnExitCondition(param);
+        }
+        void Enter(IStateMachineBase machine,T param)
         {  
             SetMachine(machine);
-            OnEnter(t, obj);
-            EnterAction?.Invoke(t, obj);
+            EnterAction?.Invoke(param);
+            OnEnter(param);
         }
-        void Exit(IStateMachine machine, T t, params object[] obj)
+        void Exit(IStateMachineBase machine, T param)
         {
             SetMachine(machine);
-            OnExit(t, obj);
-            ExitAction?.Invoke(t, obj);
+            ExitAction?.Invoke(param);
+            OnExit(param);
         }
-        Action<T,object[]> EnterAction{ get; set; }
-        Action<T,object[]> ExitAction{ get; set; }
-        protected void OnEnter(T t,object[] objects);
-        protected void OnExit(T t,object[] objects);
+        Func<T,bool> EnterConditionFunc{ get; set; }
+        Func<T,bool> ExitConditionFunc{ get; set; }
+        Action<T> EnterAction{ get; set; }
+        Action<T> ExitAction{ get; set; }
+        protected void OnEnter(T param);
+        protected void OnExit(T param);
+        protected bool OnEnterCondition(T param);
+        protected bool OnExitCondition(T param);
+        void IStateBase.Reset()
+        {
+            EnterAction = null;
+            ExitAction = null;
+            EnterConditionFunc = null;
+            ExitConditionFunc = null;
+        }
     }
 
-    public interface IProcedure:IState
+    public interface IProcedure:IStateBase
     { 
         bool IsEnable { get;}
         void SetEnable(bool isEnable);
@@ -97,26 +151,47 @@ namespace EasyFramework.StateMachineKit
 
     public static class IStateExtension
     {
-        public static T OnEnterCondition<T>(this T state, Func<bool> condition) where T : IState
+        public static IState OnEnterCondition(this IState state, Func<bool> condition)
         {
             state.EnterConditionFunc+=condition;
             return state;
         }
-        public static T RemoveEnterCondition<T>(this T state, Func<bool> condition) where T : IState
+        public static IState<T> OnEnterCondition<T>(this IState<T> state, Func<T,bool> condition)
         {
-            state.EnterConditionFunc-=condition;
+            state.EnterConditionFunc+=condition;
             return state;
         }
-        public static T OnExitCondition<T>(this T state, Func<bool> condition) where T : IState
+        public static IState OnExitCondition(this IState state, Func<bool> condition)
         {
             state.ExitConditionFunc+=condition;
             return state;
         }
-        public static T RemoveExitCondition<T>(this T state, Func<bool> condition) where T : IState
+        public static IState<T> OnExitCondition<T>(this IState<T> state, Func<T,bool> condition)
+        {
+            state.ExitConditionFunc+=condition;
+            return state;
+        }
+        public static IState RemoveEnterCondition(this IState state, Func<bool> condition)
+        {
+            state.EnterConditionFunc-=condition;
+            return state;
+        }
+        public static IState<T> RemoveEnterCondition<T>(this IState<T> state, Func<T, bool> condition)
+        {
+            state.EnterConditionFunc-=condition;
+            return state;
+        }
+        public static IState RemoveExitCondition(this IState state, Func<bool> condition)
         {
             state.ExitConditionFunc-=condition;
             return state;
         }
+        public static IState<T> RemoveExitCondition<T>(this IState<T> state, Func<T, bool> condition)
+        {
+            state.ExitConditionFunc-=condition;
+            return state;
+        }
+       
         public static T OnUpdate<T>(this T state, Action update) where T : IStateUpdate
         {
             state.UpdateAction+=update;
@@ -137,44 +212,45 @@ namespace EasyFramework.StateMachineKit
             state.FixedUpdateAction-=fixedUpdate;
             return state;
         }
-        public static T OnEnter<T>(this T state, Action<object[]> enter) where T : IEasyState
+        
+        public static IState OnEnter(this IState state, Action enter)
         {
             state.EnterAction+=enter;
             return state;
         }
-        public static T RemoveEnter<T>(this T state, Action<object[]> enter) where T : IEasyState
-        {
-            state.EnterAction-=enter;
-            return state;
-        }
-        public static T OnExit<T>(this T state, Action<object[]> exit) where T : IEasyState
-        {
-            state.ExitAction+=exit;
-            return state;
-        }
-        public static T RemoveExit<T>(this T state, Action<object[]> exit) where T : IEasyState
-        {
-            state.ExitAction-=exit;
-            return state;
-        }
-        public static IEasyState<T> OnEnter<T>(this IEasyState<T> state, Action<T,object[]> enter)
+        public static IState<T> OnEnter<T>(this IState<T> state, Action<T> enter)
         {
             state.EnterAction+=enter;
             return state;
         }
-        public static IEasyState<T> RemoveEnter<T>(this IEasyState<T> state, Action<T,object[]> enter)
-        {
-            state.EnterAction-=enter;
-            return state;
-        }
-        public static IEasyState<T> OnExit<T>(this IEasyState<T> state, Action<T,object[]> exit)
+        public static IState OnExit(this IState state, Action exit)
         {
             state.ExitAction+=exit;
             return state;
         }
-        public static IEasyState<T> RemoveExit<T>(this IEasyState<T> state, Action<T,object[]> exit)
+        public static IState<T> OnExit<T>(this IState<T> state, Action<T> exit)
         {
-            state.ExitAction-=exit;
+            state.ExitAction+=exit;
+            return state;
+        }
+        public static IState RemoveEnter(this IState state, Action enter)
+        {
+            state.EnterAction-=enter;
+            return state;
+        }
+        public static IState<T> RemoveEnter<T>(this IState<T> state, Action<T> enter)
+        {
+            state.EnterAction-=enter;
+            return state;
+        }
+        public static IState RemoveExit(this IState state, Action exit)
+        {
+            state.ExitAction -= exit;
+            return state;
+        }
+        public static IState<T> RemoveExit<T>(this IState<T> state, Action<T> exit)
+        {
+            state.ExitAction -= exit;
             return state;
         }
     }

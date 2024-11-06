@@ -8,16 +8,14 @@ namespace EasyFramework.EasySystem
     {
         public readonly Dictionary<string,Type> AllTypes = new ();
         public static event Action<Type> OnCodeLoaded;
-
-        private const string Framework = "EasyFramework";
         
         protected override void OnInit()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
-                if (assembly.GetName().Name == Framework ||
-                    assembly.GetReferencedAssemblies().Any(targetAssembly=>targetAssembly.Name==Framework))
+                if (assembly.GetName().Name == FrameworkSettings.Framework ||
+                    assembly.GetReferencedAssemblies().Any(targetAssembly=>targetAssembly.Name==FrameworkSettings.Framework))
                 {
                     foreach (var type in assembly.GetTypes())
                     {

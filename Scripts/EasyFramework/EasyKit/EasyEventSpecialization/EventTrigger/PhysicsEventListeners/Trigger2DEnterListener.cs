@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
-    public class Listener2DEnterListener : AListener2DListener
+    public class Trigger2DEnterListener : AListener2DListener
     {
         private void OnTriggerEnter2D(Collider2D other) => Invoke(other);
     }

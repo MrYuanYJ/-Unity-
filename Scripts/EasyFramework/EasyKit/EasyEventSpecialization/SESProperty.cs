@@ -9,7 +9,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     [Serializable]
     public class SESProperty<T>: IESProperty<T>
@@ -99,7 +99,7 @@ namespace EasyFramework.EventKit
         
         public void Modify<M>(Expression<Func<T, M>> expression, M newValue)
         {
-            ExCSharp.Modify(Value, expression, newValue, _propertyEvent.Invoke);
+            Value.Modify(expression, newValue, onChange:_propertyEvent.Invoke);
         }
 
         public void ForceNotify()

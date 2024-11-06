@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using EasyFramework.EventKit;
-using EXFunctionKit;
 
 namespace EasyFramework
 {
@@ -31,9 +27,9 @@ namespace EasyFramework
         public static void Init(this IInitAble self)=> self.Init();
         public static void Dispose(this IDisposeAble self)=> self.Dispose();
         public static void Dispose(this IEasyLife self,bool usePool)=> self.Dispose(usePool);
-        public static void Enable(this IActiveAble self) => self.IsActive.Value = true;
-        public static void Disable(this IActiveAble self) => self.IsActive.Value = false;
-        public static void SetActive(this IActiveAble self, bool isActive) => self.IsActive.Value = isActive;
+        public static void Enable(this IActiveAble self) => self._isActive = true;
+        public static void Disable(this IActiveAble self) => self._isActive = false;
+        public static void SetActive(this IActiveAble self, bool isActive) => self._isActive = isActive;
     }
 
     public static class EasyLifeCycleExtensions
@@ -64,12 +60,22 @@ namespace EasyFramework
                 activeAble.UnActiveEvent.Register(self.UnRegister);
             return self;
         }
-        public static IUnRegisterHandle RegisterOnDispose(this IDisposeAble self, Action action) => self.DisposeEvent.Register(action).OnlyPlayOnce();
+        public static IUnRegisterHandle UnRegisterOnStart(this IUnRegisterHandle self, IStartAble startAble, bool onlyUnRegisterOnce = false)
+        {
+            if (onlyUnRegisterOnce)
+                startAble.StartEvent.Register(self.UnRegister).OnlyPlayOnce();
+            else
+                startAble.StartEvent.Register(self.UnRegister);
+            return self;
+        }
+        public static IUnRegisterHandle RegisterOnDispose(this IDisposeAble self, Action action) => self.DisposeEvent.Register(action);
         public static IUnRegisterHandle RegisterOnActive(this IActiveAble self, Action action) => self.ActiveEvent.Register(action);
         public static IUnRegisterHandle RegisterOnUnActive(this IActiveAble self, Action action) => self.UnActiveEvent.Register(action);
+        public static IUnRegisterHandle RegisterOnStart(this IStartAble self, Action action) => self.StartEvent.Register(action);
         public static void UnRegisterDisposeEvent(this IDisposeAble self, Action action) => self.DisposeEvent.UnRegister(action);
         public static void UnRegisterActiveEvent(this IActiveAble self, Action action) => self.ActiveEvent.UnRegister(action);
         public static void UnRegisterUnActiveEvent(this IActiveAble self, Action action) => self.UnActiveEvent.UnRegister(action);
+        public static void UnRegisterStartEvent(this IStartAble self, Action action) => self.StartEvent.UnRegister(action);
 
         public static CancellationTokenSource CancelOnDispose(this IDisposeAble self)
         {

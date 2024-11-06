@@ -1,152 +1,134 @@
 using System;
-using System.Collections;
-using System.Threading;
-using System.Threading.Tasks;
-using Object = UnityEngine.Object;
+using System.Runtime.CompilerServices;
 
 namespace EasyFramework
 {
-    public class CoroutineHandle: ICoroutineHandle<CoroutineHandle>
+    /// <summary>
+    /// 包装协程，提供协程的取消功能，并且支持使用await与yield return语法
+    /// CoroutineHandle具有时效性，当协程完成或取消时，会自动回收;
+    /// <para>注意:因为CoroutineHandle是可回收的，所以不建议长期保留CoroutineHandle的引用</para>
+    /// </summary>
+    public class CoroutineHandle : IYieldAble,IAwaitAble,ICancelAble,ICompleteAble,IDoneAble,IRecycleable
     {
-        private CoroutineHandle()
-        {
-
-        }
-        private static readonly EasyPool<CoroutineHandle> Pool = new EasyPool<CoroutineHandle>(() => new CoroutineHandle(), null, null, 32);
-
+        protected CoroutineHandle() { }
+        private static readonly EasyPool<CoroutineHandle> Pool = new EasyPool<CoroutineHandle>(() => new CoroutineHandle(), null, null, 64);
         public static CoroutineHandle Fetch()
         {
-            var handle = Pool.Fetch();
-            handle._tcs = new TaskCompletionSource<bool>();
-            handle._tokenSource = new CancellationTokenSource();
-            handle.Canceled = null;
-            handle._completed = null;
+            var handle= Pool.Fetch();
+            ((IRecycleable)handle).Recycle();
+            handle.IsCanceled = false;
+            handle.IsCompleted = false;
             return handle;
         }
-        
-        private TaskCompletionSource<bool> _tcs;
-        private CancellationTokenSource _tokenSource;
-        
-        public Task Task =>_tcs.Task;
-        public CancellationToken Token=> _tokenSource.Token;
-        public bool IsRecycled => ((IRecycleable) this).IsRecycled;
-        public event Action<CoroutineHandle> Canceled;
-        private event Action<CoroutineHandle> _completed;
-        public event Action<CoroutineHandle> Completed
-        {
-            add
-            {
-                _completed += value;
-                if(_tcs.Task.IsCompleted)
-                {
-                    value(this);
-                }
-            }
-            remove => _completed -= value;
-        }
-        
-        void IEnumerator.Reset(){}
-        bool IEnumerator.MoveNext() => !Task.IsCompleted;
-        object IEnumerator.Current => null;
+        public event Action Completed;
+        public event Action Cancelled;
+        public event Action Done;
+        public bool IsDone => IsCanceled || IsCompleted;
+        public bool IsCanceled { get; protected set; }
+        public bool IsCompleted { get; protected set; }
 
-        public void Cancel()
+        public bool MoveNext()=>!IsDone;
+        public void Reset() {}
+        public object Current => null;
+
+        public CoroutineHandle GetAwaiter()=> this;
+        public void GetResult(){}
+        void INotifyCompletion.OnCompleted(Action continuation)
         {
-            if(!_tcs.Task.IsCompleted&&_tcs.TrySetCanceled(_tokenSource.Token))
+            if (IsDone)
             {
-                Canceled?.Invoke(this);
-                EasyCoroutine.StopCoroutine(this);
-                Pool.Recycle(this);
+                continuation?.Invoke();
             }
-        
+            else
+            {
+                Cancelled += continuation;
+                Completed += continuation;
+            }
         }
-        void ICoroutineHandle.Complete()
+        void ICancelAble.Cancel()
         {
-            if(_tcs.TrySetResult(true))
-            {
-                _completed?.Invoke(this);
-                Pool.Recycle(this);
-            }
+            if(IsDone)
+                return;
+                
+            IsCanceled = true;
+            OnCancel();
         }
 
-        bool IRecycleable.IsRecycled { get; set; }
-        void IRecycleable.Recycle(){}
+        internal void Complete()
+        {
+            if (IsDone)
+                return;
+
+            IsCompleted = true;
+            OnCompleted();
+        }
+
+        private void OnCancel()
+        {
+            EasyCoroutine.StopCoroutine(this);
+            Cancelled?.Invoke();
+            Done?.Invoke();
+            EasyCoroutine.RecycleCoroutineHandle(this);
+        }
+        private void OnCompleted()
+        {
+            Completed?.Invoke();
+            Done?.Invoke();
+            EasyCoroutine.RecycleCoroutineHandle(this);
+        }
+
+        public bool IsRecycled { get; set; }
+
+        void IRecycleable.Recycle()
+        {
+            Cancelled = null;
+            Completed = null;
+        }
+        internal virtual void Recycle() => Pool.Recycle(this);
     }
-    public class CoroutineHandle<TResult>: ICoroutineHandle<CoroutineHandle<TResult>,TResult>
+    /// <summary>
+    /// 包装协程，提供协程的取消功能，并且支持使用await与yield return语法
+    /// CoroutineHandle具有时效性，当协程完成或取消时，会自动回收;
+    /// <para>注意:因为CoroutineHandle是可回收的，所以不建议长期保留CoroutineHandle的引用</para>
+    /// </summary>
+    public class CoroutineHandle<T> : CoroutineHandle,IAwaitAble<T>
     {
-        private CoroutineHandle()
-        {
-
+        protected CoroutineHandle()
+        { 
+            Pool.SetOnFetch(ResetHandle);
         }
-        private static readonly EasyPool<CoroutineHandle<TResult>> Pool = new EasyPool<CoroutineHandle<TResult>>(() => new CoroutineHandle<TResult>(), null, null, 32);
-
-        public static CoroutineHandle<TResult> Fetch()
+        private static readonly EasyPool<CoroutineHandle<T>> Pool = new(() => new CoroutineHandle<T>(), null, null, 64);
+        public new static CoroutineHandle<T> Fetch()
         {
-            var handle = Pool.Fetch();
-            handle._tcs = new TaskCompletionSource<TResult>();
-            handle._tokenSource = new CancellationTokenSource();
-            handle._result = default;
-            handle.Canceled = null;
-            handle._completed = null;
+            var handle= Pool.Fetch();
+            ((IRecycleable)handle).Recycle();
+            handle.IsCanceled = false;
+            handle.IsCompleted = false;
             return handle;
         }
-        
-        
-        private TaskCompletionSource<TResult> _tcs;
-        private TResult _result;
-        private CancellationTokenSource _tokenSource;
-        
-        public Task<TResult> Task =>_tcs.Task;
-        public CancellationToken Token=> _tokenSource.Token;
-        public TResult Result => _result;
-        public bool IsRecycled => ((IRecycleable) this).IsRecycled;
-
-        public event Action<CoroutineHandle<TResult>> Canceled;
-        private event Action<CoroutineHandle<TResult>> _completed;
-        public event Action<CoroutineHandle<TResult>> Completed
+        public static CoroutineHandle<T> Fetch(T result)
         {
-            add
-            {
-                _completed += value;
-                if(_tcs.Task.IsCompleted)
-                {
-                    value(this);
-                }
-            }
-            remove => _completed -= value;
-        }
-        
-        void IEnumerator.Reset(){}
-        bool IEnumerator.MoveNext() => !Task.IsCompleted;
-        object IEnumerator.Current => null;
-
-        public void Cancel()
-        {
-            if(!_tcs.Task.IsCompleted&&_tcs.TrySetCanceled(_tokenSource.Token))
-            {
-                Canceled?.Invoke(this);
-                EasyCoroutine.StopCoroutine(this);
-                Pool.Recycle(this);
-            }
-        
+            var handle= Pool.Fetch();
+            ((IRecycleable)handle).Recycle();
+            handle.IsCanceled = false;
+            handle.IsCompleted = false;
+            handle.SetResult(result);
+            return handle;
         }
 
-        void ICoroutineHandle.Complete()
-        {
-            if(_tcs.TrySetResult(_result))
-            {
-                _completed?.Invoke(this);
-                Pool.Recycle(this);
-            }
-        }
+        public T Result { get; private set; }
+        public new CoroutineHandle<T> GetAwaiter()=> this;
+        public new T GetResult()=> Result;
 
-        void ICoroutineHandle<CoroutineHandle<TResult>,TResult>.Complete(TResult result)
+        private void ResetHandle(CoroutineHandle handle)
         {
-            _result = result;
-            ((ICoroutineHandle)this).Complete();
+            Result = default;
         }
-
-        bool IRecycleable.IsRecycled { get; set; }
-        void IRecycleable.Recycle(){}
-        
+        public void SetResult(T result)
+        {
+            Result = result;
+            Complete();
+        }
+        internal override void Recycle() => Pool.Recycle(this);
     }
 }

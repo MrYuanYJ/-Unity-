@@ -27,11 +27,9 @@ namespace EasyFramework
         void SetCurrentLoopCount(int currentLoopCount);
     }
 
-    public interface IEasyActionEvent
+    public interface IEasyActionEvent: ICompleteAble,ICancelAble
     {
-        public event Action OnRunning;
-        public event Action OnCompleted;
-        public event Action OnCanceled;
-        public event Action OnEnd;
+        public event Action Running;
+        public event Action End;
     }
 }

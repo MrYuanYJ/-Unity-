@@ -1,5 +1,4 @@
 using System;
-using EasyFramework.EventKit;
 namespace EasyFramework
 {
     public interface IGetModelAble:IGetStructureAble{}
@@ -12,11 +11,14 @@ namespace EasyFramework
 
     public interface ISetStructureAbleAble:IGetStructureAble
     {
-        protected IStructure Structure { get; set; }
+        IStructure IGetStructureAble.Structure => Structure;
+        new IStructure Structure { get; protected set; }
         void SetStructure(IStructure structure)
         {
             Structure = structure;
-            if (structure.IsInit && this is IEasyLife easyLife)
+            if (structure!= null 
+                && structure.IsInit 
+                && this is IEasyLife easyLife)
             {
                 easyLife.Init();
             }
@@ -79,6 +81,7 @@ namespace EasyFramework
             if (!self.Container.TryGet(out T model))
             {
                 model=self.RegisterModel<T>();
+                
             }
             return model;
         }
@@ -144,12 +147,14 @@ namespace EasyFramework
         public static void UnRegisterFunc<T>(this IStructure self, Func<T, IResult> func)where T : struct => self.Func.UnRegister(func);
     }
 
-    public interface IEntity : IStartAble,IActiveAble,IGetModelAble, IGetSystemAble, IRegisterEventAble, ISendEventAble, ISendCommandAble
+    public interface IEntity : IActiveAble,IGetModelAble, IGetSystemAble, IRegisterEventAble, ISendEventAble, ISendCommandAble
     {
         public object BindObj { get; }
         public IEntity BindEntity { get; }
         public IEntity Parent { get; }
         public ContainerDic<IEntity> Container { get;}
+        public void SetBindObj(object bindObj);
+        public void SetBindEntity(IEntity bindEntity);
         public void EntityBind(object bindObj, IEntity bindEntity);
         public void SetParent(IEntity parent);
     }

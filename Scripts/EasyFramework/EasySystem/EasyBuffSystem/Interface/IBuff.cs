@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using EasyFramework.EasyTagKit;
-using EasyFramework.EasyTaskKit;
 using UnityEngine;
 
 namespace EasyFramework
@@ -83,9 +82,8 @@ namespace EasyFramework
             EBuff = data.EBuff;
             Magnification = Mathf.Min(data.Magnification, MaxMagnification);
             IsDeInit = false;
-            ExecuteHandle =CoroutineHandle.Fetch(); 
             OnInit(data);
-            EasyTask.Seconds(ExecuteHandle,Interval,Duration, _=>Execute());
+            ExecuteHandle=EasyTask.Seconds(Interval,Duration, _=>Execute());
         }
 
         void IBuff.DeInit()
@@ -108,6 +106,7 @@ namespace EasyFramework
             ExistingTime += dateTime;
             if (Duration==0||Duration > 0 && ExistingTime >= Duration)
                 BuffEvent.RemoveBuff.InvokeEvent(Unit,EBuff,float.MaxValue);
+            OnRunning();
         }
     }
 
@@ -135,6 +134,7 @@ namespace EasyFramework
             ExistingTime += dateTime;
             if (Duration==0||Duration > 0 && ExistingTime >= Duration)
                 BuffEvent.RemoveBuff.InvokeEvent(Unit,EBuff,float.MaxValue);
+            OnRunning();
         }
 
         void IBuff.Execute()

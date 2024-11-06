@@ -177,6 +177,21 @@ namespace EXFunctionKit
             return component;
         }
 
+        public static Component Component(this GameObject self, Type type)
+        {
+            if (!self.TryGetComponent(type, out var component)) { return self.AddComponent(type); }
+
+            return component;
+        }
+        public static Component Component(this Component self, Type type)
+        {
+            if (!self.gameObject.TryGetComponent(type, out var component)) { return self.gameObject.AddComponent(type); }
+
+            return component;
+        }
+
+
+
         public static Component[] GetAllComponents(this GameObject self, bool findChildren = false)
         {
             if (!findChildren)

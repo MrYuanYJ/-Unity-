@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="width: 100%; height: 100%; flex-direction: column; min-width: 200px;">
+        <ui:VisualElement name="VisualElement" style="height: 15px;">
+            <uie:Toolbar style="height: 100%; width: 100%;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="width: 100%; height: 100%; flex-direction: row; min-width: 200px;">
+            <ui:VisualElement name="Inspector" focusable="false" style="width: 30%; height: 100%; flex-direction: column; border-right-color: rgb(151, 151, 151); border-right-width: 0.5px; min-width: 100px; min-height: auto; left: 0; right: auto; flex-grow: 0;">
+                <ui:Label text="Inspector" display-tooltip-when-elided="true" name="Title" style="-unity-font-style: bold; font-size: 14px; min-width: auto; margin-left: 5px;" />
+                <ui:ScrollView style="width: auto; height: 100%; right: auto; left: auto; top: auto; bottom: auto; margin-left: 2px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; padding-left: 3px; padding-right: 3px; padding-top: 3px; padding-bottom: 3px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Drager" style="width: 1px; height: 100%; min-width: auto; min-height: auto;">
+                <ui:VisualElement name="DragBar" style="width: 10px; height: 100%; left: -5px; background-color: rgb(156, 156, 156); transition-property: background-color; cursor: initial;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Graph" style="width: 100%; height: 100%; flex-direction: column; flex-shrink: 1; flex-grow: 0; min-width: 100px; margin-left: 5px; padding-left: 0;">
+                <EasyFramework.Editor.NodeGraphView focusable="true" style="width: 100%; height: 100%;">
+                    <ui:Label text="Graph" display-tooltip-when-elided="true" name="Title" style="-unity-font-style: bold; font-size: 14px; min-width: auto; margin-left: 5px;" />
+                </EasyFramework.Editor.NodeGraphView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

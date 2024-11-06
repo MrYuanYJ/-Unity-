@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public class MouseEnterListener:AMonoListener
     {

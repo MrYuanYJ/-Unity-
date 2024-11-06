@@ -1,20 +1,23 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace EasyFramework.StateMachineKit
+namespace EasyFramework
 {
     public interface IProcedureSMachine<TKey,TState>:ISMachine<TKey, TState> where TState : IProcedure
     {
         public LinkedList<TKey> Procedures { get; }
 
-        bool ISMachine<TKey, TState>.AfterAdd(TKey key)
+        bool ISMachine<TKey, TState>.OnAfterAdd(TKey key, TState state)
         {
+            if (!OnAfterAdd(key, state) || !state.AfterAdd(this))
+                return false;
             Procedures.AddLast(key);
             return true;
         }
-        bool ISMachine<TKey, TState>.AfterRemove(TKey key)
+        bool ISMachine<TKey, TState>.AfterRemove(TKey key, TState state)
         {
+            if (!OnAfterRemove(key, state) || !state.AfterRemove(this))
+                return false;
             Procedures.Remove(key);
             return true;
         }
@@ -42,9 +45,9 @@ namespace EasyFramework.StateMachineKit
     public static class ProcedureSMachineExtension
     {
         public static bool AddProcedure<TKey, TState>(this IProcedureSMachine<TKey, TState> self, TKey key, TState addState)
-            where TState : IProcedure, new()
+            where TState : IProcedure
         {
-            if (self.BeforeAdd(key) && self.States.TryAdd(key, addState))
+            if (self.AddState(key, addState))
             {
                 self.Procedures.AddLast(key);
                 return true;
@@ -68,7 +71,7 @@ namespace EasyFramework.StateMachineKit
         {
             var node = self.Procedures.Find(key);
             if (node != null)
-                if (self.BeforeAdd(newKey) && self.States.TryAdd(newKey, addState))
+                if (self.AddState(newKey, addState))
                 {
                     self.Procedures.AddBefore(node, newKey);
                     return true;
@@ -81,7 +84,7 @@ namespace EasyFramework.StateMachineKit
         {
             var node = self.Procedures.Find(key);
             if (node != null)
-                if (self.BeforeAdd(newKey) && self.States.TryAdd(newKey, addState))
+                if (self.AddState(newKey, addState))
                 {
                     self.Procedures.AddAfter(node, newKey);
                     return true;
@@ -135,84 +138,96 @@ namespace EasyFramework.StateMachineKit
 
 
 
-    public interface IProcedureStateMachine<TKey, TState, TValue> : IStateMachine<TKey, TState, TValue>, IProcedureSMachine<TKey, TState> where TState : IEasyState<TValue>,IProcedure
+    public interface IProcedureStateMachine<TKey, TState, TValue> : IStateMachine<TKey, TState, TValue>, IProcedureSMachine<TKey, TState> where TState : IState<TValue>,IProcedure
     {
     }
 
     public static class ProcedureStateMachineValueExtension
     {
-        public static bool NextProcedure<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self,
-            TValue t, params object[] data)
-            where TState : IEasyState<TValue>, IProcedure
+        public static void NextProcedure<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self, TValue param,Action<TKey,TValue> onFailed = null)
+            where TState : IState<TValue>, IProcedure
         {
             var next = IProcedureSMachine<TKey, TState>.FindNext(self.Procedures.Find(self.CurrentState),
                 next => self.States[next.Value].IsEnable);
             if (next != null)
-                return self.ChangeState(next.Value, t, data);
+                self.ChangeState(next.Value,param,onFailed);
             else
-                return self.ExitCurrentState(t, data);
+                self.ExitCurrentState(param,onFailed);
         }
 
-        public static bool PreviousProcedure<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self,
-            TValue t, params object[] data)
-            where TState : IEasyState<TValue>, IProcedure
+        public static void PreviousProcedure<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self, TValue param,Action<TKey,TValue> onFailed = null)
+            where TState : IState<TValue>, IProcedure
         {
             var previous = IProcedureSMachine<TKey, TState>.FindPrevious(self.Procedures.Find(self.CurrentState),
                 previous => self.States[previous.Value].IsEnable);
             if (previous != null)
-                return self.ChangeState(previous.Value, t, data);
+                self.ChangeState(previous.Value,param,onFailed);
             else
-                return self.ExitCurrentState(t, data);
+                self.ExitCurrentState(param,onFailed);
         }
 
-        public static bool ReStart<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self,
-            TValue t, params object[] data)
-            where TState : IEasyState<TValue>, IProcedure
+        public static void ReStart<TKey, TState, TValue>(this IProcedureStateMachine<TKey, TState, TValue> self, TValue param,Action<TKey,TValue> onFailed = null)
+            where TState : IState<TValue>, IProcedure
         {
             var node = self.Procedures.First;
             if (node != null)
-                return self.ChangeState(node.Value, t, data);
+                self.ChangeState(node.Value,param,onFailed);
             else
-                return self.ExitCurrentState(t, data);
+                self.ExitCurrentState(param,onFailed);
         }
     }
 
-    public interface IProcedureStateMachine<TKey, TState> : IStateMachine<TKey, TState>, IProcedureSMachine<TKey, TState> where TState : IEasyState, IProcedure
+    public interface IProcedureStateMachine<TKey, TState> : IStateMachine<TKey, TState>, IProcedureSMachine<TKey, TState> where TState : IState, IProcedure
     {
     }
 
     public static class ProcedureStateMachineExtension
     {
-        public static bool NextProcedure<TKey, TState>(this IProcedureStateMachine<TKey, TState> self, params object[] data)
-            where TState : IEasyState, IProcedure
+        public static bool AddProcedure<TKey>(this IProcedureSMachine<TKey, UniversalProcedure> self, TKey key)
+        {
+            return self.AddProcedure(key, UniversalProcedure.Pool.Fetch());
+        }
+        public static bool AddProcedure<TKey, TValue>(this IProcedureSMachine<TKey, UniversalProcedure<TValue>> self, TKey key)
+        {
+            return self.AddProcedure(key, UniversalProcedure<TValue>.Pool.Fetch());
+        }
+        public static bool AddProcedure<TKey,TMachine>(this IProcedureSMachine<TKey,UniversalEasyProcedure<TMachine>> self, TKey key)
+            where TMachine : IProcedureSMachine<TKey,UniversalEasyProcedure<TMachine>>
+        {
+            return self.AddProcedure(key, UniversalEasyProcedure<TMachine>.Pool.Fetch());
+        }
+        public static bool AddProcedure<TKey,TMachine,TValue>(this IProcedureSMachine<TKey, UniversalEasyProcedure<TMachine,TValue>> self, TKey key)
+            where TMachine : IProcedureSMachine<TKey, UniversalEasyProcedure<TMachine,TValue>>
+        {
+            return self.AddProcedure(key, UniversalEasyProcedure<TMachine,TValue>.Pool.Fetch());
+        }
+        public static void NextProcedure<TKey, TState>(this IProcedureStateMachine<TKey, TState> self,Action<TKey> onFailed = null)
+            where TState : IState, IProcedure
         {
             var node = self.Procedures.Find(self.CurrentState);
             if (node != null && node.Next != null)
-                return self.ChangeState(node.Next.Value, data);
+                self.ChangeState(node.Next.Value,onFailed);
             else
-                return self.ExitCurrentState(data);
+                self.ExitCurrentState(onFailed);
         }
 
-        public static bool PreviousProcedure<TKey, TState>(this IProcedureStateMachine<TKey, TState> self, params object[] data)
-            where TState : IEasyState, IProcedure
+        public static void PreviousProcedure<TKey, TState>(this IProcedureStateMachine<TKey, TState> self,Action<TKey> onFailed = null)
+            where TState : IState, IProcedure
         {
             var node = self.Procedures.Find(self.CurrentState);
             if (node != null && node.Previous != null)
-                return self.ChangeState(node.Previous.Value, data);
+                self.ChangeState(node.Previous.Value,onFailed);
             else
-                return self.ExitCurrentState(data);
+                self.ExitCurrentState(onFailed);
         }
 
-        public static bool ReStart<TKey, TState>(this IProcedureStateMachine<TKey, TState> self, params object[] data)
-            where TState : IEasyState, IProcedure
+        public static void ReStart<TKey, TState>(this IProcedureStateMachine<TKey, TState> self,Action<TKey> onFailed = null)
+            where TState : IState, IProcedure
         {
             var node = self.Procedures.First;
             if (node != null)
-                return self.ChangeState(node.Value, data);
+                self.ChangeState(node.Value,onFailed);
             else
-                return self.ExitCurrentState(data);
+                self.ExitCurrentState(onFailed);
         }
-    }
-    public interface ITypeProcedureStateMachine<TState,TValue>: ITypeStateMachine<TState,TValue>,ITypeProcedureSMachine<TState>,IProcedureStateMachine<Type, TState,TValue> where TState : IEasyState<TValue>, IProcedure {}
-    public interface ITypeProcedureStateMachine<TState>: ITypeStateMachine<TState>,ITypeProcedureSMachine<TState>,IProcedureStateMachine<Type, TState> where TState : IEasyState, IProcedure {}
-}
+    }}

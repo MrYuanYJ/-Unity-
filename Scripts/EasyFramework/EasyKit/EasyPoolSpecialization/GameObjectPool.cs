@@ -1,4 +1,3 @@
-using EasyFramework.EasyResKit;
 using EXFunctionKit;
 using UnityEngine;
 
@@ -15,6 +14,7 @@ namespace EasyFramework
 
         protected override void OnInit()
         {
+            base.OnInit();
             ForceRegister();
             EasyRes.RecycleGo.RegisterEvent(obj=>Recycle(EasyRes.GetAssetPath.InvokeFunc(obj),obj)).UnRegisterOnDispose(this);
             EasyRes.FetchGObject.RegisterFunc(Fetch).UnRegisterOnDispose(this);

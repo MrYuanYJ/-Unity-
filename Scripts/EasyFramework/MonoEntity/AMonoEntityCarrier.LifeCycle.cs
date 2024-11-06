@@ -23,7 +23,7 @@ namespace EasyFramework
             if (parent != null && parent.Entity == null)
                 return;
             this.Init();
-            if (Entity is {BindEntity: not null})
+            if (Entity!=null && Entity.BindEntity!=null)
             {
                 if (Entity.BindEntity.IsInit)
                     Entity.Init();
@@ -57,7 +57,7 @@ namespace EasyFramework
             if (parent != null)
             {
                 Entity.SetParent(parent.Entity);
-                parent.Entity.Container.Add(Entity.GetType(), Entity);
+                parent.Entity.Container[Entity.GetType()] = Entity;
             }
             foreach (var child in children)
                 child.TryInit();
@@ -67,16 +67,16 @@ namespace EasyFramework
         {
             if (Entity != null && !Entity.IsDispose)
             {
-                Entity.Dispose();
+                Entity.Dispose(usePool);
                 Entity = null;
             }
         }
 
         /// <summary>
-        /// 添加子级，并初始化（只建议在运行时使用此方法）
+        /// 获取或添加子级，并初始化（只建议在运行时使用此方法）
         /// </summary>
         /// <param name="monoEntityCarrierType"></param>
-        public AMonoEntityCarrier AddMonoEntity(Type monoEntityCarrierType)
+        public AMonoEntityCarrier GetOrAddMonoEntity(Type monoEntityCarrierType)
         {
             if (Entity.Container.TryGet(monoEntityCarrierType,out var entity))
                 return entity.BindObj as AMonoEntityCarrier;
@@ -85,16 +85,23 @@ namespace EasyFramework
                 : Instantiate(new GameObject($"{GetType().Name}->"), transform);
             if (children.Count == 0)
             {
-                childGo.transform.SetParent(transform);
                 if (parent == null)
                     childGo.SetActive(false);
             }
 
-            var monoEntityCarrier = (AMonoEntityCarrier)childGo.AddComponent(monoEntityCarrierType);
-            children.Add(monoEntityCarrier);
+            var monoEntityCarrier = (AMonoEntityCarrier)childGo.Component(monoEntityCarrierType);
+            if (!children.Contains(monoEntityCarrier))
+                children.Add(monoEntityCarrier);
             monoEntityCarrier.parent = this;
             monoEntityCarrier.OnEnable();
             return monoEntityCarrier;
+        }
+        /// <summary>
+        /// 获取或添加子级，并初始化（只建议在运行时使用此方法）
+        /// </summary>
+        public T GetOrAddMonoEntity<T>() where T : AMonoEntityCarrier
+        {
+            return (T)GetOrAddMonoEntity(typeof(T));
         }
 
         /// <summary>
@@ -115,6 +122,14 @@ namespace EasyFramework
                     Destroy(this);
                 }
             }
+        }
+
+        /// <summary>
+        /// 移除子级，并销毁（只建议在运行时使用此方法）
+        /// </summary>
+        public void RemoveMonoEntity<T>() where T : AMonoEntityCarrier
+        {
+            RemoveMonoEntity(typeof(T));
         }
     }
 }

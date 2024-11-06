@@ -1,43 +1,78 @@
 using System;
 using System.Collections;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace EasyFramework
 {
-    public interface ICoroutineHandle: IEnumerator,IRecycleable
+    public interface INonImmediate
     {
-        Task Task { get; }
-        CancellationToken Token { get; }
-        new bool IsRecycled { get; }
-        
-        void Complete();
+        bool IsDone { get; }
+    }
+    public interface ICancelAble
+    {
+        event Action Cancelled;
+        bool IsCanceled { get; }
         void Cancel();
     }
-    public interface ICoroutineHandle<T> : ICoroutineHandle where T : ICoroutineHandle<T>
+
+    public interface ICompleteAble
     {
-        event Action<T> Canceled;
-        event Action<T> Completed;
+        event Action Completed;
+        bool IsCompleted { get; }
     }
 
-    public interface ICoroutineHandle<T,TResult>:ICoroutineHandle<T> where T : ICoroutineHandle<T, TResult>
+    public interface IDoneAble
     {
-        new Task<TResult> Task { get; }
-        Task ICoroutineHandle.Task => Task;
-        TResult Result { get; }
-        void Complete(TResult result);
+        event Action Done;
+        bool IsDone { get; }
+    }
+    public interface IYieldAble: INonImmediate,IEnumerator
+    {
+        
+    }
+
+    public interface IAwaitAble: INonImmediate,INotifyCompletion
+    {
+
+    }
+    public interface IAwaitAble<T>: IAwaitAble
+    {
+        T Result { get; }
+        T GetResult();
     }
 
     public static class CoroutineHandleExtensions
     {
-        public static T OnCompleted<T>(this T handle, Action<T> callback) where T : ICoroutineHandle<T>
+        public static void Cancel(this ICancelAble handle)=>handle?.Cancel();
+        public static T OnCanceled<T>(this T handle, Action action) where T : ICancelAble
         {
-            handle.Completed += callback;
+            if (handle.IsCanceled)
+                action?.Invoke();
+            handle.Cancelled += action;
             return handle;
         }
-        public static T OnCanceled<T>(this T handle, Action<T> callback) where T : ICoroutineHandle<T>
+        public static T OnCompleted<T>(this T handle, Action action) where T : ICompleteAble
         {
-            handle.Canceled += callback;
+            if (handle.IsCompleted)
+                action?.Invoke();
+            handle.Completed += action;
+            return handle;
+        }
+        public static T OnDone<T>(this T handle, Action action) where T : IDoneAble
+        {
+            if (handle.IsDone)
+                action?.Invoke();
+            handle.Done += action;
+            return handle;
+        }
+
+        public static CoroutineHandle<T> OnReceivedResult<T>(this CoroutineHandle<T> handle, Action<T> action)
+        {
+            handle.OnCompleted(() =>
+            {
+                if (handle.Result != null)
+                    action?.Invoke(handle.Result);
+            });
             return handle;
         }
     }

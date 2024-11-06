@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using EasyFramework.EasyTaskKit;
 using EasyFramework.EasyUIKit;
 using UnityEngine;
 
@@ -34,20 +33,12 @@ namespace EasyFramework
         [SerializeField] private bool isUnscaledTime;
         [SerializeField] private float duration;
 
-
-        public CoroutineHandle Run(Action onFinished = null,params object[] args)
-        {
-            
-            var handle = CoroutineHandle.Fetch();
-            return Run(handle, onFinished, args);
-        }
-
-        public CoroutineHandle Run(CoroutineHandle handle, Action onFinished = null, params object[] args)
+        public CoroutineHandle Run(Action onFinished = null, params object[] args)
         {
             Panel = args[0] as IEasyPanel;
-            handle.Completed += _ => ((IEasyAni)this).Finish();
+            var handle=EasyTask.TimeTask(Duration, Play, IsUnscaledTime);
             Finished += onFinished;
-            EasyTask.TimeTask(handle, Duration, Play, IsUnscaledTime);
+            handle.Completed += () => ((IEasyAni)this).Finish();
             return handle;
         }
         private void Play(float progress)

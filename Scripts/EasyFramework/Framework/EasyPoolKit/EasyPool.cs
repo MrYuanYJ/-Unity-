@@ -73,7 +73,7 @@ namespace EasyFramework
                 recycleable.Recycle();
             }
 
-            if ( pool.Count < MaxCount )
+            if ( pool.Count <= MaxCount )
             {
                 OnRecycle?.Invoke( t );
                 pool.Push( t );

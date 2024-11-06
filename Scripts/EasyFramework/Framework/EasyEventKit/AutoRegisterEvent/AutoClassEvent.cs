@@ -1,6 +1,6 @@
-using System.Threading;
 
-namespace EasyFramework.EventKit
+
+namespace EasyFramework
 {
     public interface IAutoRegisterEvent
     {

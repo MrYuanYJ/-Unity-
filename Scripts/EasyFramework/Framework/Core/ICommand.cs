@@ -21,8 +21,6 @@ namespace EasyFramework
     public interface ISendCommandAble: IGetStructureAble { }
    public abstract class ACommand: ICommand
    {
-       private IStructure _structure;
-
        public void Execute()
        {
            OnExecute();
@@ -39,18 +37,10 @@ namespace EasyFramework
        protected abstract void OnExecute();
        protected abstract void OnUndo();
 
-       public IStructure Structure=> _structure;
-
-       IStructure ISetStructureAbleAble.Structure
-       {
-           get => _structure;
-           set => _structure = value;
-       }
+       IStructure ISetStructureAbleAble.Structure { get; set; }
    }
    public abstract class AReturnCommand<TReturn>: ICommand<TReturn>
    {
-       private IStructure _structure;
-
        public TReturn Execute()
        {
            var @return= OnExecute();
@@ -67,12 +57,6 @@ namespace EasyFramework
        protected abstract TReturn OnExecute();
        protected abstract void OnUndo();
 
-       public IStructure Structure => _structure;
-
-       IStructure ISetStructureAbleAble.Structure
-       {
-           get => _structure;
-           set => _structure = value;
-       }
+       IStructure ISetStructureAbleAble.Structure { get; set; }
    }
 }

@@ -1,13 +1,18 @@
-using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace EasyFramework
 {
-    public class GameInit : AMonoEntity<GameInitComponent>
+    public class GameInit : MonoBehaviour
     {
-        public override void OnStart()
+        private void Start()
         {
-            Debug.Log("GameInit OnStart");
+            Game.TryRegister();
+        }
+            
+        private void OnDestroy()
+        {
+            Game.Instance?.Dispose();
         }
     }
 }

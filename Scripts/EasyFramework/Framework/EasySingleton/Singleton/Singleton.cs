@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using EasyFramework.EventKit;
 using UnityEngine;
 
 namespace EasyFramework
@@ -63,6 +62,7 @@ namespace EasyFramework
         }
 
         public bool IsInit { get; set; }
+        public bool InitDone { get; set; }
         public IEasyEvent InitEvent { get; }=new EasyEvent();
         public IEasyEvent DisposeEvent { get; }=new EasyEvent();
         void IInitAble.OnInit() => OnInit();

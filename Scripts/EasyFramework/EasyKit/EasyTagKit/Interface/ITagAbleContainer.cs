@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace EasyFramework.EasyTagKit
+namespace EasyFramework
 {
     public interface ITagAbleContainer<TTag>
     {

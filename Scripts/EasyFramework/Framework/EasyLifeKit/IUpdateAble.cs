@@ -1,10 +1,13 @@
-using EasyFramework.EventKit;
+
 
 namespace EasyFramework
 {
     public interface IUpdateAble : IEasyLife
     {
         IEasyEvent UpdateEvent { get; }
+
+        static void EnableUpdateAble(IUpdateAble updateAble)=>EasyLifeCycle.Update.RegisterEvent(updateAble.Update);
+        static void DisableUpdateAble(IUpdateAble updateAble)=>EasyLifeCycle.Update.UnRegisterEvent(updateAble.Update);
 
         void Update()
         {

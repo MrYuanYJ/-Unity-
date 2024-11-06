@@ -1,18 +1,29 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace EasyFramework
 {
-    public abstract class AEasyAction: IEasyAction,IEasyActionEvent
+    public abstract class AEasyAction: IEasyAction,IEasyActionEvent,IYieldAble,IAwaitAble
     {
         public long ActionID { get; protected set; }
         public float RunTime { get; protected set; }
         public bool IsPause { get; protected set; }
         public int LoopCount { get; protected set; }
         public int CurrentLoopCount { get; protected set; }
+        public bool IsDone =>IsCompleted || IsCanceled;
+        public bool IsCanceled { get; protected set; }
+        public bool IsCompleted { get; protected set; }
         
-        void IEasyAction.Start()=>EasyActionSingleton.AddAction(this);
-        void IEasyAction.Pause()=> IsPause = true;
-        void IEasyAction.Resume()=> IsPause = false;
+        public void Start()=>EasyActionSingleton.AddAction(this);
+        public void Pause()=> IsPause = true;
+        public void Resume()=> IsPause = false;
+        public void Cancel()
+        {
+            if (IsDone) return;
+            IsCanceled = true;
+            EasyActionSingleton.RemoveAction(this, (this as IEasyAction).OnActionCancel);
+        }
+
         bool IEasyAction.Update(float deltaTime)
         {
             if (IsPause) return false;
@@ -25,7 +36,6 @@ namespace EasyFramework
                 CurrentLoopCount++;
             if (LoopCount <= 0 || CurrentLoopCount < LoopCount)
             {
-                
                 (this as IEasyAction).OnActionCompleted();
             }
             else
@@ -35,29 +45,29 @@ namespace EasyFramework
                 (this as IEasyAction).OnActionEnd();
             }
         }
-        void IEasyAction.Cancel()=> EasyActionSingleton.RemoveAction(this,(this as IEasyAction).OnActionCancel);
         bool IEasyAction.OnActionUpdate(float deltaTime)
         {
-            OnRunning?.Invoke();
+            Running?.Invoke();
             return OnActionUpdate(deltaTime);
         }
 
         void IEasyAction.OnActionCompleted()
         {
+            IsCompleted = true;
             OnActionCompleted();
-            OnCompleted?.Invoke();
+            Completed?.Invoke();
         }
 
         void IEasyAction.OnActionCancel()
         {
             OnActionCancel();
-            OnCanceled?.Invoke();
+            Cancelled?.Invoke();
         }
 
         void IEasyAction.OnActionEnd()
         {
             OnActionEnd();
-            OnEnd?.Invoke();
+            End?.Invoke();
         }
 
         protected abstract bool OnActionUpdate(float deltaTime);
@@ -65,17 +75,17 @@ namespace EasyFramework
         protected abstract void OnActionCancel();
         protected abstract void OnActionEnd();
 
-        public event Action OnRunning;
-        public event Action OnCompleted;
-        public event Action OnCanceled;
-        public event Action OnEnd;
+        public event Action Running;
+        public event Action Completed;
+        public event Action Cancelled;
+        public event Action End;
 
         private void ClearEvents()
         {
-            OnRunning = null;
-            OnCompleted = null;
-            OnCanceled = null;
-            OnEnd = null;
+            Running = null;
+            Completed = null;
+            Cancelled = null;
+            End = null;
         }
 
         protected virtual void Reset(int loopCount)
@@ -88,5 +98,22 @@ namespace EasyFramework
         }
         void IEasyAction.SetLoopCount(int loopCount) => LoopCount = loopCount;
         void IEasyAction.SetCurrentLoopCount(int currentLoopCount)=> CurrentLoopCount = currentLoopCount;
+        public bool MoveNext()=>!IsDone;
+        public void Reset() {}
+        public object Current => null;
+        public AEasyAction GetAwaiter()=> this;
+        public void GetResult(){}
+        void INotifyCompletion.OnCompleted(Action continuation)
+        {
+            if (IsDone)
+            {
+                continuation?.Invoke();
+            }
+            else
+            {
+                Cancelled += continuation;
+                Completed += continuation;
+            }
+        }
     }
 }

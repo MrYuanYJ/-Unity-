@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public class ProgressEventListener: MonoBehaviour,IProgressEvent<float>
     {

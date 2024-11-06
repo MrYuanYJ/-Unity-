@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using EasyFramework.EasyTaskKit;
 using UnityEngine;
 
 namespace EasyFramework.EasyUIKit
@@ -38,9 +37,9 @@ namespace EasyFramework.EasyUIKit
         public CoroutineHandle<T> OpenUI<T>() where T : Component, IEasyUI
         {
             var handle = EasyTask.RegisterEasyResultCoroutine<T>(GetOrCreateUI);
-            handle.Completed += h =>
+            handle.Completed += () =>
             {
-                var panel = h.Result;
+                var panel = handle.Result;
                 panel.SetCanvas(UIRoot, panel.Layer);
                 UIRoot.OpenUI(panel);
             };

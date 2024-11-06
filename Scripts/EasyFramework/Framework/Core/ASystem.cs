@@ -1,12 +1,13 @@
-using EasyFramework.EventKit;
-
 namespace EasyFramework
 {
     public abstract class ASystem : ISystem
     {
         private IStructure _structure;
         public bool IsInit { get; set; }
-        public ESProperty<bool> IsActive { get; set; } = new(true);
+        public bool InitDone { get; set; }
+        public bool Enable => IsActive;
+        public bool IsActive { get; set; } = true;
+
         public IEasyEvent InitEvent { get; } = new EasyEvent();
         public IEasyEvent DisposeEvent { get; } = new EasyEvent();
         public IEasyEvent ActiveEvent { get; } = new EasyEvent();
@@ -28,8 +29,10 @@ namespace EasyFramework
             OnDispose(usePool);
         }
 
-        public IStructure Structure => _structure;
-
-        IStructure ISetStructureAbleAble.Structure { get => _structure; set => _structure = value; }
+        IStructure ISetStructureAbleAble.Structure
+        {
+            get => _structure;
+            set => _structure = value;
+        }
     }
 }

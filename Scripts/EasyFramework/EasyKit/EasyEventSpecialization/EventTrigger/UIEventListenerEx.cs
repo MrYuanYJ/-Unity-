@@ -3,7 +3,7 @@ using EXFunctionKit;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public abstract class APointerEventListener : AUnityEventBinder<PointerEventData>, IEventListener
     {

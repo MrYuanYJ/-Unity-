@@ -44,7 +44,7 @@ namespace EasyFramework
         public static Sequence Action(this Sequence self, Action action, Action<Condition> set = null)
         {
             var condition = EasyFramework.Condition.Fetch(() => true);
-            condition.Complete(action);
+            condition.OnCompleted(action);
             set?.Invoke(condition);
             return self.Append(condition);
         }

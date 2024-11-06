@@ -21,7 +21,7 @@ namespace EasyFramework
         public void Recycle(TValue t)
         {
             _pool.Push(t);
-            t.TryGetGameObject()?.SetParentRetainLocal(transform).SetActive(false);
+            t.TryGetGameObject()?.SetParent(transform).SetActive(false);
         }
 
         public TValue Fetch()

@@ -1,6 +1,6 @@
 using System;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     public interface IAutoRegisterLifeCycleEvent
     {

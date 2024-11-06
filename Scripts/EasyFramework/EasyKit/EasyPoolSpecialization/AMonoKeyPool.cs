@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace EasyFramework
 {
-    public abstract class AMonoKeyPool<T,TValue>: MonoSingleton<T>,IInitAble where T : AMonoKeyPool<T,TValue> where TValue : Object
+    public abstract class AMonoKeyPool<T,TValue>: MonoSingleton<T> where T : AMonoKeyPool<T,TValue> where TValue : Object
     {
-        private readonly Dictionary<string, AMonoValuePool<TValue>> _pool = new Dictionary<string, AMonoValuePool<TValue>>();
+        private readonly Dictionary<string, AMonoValuePool<TValue>> _pool = new ();
         public void Clear()
         {
             Destroy(this);
@@ -18,6 +18,19 @@ namespace EasyFramework
                 _pool.Remove(key);
             }
         }
+        public AMonoValuePool<TValue> GetPool(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                path = "Unknown Path";
+            if (!_pool.TryGetValue(path, out AMonoValuePool<TValue> pool))
+            {
+                pool = CreatePool(path);
+                pool.name = path;
+                _pool.Add(path, pool);
+            }
+            return pool;
+        }
+        public GameObject GetPoolGo(string path)=>GetPool(path).gameObject;
         
         public void Recycle(string path,TValue t)
         {
@@ -42,5 +55,9 @@ namespace EasyFramework
             return null;
         }
         protected abstract AMonoValuePool<TValue> CreatePool(string path);
+        protected override void OnInit()
+        {
+            EasyRes.PoolGObject<T>.RegisterFunc(GetPoolGo);
+        }
     }
 }

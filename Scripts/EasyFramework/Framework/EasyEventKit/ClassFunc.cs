@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EasyFramework.EventKit
+namespace EasyFramework
 {
     #region AFuncIndex
     
@@ -17,6 +17,8 @@ namespace EasyFramework.EventKit
     {
         public static R[] BaseInvokeAndReturnAll() => EasyFuncDic.Global.InvokeAndReturnAllClassFunc<T,R>();
         public static R[] BaseInvokeAndReturnAll(IGetEasyFuncDic f) => f.FuncDic.InvokeAndReturnAllClassFunc<T,R>();
+        public static int BaseInvokeAndReturnAllNonAlloc(R[] results) => EasyFuncDic.Global.InvokeAndReturnAllClassFuncNonAlloc<T,R>(results);
+        public static int BaseInvokeAndReturnAllNonAlloc(IGetEasyFuncDic f, R[] results) => f.FuncDic.InvokeAndReturnAllClassFuncNonAlloc<T,R>(results);
         public static R BaseInvoke() => EasyFuncDic.Global.InvokeClassFunc<T,R>();
         public static R BaseInvoke(IGetEasyFuncDic f) => f.FuncDic.InvokeClassFunc<T,R>();
     }
@@ -28,6 +30,8 @@ namespace EasyFramework.EventKit
         public static void UnRegisterFunc(IGetEasyFuncDic f, Func<R> a) => f.FuncDic.UnRegisterClassFunc<T,R>(a);
         public static R[] InvokeAndReturnAll() => EasyFuncDic.Global.InvokeAndReturnAllClassFunc<T,R>();
         public static R[] InvokeAndReturnAll(IGetEasyFuncDic f) => f.FuncDic.InvokeAndReturnAllClassFunc<T,R>();
+        public static int InvokeAndReturnAllNonAlloc(R[] results) => EasyFuncDic.Global.InvokeAndReturnAllClassFuncNonAlloc<T,R>(results);
+        public static int InvokeAndReturnAllNonAlloc(IGetEasyFuncDic f, R[] results) => f.FuncDic.InvokeAndReturnAllClassFuncNonAlloc<T,R>(results);
         public static R InvokeFunc() => EasyFuncDic.Global.InvokeClassFunc<T,R>();
         public static R InvokeFunc(IGetEasyFuncDic f) => f.FuncDic.InvokeClassFunc<T,R>();
     }
@@ -44,6 +48,8 @@ namespace EasyFramework.EventKit
         public static void UnRegisterFunc(IGetEasyFuncDic f, Func<T1, R> a) => f.FuncDic.UnRegisterClassFunc<T, T1, R>(a);
         public static R[] InvokeAndReturnAll(T1 t1) => EasyFuncDic.Global.InvokeAndReturnAllClassFunc<T, T1, R>(t1);
         public static R[] InvokeAndReturnAll(IGetEasyFuncDic f, T1 t1) => f.FuncDic.InvokeAndReturnAllClassFunc<T, T1, R>(t1);
+        public static int InvokeAndReturnAllNonAlloc(T1 t1, R[] results) => EasyFuncDic.Global.InvokeAndReturnAllClassFuncNonAlloc<T, T1, R>(t1, results);
+        public static int InvokeAndReturnAllNonAlloc(IGetEasyFuncDic f, T1 t1, R[] results) => f.FuncDic.InvokeAndReturnAllClassFuncNonAlloc<T, T1, R>(t1, results);
         public static R InvokeFunc(T1 t1) => EasyFuncDic.Global.InvokeClassFunc<T, T1, R>(t1);
         public static R InvokeFunc(IGetEasyFuncDic f, T1 t1) => f.FuncDic.InvokeClassFunc<T, T1, R>(t1);
     }
@@ -59,6 +65,8 @@ namespace EasyFramework.EventKit
         public static void UnRegisterFunc(IGetEasyFuncDic f, Func<T1, T2, R> a) => f.FuncDic.UnRegisterClassFunc<T, T1, T2, R>(a);
         public static R[] InvokeAndReturnAll(T1 t1, T2 t2) => EasyFuncDic.Global.InvokeAndReturnAllClassFunc<T, T1, T2, R>(t1, t2);
         public static R[] InvokeAndReturnAll(IGetEasyFuncDic f, T1 t1, T2 t2) => f.FuncDic.InvokeAndReturnAllClassFunc<T, T1, T2, R>(t1, t2);
+        public static int InvokeAndReturnAllNonAlloc(T1 t1, T2 t2, R[] results) => EasyFuncDic.Global.InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, R>(t1, t2, results);
+        public static int InvokeAndReturnAllNonAlloc(IGetEasyFuncDic f, T1 t1, T2 t2, R[] results) => f.FuncDic.InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, R>(t1, t2, results);
         public static R InvokeFunc(T1 t1, T2 t2) => EasyFuncDic.Global.InvokeClassFunc<T, T1, T2, R>(t1, t2);
         public static R InvokeFunc(IGetEasyFuncDic f, T1 t1, T2 t2) => f.FuncDic.InvokeClassFunc<T, T1, T2, R>(t1, t2);
     }
@@ -74,6 +82,8 @@ namespace EasyFramework.EventKit
         public static void UnRegisterFunc(IGetEasyFuncDic f, Func<T1, T2, T3, R> a) => f.FuncDic.UnRegisterClassFunc<T, T1, T2, T3, R>(a);
         public static R[] InvokeAndReturnAll(T1 t1, T2 t2, T3 t3) => EasyFuncDic.Global.InvokeAndReturnAllClassFunc<T, T1, T2, T3, R>(t1, t2, t3);
         public static R[] InvokeAndReturnAll(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3) => f.FuncDic.InvokeAndReturnAllClassFunc<T, T1, T2, T3, R>(t1, t2, t3);
+        public static int InvokeAndReturnAllNonAlloc(T1 t1, T2 t2, T3 t3, R[] results) => EasyFuncDic.Global.InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, R>(t1, t2, t3, results);
+        public static int InvokeAndReturnAllNonAlloc(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3, R[] results) => f.FuncDic.InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, R>(t1, t2, t3, results);
         public static R InvokeFunc(T1 t1, T2 t2, T3 t3) => EasyFuncDic.Global.InvokeClassFunc<T, T1, T2, T3, R>(t1, t2, t3);
         public static R InvokeFunc(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3) => f.FuncDic.InvokeClassFunc<T, T1, T2, T3, R>(t1, t2, t3);
     }
@@ -90,6 +100,8 @@ namespace EasyFramework.EventKit
         public static void UnRegisterFunc(IGetEasyFuncDic f, Func<T1, T2, T3, T4, R> a) => f.FuncDic.UnRegisterClassFunc<T, T1, T2, T3, T4, R>(a);
         public static R[] InvokeAndReturnAll(T1 t1, T2 t2, T3 t3, T4 t4) => EasyFuncDic.Global.InvokeAndReturnAllClassFunc<T, T1, T2, T3, T4, R>(t1, t2, t3, t4);
         public static R[] InvokeAndReturnAll(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3, T4 t4) => f.FuncDic.InvokeAndReturnAllClassFunc<T, T1, T2, T3, T4, R>(t1, t2, t3, t4);
+        public static int InvokeAndReturnAllNonAlloc(T1 t1, T2 t2, T3 t3, T4 t4, R[] results) => EasyFuncDic.Global.InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, T4, R>(t1, t2, t3, t4, results);
+        public static int InvokeAndReturnAllNonAlloc(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3, T4 t4, R[] results) => f.FuncDic.InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, T4, R>(t1, t2, t3, t4, results);
         public static R InvokeFunc(T1 t1, T2 t2, T3 t3, T4 t4) => EasyFuncDic.Global.InvokeClassFunc<T, T1, T2, T3, T4, R>(t1, t2, t3, t4);
         public static R InvokeFunc(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3, T4 t4) => f.FuncDic.InvokeClassFunc<T, T1, T2, T3, T4, R>(t1, t2, t3, t4);
     }
@@ -106,6 +118,8 @@ namespace EasyFramework.EventKit
         public static void UnRegisterFunc(IGetEasyFuncDic f, Func<T1, T2, T3, T4, T5, R> a) => f.FuncDic.UnRegisterClassFunc<T, T1, T2, T3, T4, T5, R>(a);
         public static R[] InvokeAndReturnAll(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) => EasyFuncDic.Global.InvokeAndReturnAllClassFunc<T, T1, T2, T3, T4, T5, R>(t1, t2, t3, t4, t5);
         public static R[] InvokeAndReturnAll(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) => f.FuncDic.InvokeAndReturnAllClassFunc<T, T1, T2, T3, T4, T5, R>(t1, t2, t3, t4, t5);
+        public static int InvokeAndReturnAllNonAlloc(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, R[] results) => EasyFuncDic.Global.InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, T4, T5, R>(t1, t2, t3, t4, t5, results);
+        public static int InvokeAndReturnAllNonAlloc(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, R[] results) => f.FuncDic.InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, T4, T5, R>(t1, t2, t3, t4, t5, results);
         public static R InvokeFunc(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) => EasyFuncDic.Global.InvokeClassFunc<T, T1, T2, T3, T4, T5, R>(t1, t2, t3, t4, t5);
         public static R InvokeFunc(IGetEasyFuncDic f, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) => f.FuncDic.InvokeClassFunc<T, T1, T2, T3, T4, T5, R>(t1, t2, t3, t4, t5);
     }
@@ -204,6 +218,43 @@ namespace EasyFramework.EventKit
             if (dic.TryGet<T>(out var func))
                 return ((EasyFunc<T1, T2, T3, T4, T5, R>) func).InvokeAndReturnAll(t1, t2, t3, t4, t5);
             return null;
+        }
+
+        public static int InvokeAndReturnAllClassFuncNonAlloc<T, R>(this IEasyFuncDic dic, R[] results) where T : IFuncIndex<T, R>
+        {
+            if (dic.TryGet<T>(out var func))
+                return ((IEasyFunc<R>) func).BaseInvokeAndReturnAllNonAlloc(results);
+            return 0;
+        }
+        public static int InvokeAndReturnAllClassFuncNonAlloc<T, T1, R>(this IEasyFuncDic dic, T1 t1, R[] results) where T : AFuncIndex<T, T1, R>
+        {
+            if (dic.TryGet<T>(out var func))
+                return ((EasyFunc<T1, R>) func).InvokeAndReturnAllNonAlloc(t1, results);
+            return 0;
+        }
+        public static int InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, R>(this IEasyFuncDic dic, T1 t1, T2 t2, R[] results) where T : AFuncIndex<T, T1, T2, R>
+        {
+            if (dic.TryGet<T>(out var func))
+                return ((EasyFunc<T1, T2, R>) func).InvokeAndReturnAllNonAlloc(t1, t2, results);
+            return 0;
+        }
+        public static int InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, R>(this IEasyFuncDic dic, T1 t1, T2 t2, T3 t3, R[] results) where T : AFuncIndex<T, T1, T2, T3, R>
+        {
+            if (dic.TryGet<T>(out var func))
+                return ((EasyFunc<T1, T2, T3, R>) func).InvokeAndReturnAllNonAlloc(t1, t2, t3, results);
+            return 0;
+        }
+        public static int InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, T4, R>(this IEasyFuncDic dic, T1 t1, T2 t2, T3 t3, T4 t4, R[] results) where T : AFuncIndex<T, T1, T2, T3, T4, R>
+        {
+            if (dic.TryGet<T>(out var func))
+                return ((EasyFunc<T1, T2, T3, T4, R>) func).InvokeAndReturnAllNonAlloc(t1, t2, t3, t4, results);
+            return 0;
+        }
+        public static int InvokeAndReturnAllClassFuncNonAlloc<T, T1, T2, T3, T4, T5, R>(this IEasyFuncDic dic, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, R[] results) where T : AFuncIndex<T, T1, T2, T3, T4, T5, R>
+        {
+            if (dic.TryGet<T>(out var func))
+                return ((EasyFunc<T1, T2, T3, T4, T5, R>) func).InvokeAndReturnAllNonAlloc(t1, t2, t3, t4, t5, results);
+            return 0;
         }
 
         public static R InvokeClassFunc<T,R>(this IEasyFuncDic dic) where T : IFuncIndex<T, R>
